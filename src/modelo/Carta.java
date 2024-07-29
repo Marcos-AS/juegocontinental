@@ -1,6 +1,8 @@
 package modelo;
 
-public class Carta implements ifCarta{
+import java.io.Serializable;
+
+public class Carta implements ifCarta, Serializable {
     private final int numero;
     private final Palo palo;
     public static final int COMODIN = -1;

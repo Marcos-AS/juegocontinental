@@ -118,7 +118,7 @@ public class Controlador implements IControladorRemoto {
         return juego.getPartidaActual().getNumRonda();
     }
 
-    public ifCarta getPozo() {
+    public ifCarta getPozo() throws RemoteException {
         ifCarta c = null;
         if (!juego.getPartidaActual().getPozo().isEmpty())
             c = juego.getPartidaActual().sacarPrimeraDelPozo();

@@ -1,5 +1,7 @@
 package modelo;
 
-public enum Palo {
+import java.io.Serializable;
+
+public enum Palo implements Serializable {
     PICAS, DIAMANTES, TREBOL, CORAZONES, COMODIN
 }

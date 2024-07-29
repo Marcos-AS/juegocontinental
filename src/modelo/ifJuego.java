@@ -15,7 +15,7 @@ public interface ifJuego extends IObservableRemoto {
     int PUNTOS_FIGURA = 10;
     int PUNTOS_AS = 20;
     int PUNTOS_COMODIN = 50;
-    Partida getPartidaActual();
+    Partida getPartidaActual() throws RemoteException;
 
     int getObservadorIndex(IObservadorRemoto o) throws RemoteException;
 
@@ -259,5 +259,5 @@ public interface ifJuego extends IObservableRemoto {
     void removerObservadores() throws RemoteException;
     void agregarJugador(String nombreJugador) throws RemoteException;
     void crearPartida(String nombreVista, int cantJugadoresDeseada, int numJugador) throws RemoteException;
-    Serializador getRanking();
+    Serializador getRanking() throws RemoteException;
 }

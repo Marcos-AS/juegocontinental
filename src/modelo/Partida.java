@@ -1,10 +1,13 @@
 package modelo;
 
+import rmimvc.src.observer.ObservableRemoto;
+
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Partida {
+public class Partida extends ObservableRemoto implements Serializable {
     private int numRonda;
     private ArrayList<Carta> pozo;
     private ArrayList<Carta> mazo;
@@ -22,35 +25,35 @@ public class Partida {
     private boolean enCurso = false;
     private int numJugadorQueEmpezoPartida;
 
-    public Partida(int cantJugadoresDeseada) {
+    public Partida(int cantJugadoresDeseada) throws RemoteException {
         this.cantJugadoresDeseada = cantJugadoresDeseada;
     }
 
-    public int getTotalRondas() {
+    public int getTotalRondas() throws RemoteException {
         return TOTAL_RONDAS;
     }
 
-    public int getNumRonda() {
+    public int getNumRonda() throws RemoteException {
         return numRonda;
     }
 
-    public void setNumRonda(int numRonda) {
+    public void setNumRonda(int numRonda) throws RemoteException {
         this.numRonda = numRonda;
     }
 
-    public ArrayList<Carta> getPozo() {
+    public ArrayList<Carta> getPozo() throws RemoteException {
         return pozo;
     }
 
-    public Carta sacarPrimeraDelPozo() {
+    public Carta sacarPrimeraDelPozo() throws RemoteException {
         return pozo.remove(pozo.size()-1);
     }
 
-    public ArrayList<jugadorActual> getJugadoresActuales() {
+    public ArrayList<jugadorActual> getJugadoresActuales() throws RemoteException {
         return jugadoresActuales;
     }
 
-    public jugadorActual getJugador(String nombreJugador) {
+    public jugadorActual getJugador(String nombreJugador)  throws RemoteException{
         jugadorActual j = null;
         for (jugadorActual jugadorActual : jugadoresActuales) {
             if (jugadorActual.getNombre().equals(nombreJugador)) {
@@ -60,15 +63,15 @@ public class Partida {
         return j;
     }
 
-    public boolean isRondaEmpezada() {
+    public boolean isRondaEmpezada() throws RemoteException {
         return rondaEmpezada;
     }
 
-    public void setRondaEmpezada(boolean rondaEmpezada) {
+    public void setRondaEmpezada(boolean rondaEmpezada) throws RemoteException {
         this.rondaEmpezada = rondaEmpezada;
     }
 
-    private int determinarNumBarajas() {
+    private int determinarNumBarajas()  throws RemoteException{
         int cantBarajas = BARAJAS_HASTA_4_JUGADORES;
         if (jugadoresActuales.size() >= 4 && jugadoresActuales.size() <= 6) {
             cantBarajas = BARAJAS_MAS_4_JUGADORES;
@@ -83,7 +86,7 @@ public class Partida {
         mezclarCartas();
     }
 
-    public void iniciarMazo(int numBarajas) {
+    public void iniciarMazo(int numBarajas)  throws RemoteException{
         mazo = new ArrayList<>();
         int i = 0;
         while(i < numBarajas) {
@@ -101,7 +104,7 @@ public class Partida {
         }
     }
 
-    public void mezclarCartas() {
+    public void mezclarCartas()  throws RemoteException{
         ArrayList<Carta> mazoMezclado = new ArrayList<>();
         Random random = new Random();
         while(!mazo.isEmpty()) {
@@ -153,41 +156,41 @@ public class Partida {
 //        jugadoresActuales.get(1).agregarCarta(new Carta(8, Palo.TREBOL));
     }
 
-    public void iniciarPozo() {
+    public void iniciarPozo()  throws RemoteException{
         pozo = new ArrayList<>();
         pozo.add(sacarPrimeraDelMazo());
         mazo.remove(mazo.size()-1);
     }
 
-    public Carta sacarPrimeraDelMazo() {
+    public Carta sacarPrimeraDelMazo() throws RemoteException {
         return mazo.remove(mazo.size()-1);
     }
 
-    public int getNumJugadorQueEmpiezaRonda() {
+    public int getNumJugadorQueEmpiezaRonda() throws RemoteException {
         return numJugadorQueEmpiezaRonda;
     }
 
-    public void setNumJugadorQueEmpiezaRonda(int numJugadorQueEmpiezaRonda) {
+    public void setNumJugadorQueEmpiezaRonda (int numJugadorQueEmpiezaRonda)  throws RemoteException {
         this.numJugadorQueEmpiezaRonda = numJugadorQueEmpiezaRonda;
     }
 
-    public void incrementarNumJugadorQueEmpiezaRonda() {
+    public void incrementarNumJugadorQueEmpiezaRonda() throws RemoteException {
         numJugadorQueEmpiezaRonda++;
     }
 
-    public int getNumTurno() {
+    public int getNumTurno() throws RemoteException {
         return numTurno;
     }
 
-    public void setNumTurno(int numTurno) {
+    public void setNumTurno(int numTurno) throws RemoteException {
         this.numTurno = numTurno;
     }
 
-    public int getNumJugadorRoboCastigo() {
+    public int getNumJugadorRoboCastigo()  throws RemoteException {
         return numJugadorRoboCastigo;
     }
 
-    public void setNumJugadorRoboCastigo(int numJugadorRoboCastigo) {
+    public void setNumJugadorRoboCastigo(int numJugadorRoboCastigo)  throws RemoteException {
         this.numJugadorRoboCastigo = numJugadorRoboCastigo;
     }
 
@@ -197,23 +200,23 @@ public class Partida {
         }
     }
 
-    public void agregarAlPozo(Carta c) {
+    public void agregarAlPozo(Carta c)  throws RemoteException {
         pozo.add(c);
     }
 
-    public boolean isCorteRonda() {
+    public boolean isCorteRonda()  throws RemoteException {
         return corteRonda;
     }
 
-    public void setCorteRonda() {
+    public void setCorteRonda()  throws RemoteException {
         corteRonda = !corteRonda;
     }
 
-    public int getNumJugadorCorte() {
+    public int getNumJugadorCorte()  throws RemoteException {
         return numJugadorCorte;
     }
 
-    public void setNumJugadorCorte(int numJugadorCorte) {
+    public void setNumJugadorCorte(int numJugadorCorte)  throws RemoteException {
         this.numJugadorCorte = numJugadorCorte;
     }
 
@@ -224,7 +227,7 @@ public class Partida {
         setCorteRonda();
     }
 
-    private void resetearJuegosJugadores() {
+    private void resetearJuegosJugadores() throws RemoteException {
         for (jugadorActual jugadorActual : jugadoresActuales) {
             jugadorActual.setTriosBajados(0);
             jugadorActual.setEscalerasBajadas(0);
@@ -259,7 +262,7 @@ public class Partida {
         }
     }
 
-    public int[] getPuntosJugadores() {
+    public int[] getPuntosJugadores() throws RemoteException {
         int[] arrayPuntos = new int[jugadoresActuales.size()];
         int i = 0;
         for (jugadorActual jugadorActual : jugadoresActuales) {
@@ -269,7 +272,7 @@ public class Partida {
         return arrayPuntos;
     }
 
-    public jugadorActual determinarGanador() {
+    public jugadorActual determinarGanador() throws RemoteException {
         jugadorActual ganador = jugadoresActuales.get(0);
         int menosPuntos = ganador.getPuntosPartida();
         for(jugadorActual j: jugadoresActuales) {
@@ -283,7 +286,7 @@ public class Partida {
         return ganador;
     }
 
-    public jugadorActual getGanador() {
+    public jugadorActual getGanador()  throws RemoteException{
         jugadorActual ganador = null;
         for (jugadorActual j : jugadoresActuales) {
             if (j.isGanador()) ganador = j;
@@ -291,7 +294,7 @@ public class Partida {
         return ganador;
     }
 
-    public void finTurno() {
+    public void finTurno() throws RemoteException{
         numTurno++;
         if (numTurno>jugadoresActuales.size()-1) {
             numTurno = 0;
@@ -305,23 +308,23 @@ public class Partida {
         jugadoresActuales.add(nuevoJugador);
     }
 
-    public boolean isEnCurso() {
+    public boolean isEnCurso() throws RemoteException{
         return enCurso;
     }
 
-    public void setEnCurso() {
+    public void setEnCurso() throws RemoteException {
         enCurso = !enCurso;
     }
 
-    public void setNumJugadorQueEmpezoPartida(int numJugadorQueEmpezoPartida) {
+    public void setNumJugadorQueEmpezoPartida(int numJugadorQueEmpezoPartida) throws RemoteException {
         this.numJugadorQueEmpezoPartida = numJugadorQueEmpezoPartida;
     }
 
-    public int getNumJugadorQueEmpezoPartida() {
+    public int getNumJugadorQueEmpezoPartida() throws RemoteException {
         return numJugadorQueEmpezoPartida;
     }
 
-    public int getCantJugadoresDeseada() {
+    public int getCantJugadoresDeseada() throws RemoteException {
         return cantJugadoresDeseada;
     }
 

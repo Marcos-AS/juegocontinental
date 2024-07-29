@@ -8,15 +8,24 @@ import static modelo.Eventos.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-public class Juego extends ObservableRemoto {
+public class Juego extends ObservableRemoto implements ifJuego{
     private Partida partidaActual;
     private ArrayList<Jugador> jugadores = new ArrayList<>();
     protected static final int CANT_CARTAS_INICIAL = 6;
     private static final String NOMBRE_ARCHIVO_RANKING = "ranking.dat";
     private final Serializador srlRanking = new Serializador(NOMBRE_ARCHIVO_RANKING);
 
+    //singleton
+    private static Juego instancia;
+    private Juego() {}
 
-    public Partida getPartidaActual() {
+    public static Juego getInstancia() throws RemoteException {
+        if (instancia == null) instancia = new Juego();
+        return instancia;
+    }
+
+
+    public Partida getPartidaActual() throws RemoteException {
         return partidaActual;
     }
 

@@ -1,9 +1,10 @@
 package modelo;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-public class jugadorActual extends Jugador{
+public class jugadorActual extends Jugador implements Serializable, ifJugador {
     private boolean turnoActual = false;
     protected int numeroJugador;
     private ArrayList<Carta> mano = new ArrayList<>();
@@ -16,50 +17,50 @@ public class jugadorActual extends Jugador{
     private int puntosPartida = 0;
     private boolean ganador = false;
 
-    public jugadorActual(String nombre) {
+    public jugadorActual(String nombre) throws RemoteException {
         super(nombre);
     }
 
-    public boolean isTurnoActual() {
+    public boolean isTurnoActual() throws RemoteException {
         return turnoActual;
     }
 
-    public void setTurnoActual(boolean turnoActual) {
+    public void setTurnoActual(boolean turnoActual) throws RemoteException {
         this.turnoActual = turnoActual;
     }
 
-    public int getNumeroJugador() {
+    public int getNumeroJugador() throws RemoteException {
         return numeroJugador;
     }
 
-    public void setNumeroJugador(int numeroJugador) {
+    public void setNumeroJugador(int numeroJugador) throws RemoteException {
         this.numeroJugador = numeroJugador;
     }
 
-    public void agregarCarta(Carta c) {
+    public void agregarCarta(Carta c) throws RemoteException {
         mano.add(c);
     }
 
-    public boolean isRoboDelMazo() {
+    public boolean isRoboDelMazo() throws RemoteException {
         return roboDelMazo;
     }
 
-    public void setRoboDelMazo(boolean roboDelMazo) {
+    public void setRoboDelMazo(boolean roboDelMazo) throws RemoteException {
         this.roboDelMazo = roboDelMazo;
     }
 
-    public boolean isRoboConCastigo() {
+    public boolean isRoboConCastigo() throws RemoteException {
         return roboConCastigo;
     }
 
-    public void setRoboConCastigo(boolean roboConCastigo) {
+    public void setRoboConCastigo(boolean roboConCastigo) throws RemoteException {
         this.roboConCastigo = roboConCastigo;
     }
 
-    public ArrayList<Carta> getMano() {
+    public ArrayList<Carta> getMano() throws RemoteException {
         return mano;
     }
-    public void moverCartaEnMano(int indCarta, int destino) {
+    public void moverCartaEnMano(int indCarta, int destino) throws RemoteException {
         Carta c = mano.get(indCarta);
         mano.remove(indCarta);
         mano.add(destino, c);
@@ -85,21 +86,21 @@ public class jugadorActual extends Jugador{
         return acomodo;
     }
 
-    public Carta removeCartaFromMano(int indiceCarta) {
+    public Carta removeCartaFromMano(int indiceCarta) throws RemoteException {
         Carta cartaATirar = mano.get(indiceCarta);
         mano.remove(indiceCarta);
         return cartaATirar;
     }
 
-    public int getPuedeBajar() {
+    public int getPuedeBajar() throws RemoteException {
         return puedeBajar;
     }
 
-    public void setPuedeBajar(int puedeBajar) {
+    public void setPuedeBajar(int puedeBajar) throws RemoteException {
         this.puedeBajar = puedeBajar;
     }
 
-    public void incrementarPuedeBajar() {
+    public void incrementarPuedeBajar() throws RemoteException {
         puedeBajar++;
     }
 
@@ -123,7 +124,7 @@ public class jugadorActual extends Jugador{
         return acomodo;
     }
 
-    public ArrayList<Carta> seleccionarCartasABajar(int[] cartasABajar) {
+    public ArrayList<Carta> seleccionarCartasABajar(int[] cartasABajar) throws RemoteException {
         ArrayList<Carta> juego = new ArrayList<>();
         for (int carta : cartasABajar) juego.add(mano.get(carta));
         return juego;
@@ -147,33 +148,33 @@ public class jugadorActual extends Jugador{
         }
     }
 
-    public void eliminarDeLaMano(ArrayList<Carta> cartasABajar) {
+    public void eliminarDeLaMano(ArrayList<Carta> cartasABajar) throws RemoteException {
         for(Carta c : cartasABajar) {
             mano.remove(c);
         }
     }
 
-    public ArrayList<ArrayList<Carta>> getJuegos() {
+    public ArrayList<ArrayList<Carta>> getJuegos() throws RemoteException {
         return juegos;
     }
 
-    public void incrementarEscalerasBajadas() {
+    public void incrementarEscalerasBajadas() throws RemoteException {
         escalerasBajadas++;
     }
 
-    public void incrementarTriosBajados() {
+    public void incrementarTriosBajados() throws RemoteException {
         triosBajados++;
     }
 
-    public int getTriosBajados() {
+    public int getTriosBajados() throws RemoteException {
         return triosBajados;
     }
 
-    public int getEscalerasBajadas() {
+    public int getEscalerasBajadas() throws RemoteException {
         return escalerasBajadas;
     }
 
-    public int[] comprobarQueFaltaParaCortar(int ronda) {
+    public int[] comprobarQueFaltaParaCortar(int ronda) throws RemoteException {
         int trios = 0;
         int escaleras = 0;
         int[] faltante = new int[2];
@@ -208,27 +209,27 @@ public class jugadorActual extends Jugador{
         return faltante;
     }
 
-    public void setTriosBajados(int triosBajados) {
+    public void setTriosBajados(int triosBajados) throws RemoteException {
         this.triosBajados = triosBajados;
     }
 
-    public void setEscalerasBajadas(int escalerasBajadas) {
+    public void setEscalerasBajadas(int escalerasBajadas) throws RemoteException {
         this.escalerasBajadas = escalerasBajadas;
     }
 
-    public int getPuntosPartida() {
+    public int getPuntosPartida() throws RemoteException {
         return puntosPartida;
     }
 
-    public void setPuntosPartida(int puntosPartida) {
+    public void setPuntosPartida(int puntosPartida) throws RemoteException {
         this.puntosPartida = puntosPartida;
     }
 
-    public boolean isGanador() {
+    public boolean isGanador() throws RemoteException {
         return ganador;
     }
 
-    public void setGanador(boolean ganador) {
+    public void setGanador(boolean ganador) throws RemoteException {
         this.ganador = ganador;
     }
 }
