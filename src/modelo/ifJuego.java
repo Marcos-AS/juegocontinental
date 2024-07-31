@@ -15,33 +15,12 @@ public interface ifJuego extends IObservableRemoto {
     int PUNTOS_FIGURA = 10;
     int PUNTOS_AS = 20;
     int PUNTOS_COMODIN = 50;
-    Partida getPartidaActual() throws RemoteException;
+    int CANT_CARTAS_INICIAL = 6;
 
     int getObservadorIndex(IObservadorRemoto o) throws RemoteException;
 
     static int cartasPorRonda(int ronda) throws RemoteException {
-        int cantCartas = Juego.CANT_CARTAS_INICIAL;
-        switch (ronda) {
-            case 2:
-                cantCartas = 7;
-                break;
-            case 3:
-                cantCartas = 8;
-                break;
-            case 4:
-                cantCartas = 9;
-                break;
-            case 5:
-                cantCartas = 10;
-                break;
-            case 6:
-                cantCartas = 11;
-                break;
-            case 7:
-                cantCartas = 12;
-                break;
-        }
-        return cantCartas;
+        return CANT_CARTAS_INICIAL + ronda -1;
     }
 
     static int comprobarJuego(ArrayList<Carta> juego, int ronda) throws RemoteException {
@@ -255,9 +234,10 @@ public interface ifJuego extends IObservableRemoto {
         return puedeCortar;
     }
 
-    void serializarGanador() throws RemoteException;
+    void serializarGanador(ifPartida p) throws RemoteException;
     void removerObservadores() throws RemoteException;
     void agregarJugador(String nombreJugador) throws RemoteException;
-    void crearPartida(String nombreVista, int cantJugadoresDeseada, int numJugador) throws RemoteException;
+
     Serializador getRanking() throws RemoteException;
+    ArrayList<Jugador> getJugadores() throws RemoteException;
 }

@@ -10,9 +10,8 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 
-public class VentanaConsola implements ifVista {
-    Controlador ctrl;
-
+public class VentanaConsola extends JFrame implements ifVista {
+    private Controlador ctrl;
     private String nombreVista;
 
     public void iniciar() throws RemoteException {
@@ -21,7 +20,7 @@ public class VentanaConsola implements ifVista {
         mostrarInfo("Jugador agregado.");
         nombreVista = nombreJugador;
         int eleccion;
-        int cantJugadores = 2; //minimo
+        int cantJugadores; //minimo
         boolean partidaIniciada = false;
         do {
             eleccion = Integer.parseInt(preguntarInput(ifVista.MENU_INICIAR));
@@ -29,7 +28,7 @@ public class VentanaConsola implements ifVista {
                 switch (eleccion) {
                     case ifVista.ELECCION_CREAR_PARTIDA: {
                         cantJugadores = Integer.parseInt(preguntarInput("Cuántos jugadores deseas para la nueva partida?"));
-                        ctrl.crearPartida(this, cantJugadores);
+                        ctrl.crearPartida(cantJugadores);
                         break;
                     }
                     case ifVista.ELECCION_RANKING: {
@@ -116,10 +115,6 @@ public class VentanaConsola implements ifVista {
         return nombreVista;
     }
 
-    public void setNombreVista(String nombreVista) {
-        this.nombreVista = nombreVista;
-    }
-
     public void mostrarCartas(ArrayList<String> cartas) {
         int i = 0;
         StringBuilder s = new StringBuilder();
@@ -134,13 +129,16 @@ public class VentanaConsola implements ifVista {
         int eleccion = 0;
         String s;
         while (eleccion < 1 || eleccion > 8) {
-            s = "Elije una opción: \n1 - Bajar uno o más juegos" +
-                    "\n2 - Tirar al pozo\n3 - Ordenar cartas" +
-                    "\n4 - Acomodar en un juego bajado propio" +
-                    "\n5 - Ver juegos bajados propios" +
-                    "\n6 - Acomodar en un juego bajado ajeno" +
-                    "\n7 - Ver juegos bajados de todos los jugadores" +
-                    "\n8 - Ver pozo";
+            s = """
+                Elije una opción:
+                1 - Bajar uno o más juegos
+                2 - Tirar al pozo
+                3 - Ordenar cartas
+                4 - Acomodar en un juego bajado propio
+                5 - Ver juegos bajados propios
+                6 - Acomodar en un juego bajado ajeno
+                7 - Ver juegos bajados de todos los jugadores
+                8 - Ver pozo""";
             eleccion = Integer.parseInt(preguntarInput(s));
         }
         return eleccion;

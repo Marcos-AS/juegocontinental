@@ -47,7 +47,7 @@ public interface ifVista {
         Al final de todas las rondas, el jugador con menos puntos es el ganador.
         
         RONDAS
-        ------------------------------------------------------------------------------------------------------------------------------------------------------------ 
+        ------------------------------------------------------------------------------------------------------------------------------------------------------------
         Se juegan 7 rondas, cada una con requisitos específicos:
         - Ronda 1: Dos tríos
         - Ronda 2: Un trío y una escalera
@@ -58,19 +58,19 @@ public interface ifVista {
         - Ronda 7: Tres escaleras
         
         DEFINICIONES
-        ------------------------------------------------------------------------------------------------------------------------------------------------------------ 
+        ------------------------------------------------------------------------------------------------------------------------------------------------------------
         Trío: 3 cartas con el mismo número, sin importar el palo.
         Escalera: 4 o más cartas consecutivas del mismo palo. Puede comenzar con cualquier carta, y el as puede ser la carta intermedia entre la K y el 2.
         Comodín: Se puede tener un trío de comodines, pero no se pueden colocar dos comodines JUNTOS en una escalera.
         
         ROBO
-        ------------------------------------------------------------------------------------------------------------------------------------------------------------ 
+        ------------------------------------------------------------------------------------------------------------------------------------------------------------
         En cada turno, el jugador debe robar una carta y descartar otra. Si no roba del pozo, los siguientes jugadores pueden optar por robar del pozo, pero si lo hacen,
          también deben robar otra del mazo (robo con "castigo"). Este proceso sigue en orden hacia la derecha. En caso de que ningún jugador desee robar del pozo,
          cada jugador debe robar una carta en su turno, ya sea del mazo o del pozo.
         
         BAJAR JUEGOS Y CORTAR
-        ------------------------------------------------------------------------------------------------------------------------------------------------------------ 
+        ------------------------------------------------------------------------------------------------------------------------------------------------------------
         Para cortar, el jugador debe tener completa la combinación requerida para la ronda.
         Se puede cortar con la carta que sobra, o elegir no cortar si no hay cartas sobrantes. En estos casos, el jugador gana la ronda.
         Además, el jugador puede bajar sus juegos una vez durante la ronda, con las siguientes restricciones:
@@ -90,7 +90,7 @@ public interface ifVista {
     void setControlador(Controlador ctrl);
     static String mostrarCombinacionRequerida(int ronda) {
         String s = "Para esta ronda deben bajarse: ";
-        s = switch (ronda) {
+        s += switch (ronda) {
             case 1 -> "2 tríos";
             case 2 -> "1 trío y 1 escalera";
             case 3 -> "2 escaleras";

@@ -19,10 +19,6 @@ public class Jugador extends ObservableRemoto implements Serializable {
         return nombre;
     }
 
-    public void setNombre(String nombre) throws RemoteException {
-        this.nombre = nombre;
-    }
-
     public int getPuntosAlFinalizar() throws RemoteException {
         return puntosAlFinalizar;
     }

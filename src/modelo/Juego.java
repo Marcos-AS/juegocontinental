@@ -9,32 +9,26 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class Juego extends ObservableRemoto implements ifJuego{
-    private Partida partidaActual;
     private ArrayList<Jugador> jugadores = new ArrayList<>();
-    protected static final int CANT_CARTAS_INICIAL = 6;
     private static final String NOMBRE_ARCHIVO_RANKING = "ranking.dat";
     private final Serializador srlRanking = new Serializador(NOMBRE_ARCHIVO_RANKING);
-
     //singleton
     private static Juego instancia;
     private Juego() {}
 
     public static Juego getInstancia() throws RemoteException {
-        if (instancia == null) instancia = new Juego();
+        if (instancia == null) {
+            instancia = new Juego();
+        }
         return instancia;
-    }
-
-
-    public Partida getPartidaActual() throws RemoteException {
-        return partidaActual;
     }
 
     public int getObservadorIndex(IObservadorRemoto o) throws RemoteException {
         return getObservadores().indexOf(o);
     }
 
-    public void serializarGanador() throws RemoteException {
-        Object guardar = partidaActual.getGanador().nombre + " --- puntos: " + partidaActual.getGanador().getPuntosAlFinalizar();
+    public void serializarGanador(ifPartida p) throws RemoteException {
+        Object guardar = p.getGanador().nombre + " --- puntos: " + p.getGanador().getPuntosAlFinalizar();
         if (srlRanking.readFirstObject()==null) {
             srlRanking.writeOneObject(guardar);
         } else {
@@ -67,14 +61,6 @@ public class Juego extends ObservableRemoto implements ifJuego{
         }
     }
 
-    public void crearPartida(String nombreVista, int cantJugadoresDeseada, int numJugador) throws RemoteException{
-        partidaActual = new Partida(cantJugadoresDeseada); //creacion de partida
-        partidaActual.agregarJugador(nombreVista);
-        partidaActual.setEnCurso();
-        partidaActual.setNumJugadorQueEmpezoPartida(numJugador);
-        notificarObservador(numJugador, NOTIFICACION_NUEVA_PARTIDA_PROPIO);
-        notificarObservadores(NOTIFICACION_NUEVA_PARTIDA);
-    }
 
     public void agregarJugador(String nombreJugador) throws RemoteException {
         jugadores.add(new Jugador(nombreJugador));
@@ -83,5 +69,9 @@ public class Juego extends ObservableRemoto implements ifJuego{
 
     public Serializador getRanking() throws RemoteException {
         return srlRanking;
+    }
+
+    public ArrayList<Jugador> getJugadores() throws RemoteException {
+        return jugadores;
     }
 }

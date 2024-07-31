@@ -1,0 +1,55 @@
+TRABAJO REQUISITOS:
+- implementación del juego en red (RMI)
+- implementación de Modelo Vista Controlador
+- implementación de Observer
+- diagrama de clases
+- interfaz gráfica y de consola
+- persistir el estado de las partidas: para poder terminar y volver a jugar más tarde o para saber el ranking de mejores jugadores del juego
+
+
+--------------------------------------------CONTINENTAL------------------------------------
+OBJETIVO: formar las combinaciones que se exigen en cada ronda tratando de conservar la cantidad minima de puntos, gana el que menos puntos acumule
+
+REQUISITOS:
+para 2-4 jugadores se usan dos mazos de baraja de poker (52 cartas c/u) más 2 comodines por mazo: en total 108 cartas 
+si juegan más de 4 se usan tres mazos, más de 6 cuatro mazos y así
+
+DESARR0LLO DEL JUEGO -------------------------------
+si un jugador mezcla, el de la derecha reparte y el de la derecha empieza (esto no se implementa)
+
+	RONDAS
+	se juegan 7 rondas
+	ronda 1: dos trios
+	2: un trio y una escalera
+	3: dos escaleras
+	4: tres trios
+	5: dos trios y una escalera
+	6: un trio y dos escaleras
+	7: tres escaleras
+
+TRIO: 3 cartas con el mismo número sin importar el palo
+ESCALERA: 4 o más cartas de número consecutivo del mismo palo. La escalera puede empezar por cualquier carta y el as puede ser carta intermedia entre la k y el 2. Cuando hay que hacer varias escaleras, todas ellas pueden ser del mismo palo.
+
+COMODIN: se puede tener un trío de comodines. No se pueden poner dos comodines JUNTOS en una escalera.
+
+REPARTO DE CARTAS:
+en la 1ra ronda se reparten 7 cartas y en cada ronda se reparte una carta más llegando a 13 cartas en la 7ma ronda
+cuando se termina de repartir se deja el mazo en el medio y se da vuelta la primera.
+
+ROBAR 
+En todos los turnos el jugador debe robar una carta y debe tirar una. Si no roba del pozo, los siguientes jugadores pueden decidir robar del pozo pero si la agarran también tienen que robar otra del mazo (robo con "castigo"), esto se hace en el orden girando hacia la derecha. Puede pasar que ningún jugador quiera robar del pozo. En cualquier caso cada jugador debe robar una carta en su turno (del mazo o del pozo).
+
+BAJAR LOS JUEGOS Y CORTAR
+para cortar se debe tener completa la combinación requerida para la ronda. se puede cortar con la carta que te sobra, o no cortar si no te sobran cartas. en esos casos el jugador gana la ronda. 
+También el jugador puede bajar sus juegos una vez durante la ronda aunque si lo hace tiene restricciones en adelante: 
+- no puede robar con "castigo"
+- no puede bajar de nuevo
+
+Se pueden acomodar las cartas sobrantes en los juegos bajados de los otros jugadores
+
+FIN DE LA RONDA: SUMA DE PUNTOS
+al acabar la ronda se hace la suma de los puntos de las cartas que los jugadores se quedaron en la mano, la persona que ganó la ronda no suma puntos.
+Los números valen su denominación, las figuras valen 10, el as vale 20 y el comodín 50
+------------------------------------------------------
+FIN DEL JUEGO
+al final de todas las rondas, el jugador con menos puntos gana.

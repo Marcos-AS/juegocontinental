@@ -1,20 +1,18 @@
 package modelo;
 
 import rmimvc.src.observer.ObservableRemoto;
-
+import java.io.Serial;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Partida extends ObservableRemoto implements Serializable {
+public class Partida extends ObservableRemoto implements Serializable, ifPartida {
     private int numRonda;
     private ArrayList<Carta> pozo;
     private ArrayList<Carta> mazo;
     private ArrayList<jugadorActual> jugadoresActuales = new ArrayList<>();
     private boolean rondaEmpezada = false;
-    private static final int BARAJAS_HASTA_4_JUGADORES = 2;
-    private static final int BARAJAS_MAS_4_JUGADORES = 3;
     private int numJugadorQueEmpiezaRonda;
     private int numTurno;
     private int numJugadorRoboCastigo;
@@ -24,35 +22,46 @@ public class Partida extends ObservableRemoto implements Serializable {
     private int cantJugadoresDeseada;
     private boolean enCurso = false;
     private int numJugadorQueEmpezoPartida;
+    @Serial
+    private static final long serialVersionUID = 1L;
+    private static Partida partidaActual;
 
-    public Partida(int cantJugadoresDeseada) throws RemoteException {
-        this.cantJugadoresDeseada = cantJugadoresDeseada;
+    private Partida() {}
+
+    public static Partida getInstanciaPartida() throws RemoteException {
+        if (partidaActual == null) {
+            partidaActual = new Partida();
+            //System.out.println("new partida " + partidaActual);
+        }
+        return partidaActual;
     }
 
+    @Override
     public int getTotalRondas() throws RemoteException {
         return TOTAL_RONDAS;
     }
 
+    @Override
     public int getNumRonda() throws RemoteException {
         return numRonda;
     }
 
-    public void setNumRonda(int numRonda) throws RemoteException {
-        this.numRonda = numRonda;
-    }
-
+    @Override
     public ArrayList<Carta> getPozo() throws RemoteException {
         return pozo;
     }
 
+    @Override
     public Carta sacarPrimeraDelPozo() throws RemoteException {
         return pozo.remove(pozo.size()-1);
     }
 
+    @Override
     public ArrayList<jugadorActual> getJugadoresActuales() throws RemoteException {
         return jugadoresActuales;
     }
 
+    @Override
     public jugadorActual getJugador(String nombreJugador)  throws RemoteException{
         jugadorActual j = null;
         for (jugadorActual jugadorActual : jugadoresActuales) {
@@ -63,29 +72,23 @@ public class Partida extends ObservableRemoto implements Serializable {
         return j;
     }
 
+    @Override
     public boolean isRondaEmpezada() throws RemoteException {
         return rondaEmpezada;
     }
 
+    @Override
     public void setRondaEmpezada(boolean rondaEmpezada) throws RemoteException {
         this.rondaEmpezada = rondaEmpezada;
     }
 
-    private int determinarNumBarajas()  throws RemoteException{
-        int cantBarajas = BARAJAS_HASTA_4_JUGADORES;
-        if (jugadoresActuales.size() >= 4 && jugadoresActuales.size() <= 6) {
-            cantBarajas = BARAJAS_MAS_4_JUGADORES;
-            //} else if(this.jugadoresActuales.size() >= 6 && this.jugadoresActuales.size() <= 8) {
-            //  cantBarajas = BARAJAS_MAS_6_JUGADORES;
-        }
-        return cantBarajas;
-    }
-
+    @Override
     public void crearMazo() throws RemoteException {
         iniciarMazo(determinarNumBarajas());
         mezclarCartas();
     }
 
+    @Override
     public void iniciarMazo(int numBarajas)  throws RemoteException{
         mazo = new ArrayList<>();
         int i = 0;
@@ -104,6 +107,7 @@ public class Partida extends ObservableRemoto implements Serializable {
         }
     }
 
+    @Override
     public void mezclarCartas()  throws RemoteException{
         ArrayList<Carta> mazoMezclado = new ArrayList<>();
         Random random = new Random();
@@ -114,6 +118,7 @@ public class Partida extends ObservableRemoto implements Serializable {
         mazo = mazoMezclado;
     }
 
+    @Override
     public void repartirCartas() throws RemoteException {
         int numCartasARepartir = ifJuego.cartasPorRonda(numRonda);
         for(jugadorActual j: jugadoresActuales) {
@@ -156,70 +161,81 @@ public class Partida extends ObservableRemoto implements Serializable {
 //        jugadoresActuales.get(1).agregarCarta(new Carta(8, Palo.TREBOL));
     }
 
+    @Override
     public void iniciarPozo()  throws RemoteException{
         pozo = new ArrayList<>();
         pozo.add(sacarPrimeraDelMazo());
         mazo.remove(mazo.size()-1);
     }
 
+    @Override
     public Carta sacarPrimeraDelMazo() throws RemoteException {
         return mazo.remove(mazo.size()-1);
     }
 
+    @Override
     public int getNumJugadorQueEmpiezaRonda() throws RemoteException {
         return numJugadorQueEmpiezaRonda;
     }
 
-    public void setNumJugadorQueEmpiezaRonda (int numJugadorQueEmpiezaRonda)  throws RemoteException {
-        this.numJugadorQueEmpiezaRonda = numJugadorQueEmpiezaRonda;
-    }
-
+    @Override
     public void incrementarNumJugadorQueEmpiezaRonda() throws RemoteException {
         numJugadorQueEmpiezaRonda++;
     }
 
+    @Override
     public int getNumTurno() throws RemoteException {
         return numTurno;
     }
 
+    @Override
     public void setNumTurno(int numTurno) throws RemoteException {
         this.numTurno = numTurno;
     }
 
+    @Override
     public int getNumJugadorRoboCastigo()  throws RemoteException {
         return numJugadorRoboCastigo;
     }
 
+    @Override
     public void setNumJugadorRoboCastigo(int numJugadorRoboCastigo)  throws RemoteException {
         this.numJugadorRoboCastigo = numJugadorRoboCastigo;
     }
 
+    @Override
     public void resetearRoboConCastigo() throws RemoteException {
         for (jugadorActual j : jugadoresActuales) {
             j.setRoboConCastigo(false);
         }
     }
 
+    @Override
     public void agregarAlPozo(Carta c)  throws RemoteException {
         pozo.add(c);
     }
 
+    @Override
     public boolean isCorteRonda()  throws RemoteException {
         return corteRonda;
     }
 
+    @Override
     public void setCorteRonda()  throws RemoteException {
         corteRonda = !corteRonda;
     }
 
+    @Override
     public int getNumJugadorCorte()  throws RemoteException {
         return numJugadorCorte;
     }
 
+    @Override
     public void setNumJugadorCorte(int numJugadorCorte)  throws RemoteException {
         this.numJugadorCorte = numJugadorCorte;
     }
 
+    @Override
     public void finRonda() throws RemoteException {
         numRonda++;
         resetearJuegosJugadores();
@@ -227,14 +243,7 @@ public class Partida extends ObservableRemoto implements Serializable {
         setCorteRonda();
     }
 
-    private void resetearJuegosJugadores() throws RemoteException {
-        for (jugadorActual jugadorActual : jugadoresActuales) {
-            jugadorActual.setTriosBajados(0);
-            jugadorActual.setEscalerasBajadas(0);
-            jugadorActual.setPuedeBajar(0);
-        }
-    }
-
+    @Override
     public void sumarPuntos() throws RemoteException {
         int n = 0;
         int puntos;
@@ -262,6 +271,7 @@ public class Partida extends ObservableRemoto implements Serializable {
         }
     }
 
+    @Override
     public int[] getPuntosJugadores() throws RemoteException {
         int[] arrayPuntos = new int[jugadoresActuales.size()];
         int i = 0;
@@ -272,6 +282,7 @@ public class Partida extends ObservableRemoto implements Serializable {
         return arrayPuntos;
     }
 
+    @Override
     public jugadorActual determinarGanador() throws RemoteException {
         jugadorActual ganador = jugadoresActuales.get(0);
         int menosPuntos = ganador.getPuntosPartida();
@@ -286,6 +297,7 @@ public class Partida extends ObservableRemoto implements Serializable {
         return ganador;
     }
 
+    @Override
     public jugadorActual getGanador()  throws RemoteException{
         jugadorActual ganador = null;
         for (jugadorActual j : jugadoresActuales) {
@@ -294,6 +306,7 @@ public class Partida extends ObservableRemoto implements Serializable {
         return ganador;
     }
 
+    @Override
     public void finTurno() throws RemoteException{
         numTurno++;
         if (numTurno>jugadoresActuales.size()-1) {
@@ -301,6 +314,7 @@ public class Partida extends ObservableRemoto implements Serializable {
         }
     }
 
+    @Override
     public void agregarJugador(String nombre) throws RemoteException {
         jugadorActual nuevoJugador = new jugadorActual(nombre);
         nuevoJugador.sumarPartida(this);
@@ -308,26 +322,27 @@ public class Partida extends ObservableRemoto implements Serializable {
         jugadoresActuales.add(nuevoJugador);
     }
 
-    public boolean isEnCurso() throws RemoteException{
-        return enCurso;
-    }
-
+    @Override
     public void setEnCurso() throws RemoteException {
         enCurso = !enCurso;
     }
 
+    @Override
     public void setNumJugadorQueEmpezoPartida(int numJugadorQueEmpezoPartida) throws RemoteException {
         this.numJugadorQueEmpezoPartida = numJugadorQueEmpezoPartida;
     }
 
+    @Override
     public int getNumJugadorQueEmpezoPartida() throws RemoteException {
         return numJugadorQueEmpezoPartida;
     }
 
+    @Override
     public int getCantJugadoresDeseada() throws RemoteException {
         return cantJugadoresDeseada;
     }
 
+    @Override
     public void ponerJugadoresEnOrden() throws RemoteException {
         ArrayList<jugadorActual> jugadores = jugadoresActuales;
         ArrayList<jugadorActual> jugadoresNuevo = new ArrayList<>();
@@ -343,5 +358,28 @@ public class Partida extends ObservableRemoto implements Serializable {
             jugadoresNuevo.add(jugadores.get(num));
         }
         jugadoresActuales = jugadoresNuevo;
+    }
+
+    @Override
+    public void setCantJugadoresDeseada(int cantJugadoresDeseada) {
+        this.cantJugadoresDeseada = cantJugadoresDeseada;
+    }
+
+    private int determinarNumBarajas() throws RemoteException {
+        int cantBarajas = BARAJAS_HASTA_4_JUGADORES;
+        if (jugadoresActuales.size() >= 4 && jugadoresActuales.size() <= 6) {
+            cantBarajas = BARAJAS_MAS_4_JUGADORES;
+            //} else if(this.jugadoresActuales.size() >= 6 && this.jugadoresActuales.size() <= 8) {
+            //  cantBarajas = BARAJAS_MAS_6_JUGADORES;
+        }
+        return cantBarajas;
+    }
+
+    private void resetearJuegosJugadores() throws RemoteException {
+        for (jugadorActual jugadorActual : jugadoresActuales) {
+            jugadorActual.setTriosBajados(0);
+            jugadorActual.setEscalerasBajadas(0);
+            jugadorActual.setPuedeBajar(0);
+        }
     }
 }
