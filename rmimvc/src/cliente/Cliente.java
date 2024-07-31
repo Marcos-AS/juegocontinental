@@ -1,4 +1,4 @@
-package rmimvc.src.cliente;
+package cliente;
 
 import rmimvc.src.RMIMVCException;
 import rmimvc.src.ServidorRMI;
