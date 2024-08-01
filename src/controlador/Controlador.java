@@ -182,7 +182,7 @@ public class Controlador implements IControladorRemoto {
             int eleccion = vista.menuBajar();
             switch (eleccion) {
                 case ifVista.ELECCION_ORDENAR_CARTAS:
-                    int manoSize = getJugadorPartida(numJugador).getMano().size();
+                    int manoSize = getJugadorPartida(numJugador).getManoSize();
                     int[] cartas = vista.preguntarParaOrdenarCartas(manoSize);
                     getJugadorPartida(numJugador).moverCartaEnMano(cartas[0], cartas[1]);
                     break;

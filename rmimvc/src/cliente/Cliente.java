@@ -34,8 +34,9 @@ public class Cliente extends ServidorRMI {
 	}
 
 	/**
-	 * Inicia el servidor local con el objeto controlador y conecta con el servidor con el modelo remoto. Además
-	 * devuelve el objeto "stub" del controlador que permite usar el objeto del modelo remotamente
+	 * Inicia el servidor local con el objeto controlador y conecta con el servidor con el
+	 * modelo remoto. Además devuelve el objeto "stub" del controlador que permite usar el
+	 * objeto del modelo remotamente
 	 *
 	 * @param <T> el tipo genérico.
 	 * @param controlador objeto del controlador que quedará accesible remotamente.
@@ -44,7 +45,8 @@ public class Cliente extends ServidorRMI {
 	 * @throws RemoteException excepción lanzada por problemas de comunicación de red con objetos remotos.
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends Remote & IObservableRemoto> IControladorRemoto iniciar(IControladorRemoto controlador) throws RMIMVCException, RemoteException {
+	public <T extends Remote & IObservableRemoto> IControladorRemoto iniciar(IControladorRemoto controlador)
+			throws RMIMVCException, RemoteException {
 		this.iniciarServidorRMI();
 		Registry registro = LocateRegistry.getRegistry(this.serverHost, this.serverPort);
 		T modeloRemoto;
