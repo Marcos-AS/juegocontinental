@@ -25,8 +25,16 @@ public class jugadorActual extends Jugador implements Serializable, ifJugador {
         this.turnoActual = turnoActual;
     }
 
+    public boolean isTurnoActual() {
+        return turnoActual;
+    }
+
     public void setNumeroJugador(int numeroJugador) throws RemoteException {
         this.numeroJugador = numeroJugador;
+    }
+
+    public int getNumeroJugador() {
+        return numeroJugador;
     }
 
     public void agregarCarta(Carta c) throws RemoteException {
@@ -37,8 +45,16 @@ public class jugadorActual extends Jugador implements Serializable, ifJugador {
         this.roboDelMazo = roboDelMazo;
     }
 
+    public boolean isRoboDelMazo() {
+        return roboDelMazo;
+    }
+
     public void setRoboConCastigo(boolean roboConCastigo) throws RemoteException {
         this.roboConCastigo = roboConCastigo;
+    }
+
+    public int getPuedeBajar() {
+        return puedeBajar;
     }
 
     public ArrayList<Carta> getMano() throws RemoteException {
@@ -47,6 +63,30 @@ public class jugadorActual extends Jugador implements Serializable, ifJugador {
 
     public int getManoSize() throws RemoteException {
         return mano.size();
+    }
+
+    public ArrayList<ArrayList<Carta>> getJuegos() {
+        return juegos;
+    }
+
+    public boolean isRoboConCastigo() {
+        return roboConCastigo;
+    }
+
+    public int getTriosBajados() {
+        return triosBajados;
+    }
+
+    public int getEscalerasBajadas() {
+        return escalerasBajadas;
+    }
+
+    public int getPuntosPartida() {
+        return puntosPartida;
+    }
+
+    public boolean isGanador() {
+        return ganador;
     }
 
     public void moverCartaEnMano(int indCarta, int destino) throws RemoteException {

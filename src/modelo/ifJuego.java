@@ -234,7 +234,7 @@ public interface ifJuego extends IObservableRemoto {
         return puedeCortar;
     }
 
-    void serializarGanador(ifPartida p) throws RemoteException;
+    void serializarGanador(Partida p) throws RemoteException;
     void removerObservadores() throws RemoteException;
     void agregarJugador(String nombreJugador) throws RemoteException;
 

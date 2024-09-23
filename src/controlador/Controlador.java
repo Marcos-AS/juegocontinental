@@ -339,10 +339,13 @@ public class Controlador implements IControladorRemoto {
         boolean bajoJuegos = false;
         while (!puedeCortar && vista.preguntarSiQuiereSeguirBajandoJuegos()) {
             vista.mostrarCartas(enviarManoJugador(numJugador));
-            if (bajarse(numJugador, vista.preguntarQueBajarParaJuego(vista.preguntarCantParaBajar()))) {
+            if (bajarse(numJugador, vista.preguntarQueBajarParaJuego(
+                    vista.preguntarCantParaBajar()))) {
                 bajoJuegos = true;
                 vista.mostrarCartas(enviarManoJugador(numJugador));
-                puedeCortar = ifJuego.comprobarPosibleCorte(getRonda(), getJugadorPartida(numJugador).getTriosBajados(), getJugadorPartida(numJugador).getEscalerasBajadas());
+                puedeCortar = ifJuego.comprobarPosibleCorte(getRonda(),
+                        getJugadorPartida(numJugador).getTriosBajados(),
+                        getJugadorPartida(numJugador).getEscalerasBajadas());
             }
         }
         if (puedeCortar) {

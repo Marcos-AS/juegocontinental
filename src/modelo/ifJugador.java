@@ -20,4 +20,12 @@ public interface ifJugador {
     void setTurnoActual(boolean turnoActual) throws RemoteException;
     void incrementarPuedeBajar() throws RemoteException;
     void setRoboConCastigo(boolean roboConCastigo) throws RemoteException;
+    boolean isRoboDelMazo();
+    boolean isTurnoActual();
+    int getPuedeBajar();
+    ArrayList<ArrayList<Carta>> getJuegos();
+    int getTriosBajados();
+    int getEscalerasBajadas();
+    boolean isRoboConCastigo();
+    int getNumeroJugador();
 }
