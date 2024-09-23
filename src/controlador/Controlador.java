@@ -182,7 +182,7 @@ public class Controlador implements IControladorRemoto {
             int eleccion = vista.menuBajar();
             switch (eleccion) {
                 case ifVista.ELECCION_ORDENAR_CARTAS:
-                    int manoSize = getJugadorPartida(numJugador).getMano().size();
+                    int manoSize = getJugadorPartida(numJugador).getManoSize();
                     int[] cartas = vista.preguntarParaOrdenarCartas(manoSize);
                     getJugadorPartida(numJugador).moverCartaEnMano(cartas[0], cartas[1]);
                     break;
@@ -339,10 +339,13 @@ public class Controlador implements IControladorRemoto {
         boolean bajoJuegos = false;
         while (!puedeCortar && vista.preguntarSiQuiereSeguirBajandoJuegos()) {
             vista.mostrarCartas(enviarManoJugador(numJugador));
-            if (bajarse(numJugador, vista.preguntarQueBajarParaJuego(vista.preguntarCantParaBajar()))) {
+            if (bajarse(numJugador, vista.preguntarQueBajarParaJuego(
+                    vista.preguntarCantParaBajar()))) {
                 bajoJuegos = true;
                 vista.mostrarCartas(enviarManoJugador(numJugador));
-                puedeCortar = ifJuego.comprobarPosibleCorte(getRonda(), getJugadorPartida(numJugador).getTriosBajados(), getJugadorPartida(numJugador).getEscalerasBajadas());
+                puedeCortar = ifJuego.comprobarPosibleCorte(getRonda(),
+                        getJugadorPartida(numJugador).getTriosBajados(),
+                        getJugadorPartida(numJugador).getEscalerasBajadas());
             }
         }
         if (puedeCortar) {

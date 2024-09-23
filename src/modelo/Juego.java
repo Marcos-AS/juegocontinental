@@ -27,7 +27,7 @@ public class Juego extends ObservableRemoto implements ifJuego{
         return getObservadores().indexOf(o);
     }
 
-    public void serializarGanador(ifPartida p) throws RemoteException {
+    public void serializarGanador(Partida p) throws RemoteException {
         Object guardar = p.getGanador().nombre + " --- puntos: " + p.getGanador().getPuntosAlFinalizar();
         if (srlRanking.readFirstObject()==null) {
             srlRanking.writeOneObject(guardar);

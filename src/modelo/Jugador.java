@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class Jugador extends ObservableRemoto implements Serializable {
     protected String nombre;
     private int puntosAlFinalizar;
-    private ArrayList<Partida> partidas = new ArrayList<>();
+    private final ArrayList<Partida> partidas = new ArrayList<>();
 
     public Jugador(String nombre) throws RemoteException {
         this.nombre = nombre;

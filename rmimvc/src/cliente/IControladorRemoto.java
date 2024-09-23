@@ -21,5 +21,5 @@ public interface IControladorRemoto extends IObservadorRemoto {
 	 * @see Remote
 	 * @see RemoteException
 	 */
-	public <T extends IObservableRemoto> void setModeloRemoto(T modeloRemoto) throws RemoteException;
+	<T extends IObservableRemoto> void setModeloRemoto(T modeloRemoto) throws RemoteException;
 }
