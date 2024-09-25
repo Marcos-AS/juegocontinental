@@ -141,17 +141,18 @@ public interface ifVista {
     void mostrarComienzaPartida(String[] jugadores);
 
     String getNombreVista();
-    void mostrarCartas(ArrayList<String> cartas);
-    int menuBajar();
-    int[] preguntarParaOrdenarCartas(int cantCartas);
-    int preguntarCartaParaAcomodar();
+    String getCartasString(ArrayList<String> cartas);
+    int menuBajar(String cartasStr);
+    int[] preguntarParaOrdenarCartas(ArrayList<String> cartas);
+    int preguntarCartaParaAcomodar(ArrayList<String> cartas);
     void mostrarJuegos(ArrayList<ArrayList<String>> juegos);
     String preguntarInput(String s);
-    boolean preguntarSiQuiereSeguirBajandoJuegos();
-    int[] preguntarQueBajarParaJuego(int cantCartas);
-    int preguntarCantParaBajar();
-    int preguntarQueBajarParaPozo(int cantCartas);
-    void mostrarPozo(ifCarta c);
+    String preguntarInputMenu(String s, String cartas);
+    boolean preguntarSiQuiereSeguirBajandoJuegos(ArrayList<String> cartas);
+    int[] preguntarQueBajarParaJuego(ArrayList<String> cartas);
+    int preguntarQueBajarParaPozo(ArrayList<String> cartas);
+    String getPozoString(ifCarta c);
     void mostrarPuntosRonda(int[] puntos) throws RemoteException;
     void iniciar() throws RemoteException;
+    String preguntarInputRobar(String s, String cartas) throws RemoteException;
 }

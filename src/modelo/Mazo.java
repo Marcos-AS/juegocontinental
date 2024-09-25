@@ -1,10 +1,12 @@
 package modelo;
 
+import rmimvc.src.observer.ObservableRemoto;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Mazo {
+public class Mazo extends ObservableRemoto {
 
     public static ArrayList<Carta> iniciarMazo(int numBarajas)  throws RemoteException {
         ArrayList<Carta> mazo = new ArrayList<>();

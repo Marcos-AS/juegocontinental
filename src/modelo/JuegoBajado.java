@@ -1,19 +1,21 @@
 package modelo;
 
+import rmimvc.src.observer.ObservableRemoto;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-public class JuegoBajado {
+public class JuegoBajado extends ObservableRemoto {
     public static boolean acomodarCartaJuegoPropio(ArrayList<ArrayList<Carta>> juegos, ArrayList<Carta> mano, int numCarta, int numJuego, int ronda) throws RemoteException {
         boolean acomodo = false;
         ArrayList<Carta> juegoElegido = (ArrayList<Carta>) juegos.get(numJuego).clone();
         juegoElegido.add(mano.get(numCarta));
-        int tipoJuego = ifJuego.comprobarJuego(juegoElegido, ronda);
-        if(tipoJuego != ifJuego.JUEGO_INVALIDO) {
-            if (tipoJuego == ifJuego.TRIO) {
-                acomodo = ifJuego.comprobarAcomodarEnTrio(juegoElegido) == ifJuego.TRIO;
+        int tipoJuego = ifPartida.comprobarJuego(juegoElegido, ronda);
+        if(tipoJuego != ifPartida.JUEGO_INVALIDO) {
+            if (tipoJuego == ifPartida.TRIO) {
+                acomodo = ifPartida.comprobarAcomodarEnTrio(juegoElegido) == ifPartida.TRIO;
             } else {
-                acomodo = ifJuego.comprobarAcomodarEnEscalera(juegoElegido) == ifJuego.ESCALERA;
+                acomodo = ifPartida.comprobarAcomodarEnEscalera(juegoElegido) == ifPartida.ESCALERA;
             }
             if(acomodo) juegos.get(numJuego).add(Mano.removeCartaFromMano(mano, numCarta)); //hace el acomodo
         }
@@ -21,8 +23,8 @@ public class JuegoBajado {
     }
 
     public static void addJuego(ArrayList<ArrayList<Carta>> juegos, ArrayList<Carta> juego, int tipoJuego) throws RemoteException {
-        if (tipoJuego == ifJuego.ESCALERA) {
-            juegos.add(ifJuego.ordenarJuego(juego));
+        if (tipoJuego == ifPartida.ESCALERA) {
+            juegos.add(ifPartida.ordenarJuego(juego));
         } else {
             juegos.add(juego);
         }

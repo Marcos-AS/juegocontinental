@@ -1,6 +1,6 @@
 package main;
 
-import modelo.Juego;
+import modelo.Partida;
 import rmimvc.src.RMIMVCException;
 import rmimvc.src.servidor.Servidor;
 
@@ -28,7 +28,7 @@ public class AppServidor {
 //                null,
 //                8888
 //        );
-        Juego modelo = Juego.getInstancia(); //crea instancia del juego, sera unica
+        Partida modelo = Partida.getInstancia(); //crea instancia del juego, sera unica
         //Servidor servidor = new Servidor(ip, Integer.parseInt(port));
         Servidor servidor = new Servidor("127.0.0.1", 8888);
         try {

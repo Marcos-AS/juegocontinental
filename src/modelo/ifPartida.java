@@ -4,11 +4,13 @@ import rmimvc.src.observer.IObservableRemoto;
 import rmimvc.src.observer.IObservadorRemoto;
 import serializacion.Serializador;
 
+import java.io.Serializable;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public interface ifJuego extends IObservableRemoto {
+public interface ifPartida extends IObservableRemoto, Serializable {
     int TRIO = 0;
     int ESCALERA = 1;
     int JUEGO_INVALIDO = 2;
@@ -16,8 +18,6 @@ public interface ifJuego extends IObservableRemoto {
     int PUNTOS_AS = 20;
     int PUNTOS_COMODIN = 50;
     int CANT_CARTAS_INICIAL = 6;
-
-    int getObservadorIndex(IObservadorRemoto o) throws RemoteException;
 
     static int cartasPorRonda(int ronda) throws RemoteException {
         return CANT_CARTAS_INICIAL + ronda -1;
@@ -234,10 +234,106 @@ public interface ifJuego extends IObservableRemoto {
         return puedeCortar;
     }
 
-    void serializarGanador(Partida p) throws RemoteException;
+    int getObservadorIndex(IObservadorRemoto o) throws RemoteException;
+
+    void serializarGanador() throws RemoteException;
+
     void removerObservadores() throws RemoteException;
-    void agregarJugador(String nombreJugador) throws RemoteException;
 
     Serializador getRanking() throws RemoteException;
+
     ArrayList<Jugador> getJugadores() throws RemoteException;
+
+    int getTotalRondas() throws RemoteException;
+
+    int getNumRonda() throws RemoteException;
+
+    ArrayList<Carta> getPozo() throws RemoteException;
+
+    Carta sacarPrimeraDelPozo() throws RemoteException;
+
+    Jugador getJugador(String nombreJugador) throws RemoteException;
+
+    boolean isRondaEmpezada() throws RemoteException;
+
+    void setRondaEmpezada(boolean rondaEmpezada) throws RemoteException;
+
+    void crearMazo() throws RemoteException;
+
+    void repartirCartas() throws RemoteException;
+
+    void iniciarPozo() throws RemoteException;
+
+    Carta sacarPrimeraDelMazo() throws RemoteException;
+
+    int getNumJugadorQueEmpiezaRonda() throws RemoteException;
+
+    void incrementarNumJugadorQueEmpiezaRonda() throws RemoteException;
+
+    int getNumTurno() throws RemoteException;
+
+    void setNumTurno(int numTurno) throws RemoteException;
+
+    int getNumJugadorRoboCastigo() throws RemoteException;
+
+    void setNumJugadorRoboCastigo(int numJugadorRoboCastigo) throws RemoteException;
+
+    void resetearRoboConCastigo() throws RemoteException;
+
+    boolean isCorteRonda() throws RemoteException;
+
+    void setCorteRonda() throws RemoteException;
+
+    int getNumJugadorCorte() throws RemoteException;
+
+    void setNumJugadorCorte(int numJugadorCorte) throws RemoteException;
+
+    void finRonda() throws RemoteException;
+
+    int[] getPuntosJugadores() throws RemoteException;
+
+    Jugador determinarGanador() throws RemoteException;
+
+    Jugador getGanador() throws RemoteException;
+
+    void incTurno() throws RemoteException;
+
+    void crearYAgregarJugador(String nombre) throws RemoteException;
+
+    void setEnCurso() throws RemoteException;
+
+    void setNumJugadorQueEmpezoPartida(int numJugadorQueEmpezoPartida)
+            throws RemoteException;
+
+    int getNumJugadorQueEmpezoPartida() throws RemoteException;
+
+    int getCantJugadoresDeseada() throws RemoteException;
+
+    void ponerJugadoresEnOrden() throws RemoteException;
+
+    void setCantJugadoresDeseada(int cantJugadoresDeseada) throws RemoteException;
+
+    int determinarNumBarajas() throws RemoteException;
+
+    int getCantJugadores() throws RemoteException;
+    Carta getPrimeraDelPozo() throws RemoteException;
+    boolean isEnCurso() throws RemoteException;
+    void robarDelMazo(int numJugador) throws RemoteException;
+
+    void setRoboDelMazo(int i, boolean b) throws RemoteException;
+
+    void robarDelPozo(int numJugador) throws RemoteException;
+
+    void robarConCastigo(int numJugadorRoboCastigo) throws RemoteException;
+
+    void setTurnoJugador(int numJugador, boolean valor) throws RemoteException;
+
+    void tirarAlPozo(int numJugador, int cartaATirar) throws RemoteException;
+
+    void moverCartaEnMano(int numJugador, int i, int i1) throws RemoteException;
+
+    void bajarJuego(int numJugador, int[] cartasABajar, int tipoJuego) throws RemoteException;
+
+    void setPuedeBajar(int numJugador, int i) throws RemoteException;
+    void incPuedeBajar(int numJugador) throws RemoteException;
 }

@@ -1,9 +1,11 @@
 package modelo;
 
+import rmimvc.src.observer.ObservableRemoto;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-public class Mano {
+public class Mano extends ObservableRemoto {
     public static Carta removeCartaFromMano(ArrayList<Carta> mano, int indiceCarta) throws RemoteException {
         Carta cartaATirar = mano.get(indiceCarta);
         mano.remove(indiceCarta);

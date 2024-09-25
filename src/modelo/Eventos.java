@@ -1,6 +1,10 @@
 package modelo;
 
-public enum Eventos {
+import rmimvc.src.observer.ObservableRemoto;
+
+import java.io.Serializable;
+
+public enum Eventos implements Serializable {
     NOTIFICACION_DESARROLLO_TURNO,
     NOTIFICACION_NUEVO_JUGADOR,
     NOTIFICACION_NUEVA_PARTIDA,
