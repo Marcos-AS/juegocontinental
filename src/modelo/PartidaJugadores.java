@@ -19,25 +19,25 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
     }
 
     public static void repartirCartas(ArrayList<Jugador> jugadoresActuales, int numRonda, ArrayList<Carta> mazo) throws RemoteException {
-        int numCartasARepartir = ifPartida.cartasPorRonda(numRonda);
-        for(Jugador j: jugadoresActuales) {
-            for(int i = 0; i < numCartasARepartir; i++) {
-                Carta c = Mazo.sacarPrimeraDelMazo(mazo);
-                j.agregarCarta(c);
-            }
-        }
-        //             jugadoresActuales.get(0).agregarCarta(new Carta(-1, Palo.COMODIN));
-//             jugadoresActuales.get(0).agregarCarta(new Carta(5, Palo.TREBOL));
-//             jugadoresActuales.get(0).agregarCarta(new Carta(5, Palo.PICAS));
-//             jugadoresActuales.get(0).agregarCarta(new Carta(6, Palo.PICAS));
-//             jugadoresActuales.get(0).agregarCarta(new Carta(6, Palo.TREBOL));
-//             jugadoresActuales.get(0).agregarCarta(new Carta(6, Palo.DIAMANTES));
-//             jugadoresActuales.get(1).agregarCarta(new Carta(3, Palo.PICAS));
-//             jugadoresActuales.get(1).agregarCarta(new Carta(3, Palo.DIAMANTES));
-//             jugadoresActuales.get(1).agregarCarta(new Carta(3, Palo.TREBOL));
-//             jugadoresActuales.get(1).agregarCarta(new Carta(-1, Palo.COMODIN));
-//             jugadoresActuales.get(1).agregarCarta(new Carta(8, Palo.PICAS));
-//             jugadoresActuales.get(1).agregarCarta(new Carta(8, Palo.TREBOL));
+//        int numCartasARepartir = ifPartida.cartasPorRonda(numRonda);
+//        for(Jugador j: jugadoresActuales) {
+//            for(int i = 0; i < numCartasARepartir; i++) {
+//                Carta c = Mazo.sacarPrimeraDelMazo(mazo);
+//                j.agregarCarta(c);
+//            }
+//        }
+        jugadoresActuales.get(0).agregarCarta(new Carta(-1, Palo.COMODIN));
+        jugadoresActuales.get(0).agregarCarta(new Carta(5, Palo.TREBOL));
+        jugadoresActuales.get(0).agregarCarta(new Carta(5, Palo.PICAS));
+        jugadoresActuales.get(0).agregarCarta(new Carta(6, Palo.PICAS));
+        jugadoresActuales.get(0).agregarCarta(new Carta(6, Palo.TREBOL));
+        jugadoresActuales.get(0).agregarCarta(new Carta(6, Palo.DIAMANTES));
+        jugadoresActuales.get(1).agregarCarta(new Carta(3, Palo.PICAS));
+        jugadoresActuales.get(1).agregarCarta(new Carta(3, Palo.DIAMANTES));
+        jugadoresActuales.get(1).agregarCarta(new Carta(3, Palo.TREBOL));
+        jugadoresActuales.get(1).agregarCarta(new Carta(-1, Palo.COMODIN));
+        jugadoresActuales.get(1).agregarCarta(new Carta(8, Palo.PICAS));
+        jugadoresActuales.get(1).agregarCarta(new Carta(8, Palo.TREBOL));
 //             jugadoresActuales.get(2).agregarCarta(new Carta(9, Palo.PICAS));
 //             jugadoresActuales.get(2).agregarCarta(new Carta(9, Palo.DIAMANTES));
 //             jugadoresActuales.get(2).agregarCarta(new Carta(9, Palo.CORAZONES));

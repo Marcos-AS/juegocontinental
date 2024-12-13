@@ -49,6 +49,7 @@ public class Cliente extends ServidorRMI {
 			throws RMIMVCException, RemoteException {
 		this.iniciarServidorRMI();
 		Registry registro = LocateRegistry.getRegistry(this.serverHost, this.serverPort);
+		//System.out.println(serverHost + ":" + serverPort);
 		T modeloRemoto;
 		try {
 			modeloRemoto = (T) registro.lookup("MVCRMI/Modelo");

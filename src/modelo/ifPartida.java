@@ -55,7 +55,7 @@ public interface ifPartida extends IObservableRemoto, Serializable {
         int esTrio = JUEGO_INVALIDO;
         int i = 0;
         int numCarta = juego.get(i).getNumero();
-        while (numCarta == Carta.COMODIN) {
+        while (numCarta == Carta.COMODIN && i < juego.size()-1) {
             i++;
             formaTrio++;
             numCarta = juego.get(i).getNumero();
@@ -298,7 +298,7 @@ public interface ifPartida extends IObservableRemoto, Serializable {
 
     void incTurno() throws RemoteException;
 
-    void crearYAgregarJugador(String nombre) throws RemoteException;
+    void crearYAgregarJugador(String nombre, int numObservador) throws RemoteException;
 
     void setEnCurso() throws RemoteException;
 
@@ -336,4 +336,8 @@ public interface ifPartida extends IObservableRemoto, Serializable {
 
     void setPuedeBajar(int numJugador, int i) throws RemoteException;
     void incPuedeBajar(int numJugador) throws RemoteException;
+
+    String getNombreJugador(int numJugador) throws RemoteException;
+
+    int getPuedeBajar(int numJugadorRoboCastigo) throws RemoteException;
 }

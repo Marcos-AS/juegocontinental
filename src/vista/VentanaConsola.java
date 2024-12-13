@@ -3,7 +3,6 @@ package vista;
 import controlador.Controlador;
 import modelo.Eventos;
 import modelo.ifCarta;
-import modelo.ifJugador;
 
 import javax.swing.*;
 import java.rmi.RemoteException;
@@ -17,6 +16,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         int eleccion;
         int cantJugadores; //minimo
         boolean partidaIniciada = false;
+        boolean partidaCreada = false;
         do {
             eleccion = menuInicial();
             switch (eleccion) {
@@ -26,24 +26,29 @@ public class VentanaConsola extends JFrame implements ifVista {
                         cantJugadores = Integer.parseInt(preguntarInput("Cuántos jugadores" +
                                 " deseas para la nueva partida?"));
                         ctrl.crearPartida(cantJugadores);
+                        partidaCreada = true;
                     } else {
                         mostrarInfo("Ya hay una partida en curso");
                     }
                     break;
                 }
                 case ifVista.ELECCION_JUGAR_PARTIDA: {
-                    if (nombreVista==null) nombreVista = preguntarInput("Indica tu nombre: ");
-                    Eventos inicioPartida = ctrl.jugarPartidaRecienIniciada();
-                    if (inicioPartida == Eventos.PARTIDA_AUN_NO_CREADA) {
-                        mostrarInfo("La partida aun no ha sido creada." +
-                                " Seleccione la opción 'Crear partida' ");
-                    } else if (inicioPartida == Eventos.FALTAN_JUGADORES) {
-                        partidaIniciada = true;
-                        mostrarInfo("Esperando que ingresen más jugadores...");
-                    } else if (inicioPartida == Eventos.INICIAR_PARTIDA) {
-                        partidaIniciada = true; //esto inicia el funcionamiento del juego
-                        ctrl.notificarComienzoPartida();
-                        ctrl.partida();
+                    if (partidaCreada || ctrl.isPartidaEnCurso()) {
+                        if (nombreVista == null) nombreVista = preguntarInput("Indica tu nombre: ");
+                        Eventos inicioPartida = ctrl.jugarPartidaRecienIniciada();
+                        if (inicioPartida == Eventos.PARTIDA_AUN_NO_CREADA) {
+                            mostrarInfo("La partida aun no ha sido creada." +
+                                    " Seleccione la opción 'Crear partida' ");
+                        } else if (inicioPartida == Eventos.FALTAN_JUGADORES) {
+                            partidaIniciada = true;
+                            mostrarInfo("Esperando que ingresen más jugadores...");
+                        } else if (inicioPartida == Eventos.INICIAR_PARTIDA) {
+                            partidaIniciada = true; //esto inicia el funcionamiento del juego
+                            ctrl.notificarComienzoPartida();
+                            ctrl.partida();
+                        }
+                    } else {
+                        mostrarInfo("Primero tienes que crear una partida");
                     }
                     break;
                 }
@@ -81,34 +86,52 @@ public class VentanaConsola extends JFrame implements ifVista {
         this.ctrl = ctrl;
     }
 
-    public void comienzoTurno(ifJugador jA) throws RemoteException {
+    public int getNumJugadorAcomodar() {
+        return Integer.parseInt(preguntarInput("Ingresa el número de jugador en cuyos" +
+                        " juegos bajados quieres acomodar: "));
+    }
+
+    public void comienzoTurno(String nomJ, int numJ) throws RemoteException {
         mostrarInfo(ifVista.mostrarCombinacionRequerida(ctrl.getRonda()));
-        String nombreJugador = jA.getNombre();
-        if (!nombreJugador.equals(nombreVista)) {
-            mostrarInfo("--------------------------\nEs el turno del jugador: "
-                    + nombreJugador);
+        if (!nomJ.equals(nombreVista)) {
+            mostrarInfo("--------------------------\nEs el turno de "
+                    + nomJ);
         } else {
             mostrarInfo("************\nEs tu turno.");
-            ctrl.setTurno(jA.getNumeroJugador(), true);
+            ctrl.setTurno(numJ, true);
         }
     }
 
     public void mostrarInfo(String s) {
-        JOptionPane.showMessageDialog(null, s);
+        JOptionPane.showMessageDialog(null, s,
+                "Jugador: " + nombreVista, JOptionPane.INFORMATION_MESSAGE);
     }
 
     public String preguntarInputMenu(String s, String cartas) {
         String mostrar = cartas + "\n " + s;
-        return JOptionPane.showInputDialog(null, mostrar);
+        return JOptionPane.showInputDialog(null, mostrar, nombreVista, JOptionPane.QUESTION_MESSAGE);
     }
 
     public String preguntarInput(String s) {
-        return JOptionPane.showInputDialog(null, s);
+        return JOptionPane.showInputDialog(null, s, nombreVista, JOptionPane.QUESTION_MESSAGE);
     }
 
-    public String preguntarInputRobar(String s, String cartas) throws RemoteException {
-        String mostrar = cartas + "\n Pozo: " + getPozoString(ctrl.getPozo()) + "\n " + s;
-        return JOptionPane.showInputDialog(null, mostrar);
+    public String preguntarInputRobar(ArrayList<String> cartas, String nomJ)
+            throws RemoteException {
+        String mostrar = getCartasString(cartas) + "\n Pozo: " + getPozoString(ctrl.getPozo()) + "\n " + ifVista.MENU_ROBAR;
+        return JOptionPane.showInputDialog(null, mostrar, nomJ, JOptionPane.QUESTION_MESSAGE);
+    }
+
+    public String preguntarInputRobarCastigo(ArrayList<String> cartas, String nomJ)
+            throws RemoteException {
+        String mostrar = getCartasString(cartas) + "\n Pozo: " + getPozoString(ctrl.getPozo()) + "\n " + ifVista.PREGUNTA_ROBAR_CASTIGO;
+        return JOptionPane.showInputDialog(null, mostrar, nomJ, JOptionPane.QUESTION_MESSAGE);
+    }
+
+    @Override
+    public boolean isRespAfirmativa(String eleccion) {
+        String e = eleccion.toLowerCase();
+        return e.equals("si") || eleccion.equals("s");
     }
 
     public String preguntarInputInicial(String s) throws RemoteException {
@@ -117,7 +140,8 @@ public class VentanaConsola extends JFrame implements ifVista {
             enCurso = "YA HAY UNA PARTIDA INICIADA";
         }
         String mostrar = s + "\n\n " + enCurso;
-        return JOptionPane.showInputDialog(null, mostrar);
+        return JOptionPane.showInputDialog(null, mostrar,
+                "Menú inicial", JOptionPane.QUESTION_MESSAGE);
     }
 
     public String getPozoString(ifCarta c) {
@@ -216,16 +240,19 @@ public class VentanaConsola extends JFrame implements ifVista {
     public boolean preguntarSiQuiereSeguirBajandoJuegos(ArrayList<String> cartas) {
         String resp = preguntarInputMenu("Deseas bajar un juego? (Si/No)"
                 , getCartasString(cartas));
-        return resp.equalsIgnoreCase("Si") || resp.equalsIgnoreCase("S");
+        return isRespAfirmativa(resp);
     }
 
     public int[] preguntarQueBajarParaJuego(ArrayList<String> cartas) {
         int[] cartasABajar = new int[preguntarCantParaBajar(cartas)];
+        int iCarta;
         for (int i = 0; i < cartasABajar.length; i++) {
-            cartasABajar[i] =
-                    Integer.parseInt(preguntarInputMenu("Carta " + (i + 1) +
-                            ":\nIndica el índice de la carta que quieres bajar: ",
-                            getCartasString(cartas)));
+            do {
+                iCarta = Integer.parseInt(preguntarInputMenu("Carta " + (i + 1) +
+                        ":\nIndica el índice de la carta que quieres bajar: ",
+                        getCartasString(cartas)));
+            } while (iCarta < 0 || iCarta >= cartas.size());
+            cartasABajar[i] = iCarta;
         }
         return cartasABajar;
     }
@@ -255,8 +282,8 @@ public class VentanaConsola extends JFrame implements ifVista {
     public void mostrarPuntosRonda(int[] puntos) throws RemoteException {
         StringBuilder s = new StringBuilder("Puntuación: \n");
         for (int i = 0; i < puntos.length; i++) {
-            s.append("Jugador ").append(ctrl.getJugadorPartida(i).getNombre())
-                            .append(": ").append(puntos[i]);
+            s.append(ctrl.getJugadorPartida(i).getNombre())
+                            .append(": ").append(puntos[i]).append("\n");
         }
         mostrarInfo(s.toString());
     }

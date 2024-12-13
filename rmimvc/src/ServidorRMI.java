@@ -35,6 +35,10 @@ public abstract class ServidorRMI {
 	 */
 	public void iniciarServidorRMI() throws RemoteException {
 		System.setProperty("java.rmi.server.hostname", this.host);
+		//System.out.println(this.host);
+		//System.setProperty("java.rmi.server.hostname", "192.168.0.247");
+		//this.registro = LocateRegistry.createRegistry(8888);
+		//System.out.println(this.port);
 		this.registro = LocateRegistry.createRegistry(this.port);
 	}
 	

@@ -13,10 +13,8 @@ import java.rmi.RemoteException;
 //import java.util.ArrayList;
 import java.util.Random;
 
-
-public class AppClienteConsola {
-
-    public static void main(String[] args) {
+public class AppClienteGUI {
+        public static void main(String[] args) {
 
 //        ArrayList<String> ips = Util.getIpDisponibles();
 //        String ip = (String) JOptionPane.showInputDialog(
@@ -56,23 +54,21 @@ public class AppClienteConsola {
 //                8888
 //        );
 
-        //creacion de la vista y el controlador
-        //ifVista vista = new VentanaConsola();
-        ifVista vista = new GUI();
-        Controlador ctrl = new Controlador(vista);
-        vista.setControlador(ctrl);
+            //creacion de la vista y el controlador
+            ifVista vista = new GUI();
+            Controlador ctrl = new Controlador(vista);
+            vista.setControlador(ctrl);
 
-        //Cliente cliente = new Cliente(ip, Integer.parseInt(port), ipServer, Integer.parseInt(portServer));
-        Cliente cliente = new Cliente("127.0.0.1", new Random().nextInt((9999-9900)+1)+9900, "192.168.0.247", 8888);
-        //Cliente cliente = new Cliente("192.168.0.40", 9999, "192.168.0.247", 8888);
-        try {
-            //se agrega el ctrl como observador y se setea el modelo como atributo del ctrl
-            cliente.iniciar(ctrl);
-            vista.iniciar();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (RMIMVCException e) {
-            e.printStackTrace();
+            //Cliente cliente = new Cliente(ip, Integer.parseInt(port), ipServer, Integer.parseInt(portServer));
+            Cliente cliente = new Cliente("127.0.0.1", new Random().nextInt((9999-9900)+1)+9900, "192.168.0.247", 8888);
+            //Cliente cliente = new Cliente("192.168.0.40", 9999, "192.168.0.247", 8888);
+            try {
+                //se agrega el ctrl como observador y se setea el modelo como atributo del ctrl
+                cliente.iniciar(ctrl);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            } catch (RMIMVCException e) {
+                e.printStackTrace();
+            }
         }
-    }
 }

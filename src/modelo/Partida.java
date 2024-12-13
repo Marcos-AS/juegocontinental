@@ -3,7 +3,6 @@ package modelo;
 import rmimvc.src.observer.IObservadorRemoto;
 import rmimvc.src.observer.ObservableRemoto;
 import serializacion.Serializador;
-import static modelo.Eventos.*;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -178,7 +177,8 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         jugadores.get(numJugador).getMano().add(sacarPrimeraDelPozo());
     }
 
-    public void robarConCastigo(int numJugadorRoboCastigo) throws RemoteException {
+    public void robarConCastigo(int numJugadorRoboCastigo)
+            throws RemoteException {
         robarDelMazo(numJugadorRoboCastigo);
         robarDelPozo(numJugadorRoboCastigo);
         jugadores.get(numJugadorRoboCastigo).setRoboConCastigo(true);
@@ -207,6 +207,15 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
 
     public void incPuedeBajar(int numJugador) throws RemoteException {
         jugadores.get(numJugador).incrementarPuedeBajar();
+    }
+
+    public int getPuedeBajar(int numJugador) throws RemoteException {
+        return jugadores.get(numJugador).getPuedeBajar();
+    }
+
+    @Override
+    public String getNombreJugador(int numJugador) throws RemoteException {
+        return jugadores.get(numJugador).getNombre();
     }
 
     @Override
@@ -300,9 +309,9 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     }
 
     @Override
-    public void crearYAgregarJugador(String nombre) throws RemoteException {
+    public void crearYAgregarJugador(String nombre, int numObservador) throws RemoteException {
         Jugador nuevoJugador = new Jugador(nombre);
-        nuevoJugador.setNumeroJugador(jugadores.size());
+        nuevoJugador.setNumeroJugador(numObservador);
         jugadores.add(nuevoJugador);
         jugadores.get(jugadores.size()-1).sumarPartida(this);
     }

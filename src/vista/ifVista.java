@@ -18,7 +18,7 @@ public interface ifVista {
     int ELECCION_VER_POZO = 8;
     int ELECCION_ROBAR_DEL_MAZO = 1;
     int ELECCION_ROBAR_DEL_POZO = 2;
-    int ELECCION_ROBAR_CON_CASTIGO = 3;
+    int ELECCION_ROBAR_CON_CASTIGO = 2;
     int ELECCION_CREAR_PARTIDA = 1;
     int ELECCION_JUGAR_PARTIDA = 2;
     int ELECCION_RANKING = 3;
@@ -136,10 +136,10 @@ public interface ifVista {
         return manoString;
     }
 
-    void comienzoTurno(ifJugador jA) throws RemoteException;
+    void comienzoTurno(String nomJ, int numJ) throws RemoteException;
     void mostrarInfo(String s);
     void mostrarComienzaPartida(String[] jugadores);
-
+    int getNumJugadorAcomodar();
     String getNombreVista();
     String getCartasString(ArrayList<String> cartas);
     int menuBajar(String cartasStr);
@@ -154,5 +154,9 @@ public interface ifVista {
     String getPozoString(ifCarta c);
     void mostrarPuntosRonda(int[] puntos) throws RemoteException;
     void iniciar() throws RemoteException;
-    String preguntarInputRobar(String s, String cartas) throws RemoteException;
+    String preguntarInputRobar(ArrayList<String> cartas, String nomJ)
+            throws RemoteException;
+    String preguntarInputRobarCastigo(ArrayList<String> cartas, String nomJ) throws RemoteException;
+
+    boolean isRespAfirmativa(String eleccion);
 }
