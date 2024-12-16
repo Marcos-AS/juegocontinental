@@ -5,6 +5,7 @@ import rmimvc.src.observer.ObservableRemoto;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class Jugador extends ObservableRemoto implements Serializable, ifJugador {
     protected String nombre;
@@ -14,16 +15,21 @@ public class Jugador extends ObservableRemoto implements Serializable, ifJugador
     public int numeroJugador;
     private ArrayList<Carta> mano = new ArrayList<>();
     public boolean roboDelMazo = false;
-    public boolean roboConCastigo = false;
     public ArrayList<ArrayList<Carta>> juegos = new ArrayList<>();
     public int puedeBajar = 0;
     public int triosBajados;
     public int escalerasBajadas;
     public int puntosPartida = 0;
     public boolean ganador = false;
+    private UUID idJugador;
 
     public Jugador(String nombre) throws RemoteException {
         this.nombre = nombre;
+        idJugador = UUID.randomUUID();
+    }
+
+    protected void resetMano() {
+        mano = new ArrayList<>();
     }
 
     public void setTurnoActual(boolean turnoActual) throws RemoteException {
@@ -54,15 +60,11 @@ public class Jugador extends ObservableRemoto implements Serializable, ifJugador
         return roboDelMazo;
     }
 
-    public void setRoboConCastigo(boolean roboConCastigo) throws RemoteException {
-        this.roboConCastigo = roboConCastigo;
-    }
-
     public int getPuedeBajar() {
         return puedeBajar;
     }
 
-    public ArrayList<Carta> getMano() throws RemoteException {
+    protected ArrayList<Carta> getMano() throws RemoteException {
         return mano;
     }
 
@@ -72,10 +74,6 @@ public class Jugador extends ObservableRemoto implements Serializable, ifJugador
 
     public ArrayList<ArrayList<Carta>> getJuegos() {
         return juegos;
-    }
-
-    public boolean isRoboConCastigo() {
-        return roboConCastigo;
     }
 
     public int getTriosBajados() {
@@ -98,8 +96,14 @@ public class Jugador extends ObservableRemoto implements Serializable, ifJugador
         Mano.moverCartaEnMano(mano, indCarta, destino);
     }
 
-    public boolean acomodarCartaJuegoPropio(int numCarta, int numJuego, int ronda) throws RemoteException {
-        return JuegoBajado.acomodarCartaJuegoPropio(juegos, mano, numCarta, numJuego, ronda);
+    public boolean comprobarAcomodarCarta(int numCarta, int numJuego, int ronda) throws RemoteException {
+        Carta c = mano.get(numCarta);
+        boolean acomodo = JuegoBajado.acomodarCarta(juegos, c, numJuego, ronda);
+        if (acomodo) {
+            juegos.get(numJuego).add(c);
+            mano.remove(c);
+        }
+        return acomodo;
     }
 
     public void setPuedeBajar(int puedeBajar) throws RemoteException {
@@ -110,26 +114,6 @@ public class Jugador extends ObservableRemoto implements Serializable, ifJugador
         puedeBajar++;
     }
 
-    public boolean comprobarAcomodarCarta(int numCarta, Palo paloCarta, int numJuego, int ronda) throws RemoteException {
-        boolean acomodo = false;
-        ArrayList<Carta> juegoElegido = (ArrayList<Carta>) juegos.get(numJuego).clone();
-        Carta c = new Carta(numCarta, paloCarta);
-        juegoElegido.add(c);
-        int tipoJuego = ifPartida.comprobarJuego(juegoElegido, ronda);
-        if(tipoJuego != ifPartida.JUEGO_INVALIDO) {
-            if (tipoJuego == ifPartida.TRIO) {
-                if (ifPartida.comprobarAcomodarEnTrio(juegoElegido) == ifPartida.TRIO) {
-                    acomodo = true;
-                }
-            } else {
-                if (ifPartida.comprobarAcomodarEnEscalera(juegoElegido) == ifPartida.ESCALERA) {
-                    acomodo = true;
-                }
-            }
-        }
-        return acomodo;
-    }
-
     public ArrayList<Carta> seleccionarCartasABajar(int[] cartasABajar) throws RemoteException {
         return Mano.seleccionarCartasABajar(mano, cartasABajar);
     }
@@ -137,9 +121,9 @@ public class Jugador extends ObservableRemoto implements Serializable, ifJugador
     public void bajarJuego(int[] cartasABajar, int tipoJuego) throws RemoteException {
         JuegoBajado.addJuego(juegos, seleccionarCartasABajar(cartasABajar), tipoJuego);
         eliminarDeLaMano(juegos.get(juegos.size() - 1));
-        if (tipoJuego == ifPartida.TRIO) {
+        if (tipoJuego == Comprobar.TRIO) {
             incrementarTriosBajados();
-        } else if (tipoJuego == ifPartida.ESCALERA) {
+        } else if (tipoJuego == Comprobar.ESCALERA) {
             incrementarEscalerasBajadas();
         }
     }
@@ -223,5 +207,9 @@ public class Jugador extends ObservableRemoto implements Serializable, ifJugador
 
     public void sumarPartida(Partida p) throws RemoteException {
         partidas.add(p);
+    }
+
+    protected UUID getIdJugador() {
+        return idJugador;
     }
 }

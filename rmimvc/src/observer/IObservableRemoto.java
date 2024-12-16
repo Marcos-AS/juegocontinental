@@ -2,6 +2,7 @@ package rmimvc.src.observer;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 /**
  * Esta es la interface con los métodos públicos de la clase ObservableRemoto. Extiende la interface Remote
@@ -47,7 +48,7 @@ public interface IObservableRemoto extends Remote {
 	 * @see Remote
 	 * @see RemoteException
 	 */
-	void notificarObservadores(int[] jugadoresQuePuedenRobarConCastigo, Object obj) throws RemoteException;
+	void notificarObservadores(ArrayList<Integer> jugadoresQuePuedenRobarConCastigo, Object obj) throws RemoteException;
 	void notificarObservador(int numJugador, Object o) throws RemoteException;
 
 }

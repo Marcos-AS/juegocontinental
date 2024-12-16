@@ -7,6 +7,9 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class PartidaJugadores extends ObservableRemoto implements Serializable {
+    static int PUNTOS_FIGURA = 10;
+    static int PUNTOS_AS = 20;
+    static int PUNTOS_COMODIN = 50;
 
     public static Jugador getJugador(ArrayList<Jugador> jugadores, String nombreJugador) throws RemoteException {
         Jugador j = null;
@@ -19,86 +22,124 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
     }
 
     public static void repartirCartas(ArrayList<Jugador> jugadoresActuales, int numRonda, ArrayList<Carta> mazo) throws RemoteException {
+        for (Jugador j : jugadoresActuales) {
+            switch (numRonda) {
+                case 1:
+                    asignarTrio(j, mazo);
+                    asignarTrio(j, mazo);
+                    break;
+                case 2:
+                    asignarTrio(j, mazo);
+                    asignarEscalera(j, mazo);
+                    break;
+                case 3:
+                    asignarEscalera(j, mazo);
+                    asignarEscalera(j, mazo);
+                    break;
+                case 4:
+                    asignarTrio(j, mazo);
+                    asignarTrio(j, mazo);
+                    asignarTrio(j, mazo);
+                    break;
+                case 5:
+                    asignarTrio(j, mazo);
+                    asignarTrio(j, mazo);
+                    asignarEscalera(j, mazo);
+                    break;
+                case 6:
+                    asignarTrio(j, mazo);
+                    asignarEscalera(j, mazo);
+                    asignarEscalera(j, mazo);
+                    break;
+                case 7:
+                    asignarEscalera(j, mazo);
+                    asignarEscalera(j, mazo);
+                    asignarEscalera(j, mazo);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Ronda no válida: " + numRonda);
+            }
+        }
+
 //        int numCartasARepartir = ifPartida.cartasPorRonda(numRonda);
 //        for(Jugador j: jugadoresActuales) {
-//            for(int i = 0; i < numCartasARepartir; i++) {
-//                Carta c = Mazo.sacarPrimeraDelMazo(mazo);
-//                j.agregarCarta(c);
+//            while (j.getMano().size() < numCartasARepartir) {
+//                j.agregarCarta(Mazo.sacarPrimeraDelMazo(mazo));
 //            }
 //        }
-        jugadoresActuales.get(0).agregarCarta(new Carta(-1, Palo.COMODIN));
-        jugadoresActuales.get(0).agregarCarta(new Carta(5, Palo.TREBOL));
-        jugadoresActuales.get(0).agregarCarta(new Carta(5, Palo.PICAS));
-        jugadoresActuales.get(0).agregarCarta(new Carta(6, Palo.PICAS));
-        jugadoresActuales.get(0).agregarCarta(new Carta(6, Palo.TREBOL));
-        jugadoresActuales.get(0).agregarCarta(new Carta(6, Palo.DIAMANTES));
-        jugadoresActuales.get(1).agregarCarta(new Carta(3, Palo.PICAS));
-        jugadoresActuales.get(1).agregarCarta(new Carta(3, Palo.DIAMANTES));
-        jugadoresActuales.get(1).agregarCarta(new Carta(3, Palo.TREBOL));
-        jugadoresActuales.get(1).agregarCarta(new Carta(-1, Palo.COMODIN));
-        jugadoresActuales.get(1).agregarCarta(new Carta(8, Palo.PICAS));
-        jugadoresActuales.get(1).agregarCarta(new Carta(8, Palo.TREBOL));
-//             jugadoresActuales.get(2).agregarCarta(new Carta(9, Palo.PICAS));
-//             jugadoresActuales.get(2).agregarCarta(new Carta(9, Palo.DIAMANTES));
-//             jugadoresActuales.get(2).agregarCarta(new Carta(9, Palo.CORAZONES));
-//             jugadoresActuales.get(2).agregarCarta(new Carta(-1, Palo.COMODIN));
-//             jugadoresActuales.get(2).agregarCarta(new Carta(2, Palo.PICAS));
-//             jugadoresActuales.get(2).agregarCarta(new Carta(2, Palo.TREBOL));
-//        jugadoresActuales.get(0).agregarCarta(new Carta(3, Palo.PICAS));
-//        jugadoresActuales.get(0).agregarCarta(new Carta(4, Palo.PICAS));
-//        jugadoresActuales.get(0).agregarCarta(new Carta(5, Palo.PICAS));
-//        jugadoresActuales.get(0).agregarCarta(new Carta(6, Palo.PICAS));
-//        jugadoresActuales.get(0).agregarCarta(new Carta(-1, Palo.COMODIN));
-//        jugadoresActuales.get(0).agregarCarta(new Carta(6, Palo.TREBOL));
-//        jugadoresActuales.get(0).agregarCarta(new Carta(6, Palo.DIAMANTES));
-//        jugadoresActuales.get(1).agregarCarta(new Carta(3, Palo.PICAS));
-//        jugadoresActuales.get(1).agregarCarta(new Carta(-1, Palo.COMODIN));
-//        jugadoresActuales.get(1).agregarCarta(new Carta(5, Palo.PICAS));
-//        jugadoresActuales.get(1).agregarCarta(new Carta(6, Palo.PICAS));
-//        jugadoresActuales.get(1).agregarCarta(new Carta(-1, Palo.COMODIN));
-//        jugadoresActuales.get(1).agregarCarta(new Carta(8, Palo.PICAS));
-//        jugadoresActuales.get(1).agregarCarta(new Carta(8, Palo.TREBOL));
-
     }
 
-    public static void resetearRoboConCastigo(ArrayList<Jugador> jugadoresActuales) throws RemoteException {
-        for (Jugador j : jugadoresActuales) {
-            j.setRoboConCastigo(false);
+    private static void asignarTrio(Jugador j, ArrayList<Carta> mazo) throws RemoteException {
+        // Elegir un valor aleatorio para el trío (1 a 13)
+        int valorTrio = (int) (Math.random() * 13) + 1;
+
+        // Buscar tres cartas del mismo valor en el mazo
+        ArrayList<Carta> cartasTrio = new ArrayList<>();
+        for (int i = 0; i < mazo.size() && cartasTrio.size() < 3; i++) {
+            Carta carta = mazo.get(i);
+            if (carta.getNumero() == valorTrio) {
+                cartasTrio.add(carta);
+            }
+        }
+
+        for (Carta c : cartasTrio) {
+            j.agregarCarta(c);
+            mazo.remove(c);
         }
     }
 
-    public static void sumarPuntos(ArrayList<Jugador> jugadoresActuales) throws RemoteException {
-        int n = 0;
-        int puntos;
-        while(n < jugadoresActuales.size()) {
-            Jugador j = jugadoresActuales.get(n);
-            puntos = 0;
-            for(Carta c: j.getMano()) {
-                int num = c.getNumero();
-                switch(num) {
-                    case 1:
-                        puntos += ifPartida.PUNTOS_AS;
-                        break;
-                    case 11, 12, 13:
-                        puntos += ifPartida.PUNTOS_FIGURA;
-                        break;
-                    case Carta.COMODIN:
-                        puntos += ifPartida.PUNTOS_COMODIN;
-                        break;
-                    case 2,3,4,5,6,7,8,9,10:
-                        puntos += num;
+    private static void asignarEscalera(Jugador jugador, ArrayList<Carta> mazo) throws RemoteException {
+        for (Palo palo : Palo.values()) {
+            for (int i = 1; i <= 10; i++) {
+                ArrayList<Carta> escalera = new ArrayList<>();
+                for (int j = 0; j < 4; j++) {
+                    int valorCarta = i + j;
+                    for (Carta carta : mazo) {
+                        if (carta.getNumero() == valorCarta && carta.getPalo() == palo) {
+                            escalera.add(carta);
+                            break;
+                        }
+                    }
+                }
+
+                // Si encontramos una escalera completa
+                if (escalera.size() == 4) {
+                    for (Carta carta : escalera) {
+                        jugador.agregarCarta(carta);
+                        mazo.remove(carta); // Eliminar las cartas del mazo
+                    }
+                    return; // Salir al encontrar una escalera
                 }
             }
-            j.setPuntosPartida(puntos);
-            n++;
         }
+    }
+
+    public static int sumarPuntos(Jugador j) throws RemoteException {
+        int puntos = 0;
+        for (Carta c : j.getMano()) {
+            int num = c.getNumero();
+            switch (num) {
+                case 1:
+                    puntos += PUNTOS_AS;
+                    break;
+                case 11, 12, 13:
+                    puntos += PUNTOS_FIGURA;
+                    break;
+                case Carta.COMODIN:
+                    puntos += PUNTOS_COMODIN;
+                    break;
+                case 2, 3, 4, 5, 6, 7, 8, 9, 10:
+                    puntos += num;
+            }
+        }
+        return puntos;
     }
 
     public static int[] getPuntosJugadores(ArrayList<Jugador> jugadoresActuales) throws RemoteException {
         int[] arrayPuntos = new int[jugadoresActuales.size()];
         int i = 0;
-        for (Jugador Jugador : jugadoresActuales) {
-            arrayPuntos[i] = Jugador.getPuntosPartida();
+        for (Jugador j : jugadoresActuales) {
+            arrayPuntos[i] = j.getPuntosPartida();
             i++;
         }
         return arrayPuntos;

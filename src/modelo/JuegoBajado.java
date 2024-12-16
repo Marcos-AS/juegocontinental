@@ -6,25 +6,23 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class JuegoBajado extends ObservableRemoto {
-    public static boolean acomodarCartaJuegoPropio(ArrayList<ArrayList<Carta>> juegos, ArrayList<Carta> mano, int numCarta, int numJuego, int ronda) throws RemoteException {
-        boolean acomodo = false;
-        ArrayList<Carta> juegoElegido = (ArrayList<Carta>) juegos.get(numJuego).clone();
-        juegoElegido.add(mano.get(numCarta));
-        int tipoJuego = ifPartida.comprobarJuego(juegoElegido, ronda);
-        if(tipoJuego != ifPartida.JUEGO_INVALIDO) {
-            if (tipoJuego == ifPartida.TRIO) {
-                acomodo = ifPartida.comprobarAcomodarEnTrio(juegoElegido) == ifPartida.TRIO;
-            } else {
-                acomodo = ifPartida.comprobarAcomodarEnEscalera(juegoElegido) == ifPartida.ESCALERA;
-            }
-            if(acomodo) juegos.get(numJuego).add(Mano.removeCartaFromMano(mano, numCarta)); //hace el acomodo
+    public static boolean acomodarCarta(ArrayList<ArrayList<Carta>> juegos,
+           Carta carta, int numJuego, int ronda) throws RemoteException {
+        boolean acomodo;
+        ArrayList<Carta> juegoElegido = new ArrayList<>(juegos.get(numJuego));
+        //necesito saber si el juego bajado es un trio o una escalera
+        if (Comprobar.comprobarJuego(juegoElegido, ronda) == Comprobar.TRIO) {
+            acomodo = Comprobar.comprobarAcomodarEnTrio(juegoElegido, carta.getNumero()) == Comprobar.TRIO;
+        } else {
+            juegoElegido.add(carta);
+            acomodo = Comprobar.comprobarAcomodarEnEscalera(juegoElegido) == Comprobar.ESCALERA;
         }
         return acomodo;
     }
 
     public static void addJuego(ArrayList<ArrayList<Carta>> juegos, ArrayList<Carta> juego, int tipoJuego) throws RemoteException {
-        if (tipoJuego == ifPartida.ESCALERA) {
-            juegos.add(ifPartida.ordenarJuego(juego));
+        if (tipoJuego == Comprobar.ESCALERA) {
+            juegos.add(Comprobar.ordenarJuego(juego));
         } else {
             juegos.add(juego);
         }

@@ -40,4 +40,14 @@ public class Mazo extends ObservableRemoto {
     public static Carta sacarPrimeraDelMazo(ArrayList<Carta> mazo) {
         return mazo.remove(mazo.size()-1);
     }
+
+    public static int determinarNumBarajas(ArrayList<Jugador> jugadores) throws RemoteException {
+        int cantBarajas = Partida.BARAJAS_HASTA_4_JUGADORES;
+        if (jugadores.size() >= 4 && jugadores.size() <= 6) {
+            cantBarajas = Partida.BARAJAS_MAS_4_JUGADORES;
+            //} else if(this.jugadores.size() >= 6 && this.jugadores.size() <= 8) {
+            //  cantBarajas = BARAJAS_MAS_6_JUGADORES;
+        }
+        return cantBarajas;
+    }
 }

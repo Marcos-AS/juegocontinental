@@ -32,13 +32,26 @@ public interface ifVista {
     String MENU_ROBAR = "Querés robar del mazo o robar del pozo?\n1 - Robar del mazo\n2 - Robar del pozo\nElige una opción: ";
     String PREGUNTA_ROBAR_CASTIGO = "Quieres robar con castigo? (robar del pozo y robar del mazo)\n1 - No\n2 - Si";
     String MENU_INICIAR = """
-            Bienvenido al juego Continental.
-            Elije una opción:
-            1 - Crear partida
-            2 - Jugar partida recién creada
-            3 - Ver ranking mejores jugadores
-            4 - Ver reglas de juego
-            -1 - Salir del juego""";
+        Bienvenido al juego Continental
+        Elije una opción:
+        1 - Crear partida
+        2 - Jugar partida recién creada
+        3 - Ver ranking mejores jugadores
+        4 - Ver reglas de juego
+        -1 - Salir del juego
+        """;
+    String MENU_INICIAR_INICIADA = """
+        <html><head><title>El Continental.</title></head>
+        <h1>Bienvenido al juego Continental</h1>
+        Elije una opción:<br>
+        1 - Crear partida<br>
+        2 - Jugar partida recién creada<br>
+        3 - Ver ranking mejores jugadores<br>
+        4 - Ver reglas de juego<br>
+        -1 - Salir del juego<br>
+        YA HAY UNA PARTIDA INICIADA
+        </html>""";
+
     String REGLAS =
     """
         OBJETIVO
@@ -136,13 +149,15 @@ public interface ifVista {
         return manoString;
     }
 
+    void mostrarAcomodoCarta(String nombre);
     void comienzoTurno(String nomJ, int numJ) throws RemoteException;
     void mostrarInfo(String s);
-    void mostrarComienzaPartida(String[] jugadores);
+    void mostrarCartas(ArrayList<String> cartas);
+    void mostrarComienzaPartida(ArrayList<String> jugadores);
     int getNumJugadorAcomodar();
     String getNombreVista();
     String getCartasString(ArrayList<String> cartas);
-    int menuBajar(String cartasStr);
+    int menuBajar(ArrayList<String> cartasStr);
     int[] preguntarParaOrdenarCartas(ArrayList<String> cartas);
     int preguntarCartaParaAcomodar(ArrayList<String> cartas);
     void mostrarJuegos(ArrayList<ArrayList<String>> juegos);
@@ -154,9 +169,9 @@ public interface ifVista {
     String getPozoString(ifCarta c);
     void mostrarPuntosRonda(int[] puntos) throws RemoteException;
     void iniciar() throws RemoteException;
-    String preguntarInputRobar(ArrayList<String> cartas, String nomJ)
+    String preguntarInputRobar(ArrayList<String> cartas)
             throws RemoteException;
-    String preguntarInputRobarCastigo(ArrayList<String> cartas, String nomJ) throws RemoteException;
+    String preguntarInputRobarCastigo(ArrayList<String> cartas) throws RemoteException;
 
     boolean isRespAfirmativa(String eleccion);
 }

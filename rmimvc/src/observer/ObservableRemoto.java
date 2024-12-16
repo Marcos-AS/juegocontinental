@@ -38,11 +38,13 @@ public abstract class ObservableRemoto implements Remote, IObservableRemoto {
 			o.actualizar(this, obj);
 	}
 
-	public void notificarObservadores(int[] jugadoresQuePuedenRobarConCastigo, Object obj) throws RemoteException {
-		for (int i = 0; i < observadores.size()-1; i++) {
-			int numJ = jugadoresQuePuedenRobarConCastigo[i];
-			if (numJ >= 0) {
-				observadores.get(numJ).actualizar(this, obj);
+	public void notificarObservadores(ArrayList<Integer> jugadoresQuePuedenRobarConCastigo, Object obj) throws RemoteException {
+		if (!jugadoresQuePuedenRobarConCastigo.isEmpty()) {
+			for (int i = 0; i < observadores.size()-1; i++) {
+				int numJ = jugadoresQuePuedenRobarConCastigo.get(i);
+				if (numJ >= 0) {
+					observadores.get(numJ).actualizar(this, obj);
+				}
 			}
 		}
 	}

@@ -5,6 +5,9 @@ import modelo.Eventos;
 import modelo.ifCarta;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
@@ -15,7 +18,6 @@ public class VentanaConsola extends JFrame implements ifVista {
     public void iniciar() throws RemoteException {
         int eleccion;
         int cantJugadores; //minimo
-        boolean partidaIniciada = false;
         boolean partidaCreada = false;
         do {
             eleccion = menuInicial();
@@ -40,10 +42,8 @@ public class VentanaConsola extends JFrame implements ifVista {
                             mostrarInfo("La partida aun no ha sido creada." +
                                     " Seleccione la opción 'Crear partida' ");
                         } else if (inicioPartida == Eventos.FALTAN_JUGADORES) {
-                            partidaIniciada = true;
                             mostrarInfo("Esperando que ingresen más jugadores...");
                         } else if (inicioPartida == Eventos.INICIAR_PARTIDA) {
-                            partidaIniciada = true; //esto inicia el funcionamiento del juego
                             ctrl.notificarComienzoPartida();
                             ctrl.partida();
                         }
@@ -67,14 +67,14 @@ public class VentanaConsola extends JFrame implements ifVista {
                 //                    }
                 //                }
             }
-        } while (eleccion != -1 && !partidaIniciada);
+        } while (eleccion != -1);
     }
 
     private int menuInicial() throws RemoteException {
         int eleccion = 0;
         do {
             try {
-                eleccion = Integer.parseInt(preguntarInputInicial(ifVista.MENU_INICIAR));
+                eleccion = Integer.parseInt(preguntarInputInicial());
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
@@ -107,25 +107,97 @@ public class VentanaConsola extends JFrame implements ifVista {
                 "Jugador: " + nombreVista, JOptionPane.INFORMATION_MESSAGE);
     }
 
+    public void mostrarCartas(ArrayList<String> cartas) {
+        JOptionPane.showMessageDialog(null, getCartasString(cartas),
+                "Jugador: " + nombreVista, JOptionPane.INFORMATION_MESSAGE);
+
+    }
+
+    private boolean validarEntrada(String resp) {
+        boolean valida = true;
+        // si el usuario cerró el diálogo o presionó "Cancelar"
+        if (resp == null) {
+            JOptionPane.showMessageDialog(null, "No se puede cancelar esta entrada. Por favor, ingresa un valor.", "Error", JOptionPane.ERROR_MESSAGE);
+            valida = false;
+        }
+
+        // Validar si la entrada está vacía o solo contiene espacios en blanco
+        if (resp.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "La entrada no puede estar vacía. Intenta de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
+            valida = false;
+        }
+        return valida;
+    }
+
+    private String mostrarInputDialog(String mostrar, String titulo, int ancho, int largo) {
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel label = new JLabel(mostrar);
+        label.setFont(new Font("Arial", Font.PLAIN, 18));
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+
+        JTextField campoTexto = new JTextField();
+        campoTexto.setFont(new Font("Arial", Font.PLAIN, 16));
+//        campoTexto.setMaximumSize(new Dimension(200,30));
+        panel.setPreferredSize(new Dimension(ancho, largo));
+        panel.add(label, BorderLayout.CENTER);
+        panel.add(campoTexto, BorderLayout.SOUTH);
+        int resultado = JOptionPane.showConfirmDialog(
+                null,
+                panel,
+                titulo,
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+        );
+
+//        panel.addFocusListener(a);
+//                (new WindowAdapter() {
+//            public void windowGainedFocus(WindowEvent e) {
+//                campoTexto.requestFocusInWindow();
+//            }
+//        });
+
+        if (resultado==JOptionPane.OK_OPTION)
+            return campoTexto.getText();
+        return null;
+    }
+
     public String preguntarInputMenu(String s, String cartas) {
         String mostrar = cartas + "\n " + s;
-        return JOptionPane.showInputDialog(null, mostrar, nombreVista, JOptionPane.QUESTION_MESSAGE);
+        String resp;
+        do
+            resp = JOptionPane.showInputDialog(null, mostrar,nombreVista,JOptionPane.QUESTION_MESSAGE);
+            //resp = mostrarInputDialog(mostrar, nombreVista, 600, 600);
+        while (!validarEntrada(resp));
+        return resp;
     }
 
     public String preguntarInput(String s) {
-        return JOptionPane.showInputDialog(null, s, nombreVista, JOptionPane.QUESTION_MESSAGE);
+        String resp;
+        do
+            resp = JOptionPane.showInputDialog(null, s,nombreVista,JOptionPane.QUESTION_MESSAGE);
+        while (!validarEntrada(resp));
+        return resp;
     }
 
-    public String preguntarInputRobar(ArrayList<String> cartas, String nomJ)
+    public String preguntarInputRobar(ArrayList<String> cartas)
             throws RemoteException {
         String mostrar = getCartasString(cartas) + "\n Pozo: " + getPozoString(ctrl.getPozo()) + "\n " + ifVista.MENU_ROBAR;
-        return JOptionPane.showInputDialog(null, mostrar, nomJ, JOptionPane.QUESTION_MESSAGE);
+        String resp;
+        do
+            resp = JOptionPane.showInputDialog(null, mostrar,nombreVista,JOptionPane.QUESTION_MESSAGE);
+        while (!validarEntrada(resp));
+        return resp;
     }
 
-    public String preguntarInputRobarCastigo(ArrayList<String> cartas, String nomJ)
+    public String preguntarInputRobarCastigo(ArrayList<String> cartas)
             throws RemoteException {
         String mostrar = getCartasString(cartas) + "\n Pozo: " + getPozoString(ctrl.getPozo()) + "\n " + ifVista.PREGUNTA_ROBAR_CASTIGO;
-        return JOptionPane.showInputDialog(null, mostrar, nomJ, JOptionPane.QUESTION_MESSAGE);
+        String resp;
+        do
+            resp = JOptionPane.showInputDialog(null, mostrar,nombreVista,JOptionPane.QUESTION_MESSAGE);
+        while (!validarEntrada(resp));
+        return resp;
     }
 
     @Override
@@ -134,14 +206,16 @@ public class VentanaConsola extends JFrame implements ifVista {
         return e.equals("si") || eleccion.equals("s");
     }
 
-    public String preguntarInputInicial(String s) throws RemoteException {
-        String enCurso = "";
+    public String preguntarInputInicial() throws RemoteException {
+        UIManager.put("OptionPane.messageFont", new Font("Arial", Font.PLAIN, 18));
+        UIManager.put("TextField.font", new Font("Arial", Font.PLAIN, 16));
+        String mostrar;
         if (ctrl.isPartidaEnCurso()) {
-            enCurso = "YA HAY UNA PARTIDA INICIADA";
+            mostrar = ifVista.MENU_INICIAR + "\nYA HAY UNA PARTIDA INICIADA";
+        } else {
+            mostrar = ifVista.MENU_INICIAR;
         }
-        String mostrar = s + "\n\n " + enCurso;
-        return JOptionPane.showInputDialog(null, mostrar,
-                "Menú inicial", JOptionPane.QUESTION_MESSAGE);
+        return JOptionPane.showInputDialog(null, mostrar,"Menú inicial",JOptionPane.QUESTION_MESSAGE);
     }
 
     public String getPozoString(ifCarta c) {
@@ -154,7 +228,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         return s;
     }
 
-    public void mostrarComienzaPartida(String[] jugadores) {
+    public void mostrarComienzaPartida(ArrayList<String> jugadores) {
         StringBuilder s = new StringBuilder("COMIENZA LA PARTIDA\nJugadores:");
         int i = 1;
         for (String nombreJugador : jugadores) {
@@ -179,9 +253,9 @@ public class VentanaConsola extends JFrame implements ifVista {
         return s.toString();
     }
 
-    public int menuBajar(String cartasStr) {
+    public int menuBajar(ArrayList<String> cartasStr) {
         int eleccion = 0;
-        String s = cartasStr + "\n";
+        String s = getCartasString(cartasStr) + "\n";
         while (eleccion < 1 || eleccion > 8) {
             s += """
                 Elije una opción:
@@ -223,6 +297,11 @@ public class VentanaConsola extends JFrame implements ifVista {
         return Integer.parseInt(
                 preguntarInputMenu("Indica el número de carta que quieres acomodar" +
                         " en un juego", getCartasString(cartas)));
+    }
+
+    public void mostrarAcomodoCarta(String nombre) {
+        mostrarInfo("Se acomodó la carta en el juego.");
+        mostrarInfo("Juegos de " + nombre + ": ");
     }
 
     public void mostrarJuegos(ArrayList<ArrayList<String>> juegos) {

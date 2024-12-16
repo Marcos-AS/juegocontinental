@@ -57,8 +57,7 @@ public class AppClienteConsola {
 //        );
 
         //creacion de la vista y el controlador
-        //ifVista vista = new VentanaConsola();
-        ifVista vista = new GUI();
+        ifVista vista = new VentanaConsola();
         Controlador ctrl = new Controlador(vista);
         vista.setControlador(ctrl);
 

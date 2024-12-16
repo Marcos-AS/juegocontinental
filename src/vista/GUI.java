@@ -16,16 +16,18 @@ public class GUI implements ifVista{
     private VentanaConsola consola = new VentanaConsola();
     private JTextField tFieldNombreJugador;
     private JPanel panelPrincipal;
-    private JLabel labelNombreJugador;
+    private JLabel titulo;
     private JButton iniciarPartidaButton;
     private JButton reglasButton;
     private JButton rankingButton;
 
     public GUI() {
         JFrame frame = new JFrame("El Continental");
+        frame.setSize(1000,700);
         frame.setContentPane(this.panelPrincipal); // Usa el nombre de tu panel principal
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack(); // Ajusta el tamaño al contenido
+        //agregarMenuBarra();
         frame.setVisible(true); // Muestra la ventana
         iniciarPartidaButton.addActionListener(e -> {
             try {
@@ -54,6 +56,11 @@ public class GUI implements ifVista{
     }
 
     @Override
+    public void mostrarAcomodoCarta(String nombre) {
+
+    }
+
+    @Override
     public void comienzoTurno(String nomJ, int numJ) throws RemoteException {
 
     }
@@ -64,7 +71,12 @@ public class GUI implements ifVista{
     }
 
     @Override
-    public void mostrarComienzaPartida(String[] jugadores) {
+    public void mostrarCartas(ArrayList<String> cartas) {
+
+    }
+
+    @Override
+    public void mostrarComienzaPartida(ArrayList<String> jugadores) {
 
     }
 
@@ -84,7 +96,7 @@ public class GUI implements ifVista{
     }
 
     @Override
-    public int menuBajar(String cartasStr) {
+    public int menuBajar(ArrayList<String> cartasStr) {
         return 0;
     }
 
@@ -156,13 +168,13 @@ public class GUI implements ifVista{
     }
 
     @Override
-    public String preguntarInputRobar(ArrayList<String> cartas, String nomJ) throws RemoteException {
+    public String preguntarInputRobar(ArrayList<String> cartas) throws RemoteException {
         pFrame.mostrarCartas(cartas);
         return "";
     }
 
     @Override
-    public String preguntarInputRobarCastigo(ArrayList<String> cartas, String nomJ) throws RemoteException {
+    public String preguntarInputRobarCastigo(ArrayList<String> cartas) throws RemoteException {
         return "";
     }
 

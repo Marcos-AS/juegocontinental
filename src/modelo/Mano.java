@@ -6,11 +6,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class Mano extends ObservableRemoto {
-    public static Carta removeCartaFromMano(ArrayList<Carta> mano, int indiceCarta) throws RemoteException {
-        Carta cartaATirar = mano.get(indiceCarta);
-        mano.remove(indiceCarta);
-        return cartaATirar;
-    }
 
     public static void moverCartaEnMano(ArrayList<Carta> mano, int indCarta, int destino) {
         Carta c = mano.get(indCarta);
@@ -22,5 +17,11 @@ public class Mano extends ObservableRemoto {
         ArrayList<Carta> juego = new ArrayList<>();
         for (int carta : cartasABajar) juego.add(mano.get(carta));
         return juego;
+    }
+
+    public static void resetearMano(ArrayList<Jugador> jugadores) throws RemoteException {
+        for (Jugador j : jugadores) {
+            j.resetMano();
+        }
     }
 }
