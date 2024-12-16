@@ -19,6 +19,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         int eleccion;
         int cantJugadores; //minimo
         boolean partidaCreada = false;
+        boolean partidaIniciada = false;
         do {
             eleccion = menuInicial();
             switch (eleccion) {
@@ -45,6 +46,7 @@ public class VentanaConsola extends JFrame implements ifVista {
                             mostrarInfo("Esperando que ingresen más jugadores...");
                         } else if (inicioPartida == Eventos.INICIAR_PARTIDA) {
                             ctrl.notificarComienzoPartida();
+                            partidaIniciada = true;
                             ctrl.partida();
                         }
                     } else {
@@ -67,7 +69,7 @@ public class VentanaConsola extends JFrame implements ifVista {
                 //                    }
                 //                }
             }
-        } while (eleccion != -1);
+        } while (eleccion != -1 && !partidaIniciada);
     }
 
     private int menuInicial() throws RemoteException {
