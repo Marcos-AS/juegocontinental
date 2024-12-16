@@ -103,6 +103,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     }
 
     public void finPartida() throws RemoteException {
+        setEnCurso();
         determinarGanador(); //al finalizar las rondas
         serializarGanador();
         notificarObservadores(NOTIFICACION_GANADOR);

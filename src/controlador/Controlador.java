@@ -132,6 +132,8 @@ public class Controlador implements IControladorRemoto {
 
     public void partida() throws RemoteException {
         partida.desarrolloPartida();
+        if (!isPartidaEnCurso())
+            vista.opcionesIniciales();
     }
 
     public int getRonda() throws RemoteException {

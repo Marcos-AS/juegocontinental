@@ -9,6 +9,9 @@ import vista.VentanaConsola;
 import vista.ifVista;
 
 //import javax.swing.*;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 //import java.util.ArrayList;
 import java.util.Random;
@@ -16,7 +19,7 @@ import java.util.Random;
 
 public class AppClienteConsola {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UnknownHostException {
 
 //        ArrayList<String> ips = Util.getIpDisponibles();
 //        String ip = (String) JOptionPane.showInputDialog(
@@ -60,7 +63,7 @@ public class AppClienteConsola {
         ifVista vista = new VentanaConsola();
         Controlador ctrl = new Controlador(vista);
         vista.setControlador(ctrl);
-
+        //System.out.println(Inet4Address.getLocalHost().getHostAddress());
         //Cliente cliente = new Cliente(ip, Integer.parseInt(port), ipServer, Integer.parseInt(portServer));
         Cliente cliente = new Cliente("127.0.0.1", new Random().nextInt((9999-9900)+1)+9900, "192.168.0.247", 8888);
         //Cliente cliente = new Cliente("192.168.0.40", 9999, "192.168.0.247", 8888);

@@ -16,8 +16,12 @@ public class VentanaConsola extends JFrame implements ifVista {
     private String nombreVista;
 
     public void iniciar() throws RemoteException {
+        nombreVista = preguntarInput("Indica tu nombre:");
+        opcionesIniciales();
+    }
+
+    public void opcionesIniciales() throws RemoteException {
         int eleccion;
-        int cantJugadores; //minimo
         boolean partidaCreada = false;
         boolean partidaIniciada = false;
         do {
@@ -25,8 +29,7 @@ public class VentanaConsola extends JFrame implements ifVista {
             switch (eleccion) {
                 case ifVista.ELECCION_CREAR_PARTIDA: {
                     if (!ctrl.isPartidaEnCurso()) {
-                        nombreVista = preguntarInput("Indica tu nombre:");
-                        cantJugadores = Integer.parseInt(preguntarInput("Cuántos jugadores" +
+                        int cantJugadores = Integer.parseInt(preguntarInput("Cuántos jugadores" +
                                 " deseas para la nueva partida?"));
                         ctrl.crearPartida(cantJugadores);
                         partidaCreada = true;
@@ -71,6 +74,7 @@ public class VentanaConsola extends JFrame implements ifVista {
             }
         } while (eleccion != -1 && !partidaIniciada);
     }
+
 
     private int menuInicial() throws RemoteException {
         int eleccion = 0;
@@ -217,7 +221,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         } else {
             mostrar = ifVista.MENU_INICIAR;
         }
-        return JOptionPane.showInputDialog(null, mostrar,"Menú inicial",JOptionPane.QUESTION_MESSAGE);
+        return JOptionPane.showInputDialog(null, mostrar,"Menú inicial - " + nombreVista,JOptionPane.QUESTION_MESSAGE);
     }
 
     public String getPozoString(ifCarta c) {

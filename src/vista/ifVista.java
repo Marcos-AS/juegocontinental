@@ -172,6 +172,6 @@ public interface ifVista {
     String preguntarInputRobar(ArrayList<String> cartas)
             throws RemoteException;
     String preguntarInputRobarCastigo(ArrayList<String> cartas) throws RemoteException;
-
+    void opcionesIniciales() throws RemoteException;
     boolean isRespAfirmativa(String eleccion);
 }

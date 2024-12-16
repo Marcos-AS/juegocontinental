@@ -179,6 +179,11 @@ public class GUI implements ifVista{
     }
 
     @Override
+    public void opcionesIniciales() throws RemoteException {
+
+    }
+
+    @Override
     public boolean isRespAfirmativa(String eleccion) {
         return false;
     }
