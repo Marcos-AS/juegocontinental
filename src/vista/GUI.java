@@ -82,28 +82,13 @@ public class GUI extends JFrame implements ifVista {
         this.setVisible(true);
     }
 
-    public void mostrarCartas(ArrayList<String> cartas) {
-        JPanel panel = new JPanel();
-        panel.setLayout(new FlowLayout());
-
-        for (String carta : cartas) {
-            JLabel label = crearLabelConImagen(carta);
-            panel.add(label);
-        }
-
-        JOptionPane.showMessageDialog(this, panel, "Tus cartas", JOptionPane.PLAIN_MESSAGE);
-    }
-
-    private JLabel crearLabelConImagen(String nombreCarta) {
-        ImageIcon icono = cargarImagenCarta(nombreCarta);
-        JLabel label = new JLabel(icono);
-        label.setHorizontalAlignment(SwingConstants.CENTER);
-        return label;
-    }
-
     private ImageIcon cargarImagenCarta(String nombreCarta) {
         String ruta = "recursos/cartas/" + nombreCarta + ".png"; // Ruta de las imágenes
         return new ImageIcon(ruta);
+    }
+
+    public String asociarRuta(String carta) {
+        return "\\src\\vista\\cartas\\" + carta + ".png";
     }
 
     public String preguntarInputRobar(ArrayList<String> cartas) throws RemoteException {
@@ -126,8 +111,8 @@ public class GUI extends JFrame implements ifVista {
         panel.setLayout(new FlowLayout());
 
         for (String carta : cartas) {
-            JLabel label = crearLabelConImagen(carta);
-            panel.add(label);
+            //JLabel label = crearLabelConImagen(carta);
+            //panel.add(label);
         }
 
         return panel;
@@ -310,6 +295,11 @@ public class GUI extends JFrame implements ifVista {
     public void mostrarInfo(String s) {
         SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(this, s,
                 "Jugador: " + nombreVista, JOptionPane.INFORMATION_MESSAGE));
+    }
+
+    @Override
+    public void mostrarCartas(ArrayList<String> cartas) {
+
     }
 
 
