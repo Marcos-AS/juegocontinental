@@ -177,7 +177,7 @@ public interface ifVista {
 
     static String asociarRuta(String carta) {
         //return "\\src\\vista\\cartas\\" + carta + ".png";
-        return "vista/cartas/" + carta + ".png";
+        return "src/vista/cartas/" + carta + ".png";
     }
 
     static String getPozoString(ifCarta c) {
