@@ -31,7 +31,7 @@ public class cartasGUI extends JFrame{
         panelCartas.add(cartaPozo);
 
         // Carta del Mazo (dada vuelta)
-        cartaMazo = new JLabel(new ImageIcon("vista/cartas/carta-dada-vuelta.png"));
+        cartaMazo = new JLabel(new ImageIcon("\\src\\vista\\cartas\\carta-dada-vuelta.png"));
         cartaMazo.setToolTipText("Robar carta del mazo");
         panelCartas.add(cartaMazo);
 
@@ -44,8 +44,7 @@ public class cartasGUI extends JFrame{
         panelMano.setBorder(BorderFactory.createTitledBorder("Tu mano"));
         panelMano.setBackground(Color.LIGHT_GRAY);
         for (String carta : cartas) {
-            ImageIcon imagen = new ImageIcon(ifVista.asociarRuta(carta));
-            panelMano.add(new JButton(imagen));
+            panelMano.add(getImageButton(carta));
         }
 
         // Añadir todo a la ventana principal
@@ -54,6 +53,11 @@ public class cartasGUI extends JFrame{
 
         revalidate();
         repaint();
+    }
+
+    public JButton getImageButton(String carta) {
+        ImageIcon imagen = new ImageIcon(ifVista.asociarRuta(carta));
+        return new JButton(imagen);
     }
 
 //    public void mostrarCartas(ArrayList<String> cartas) {
