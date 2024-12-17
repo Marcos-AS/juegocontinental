@@ -31,7 +31,7 @@ public class cartasGUI extends JFrame{
         panelCartas.add(cartaPozo);
 
         // Carta del Mazo (dada vuelta)
-        cartaMazo = new JLabel(new ImageIcon("\\src\\vista\\cartas\\carta-dada-vuelta.png"));
+        cartaMazo = new JLabel(new ImageIcon("vista/cartas/carta-dada-vuelta.png"));
         cartaMazo.setToolTipText("Robar carta del mazo");
         panelCartas.add(cartaMazo);
 
