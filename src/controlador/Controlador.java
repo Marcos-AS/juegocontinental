@@ -120,7 +120,7 @@ public class Controlador implements IControladorRemoto {
             if (obj[0] == NOTIFICACION_BAJO_JUEGO) {
                 String nombre = partida.getNombreJugador((int)obj[1]);
                 if (!vista.getNombreVista().equals(nombre)) {
-                    vista.mostrarInfo("El jugador " + nombre + " bajó un juego.");
+                    vista.mostrarInfo(nombre + " bajó un juego.");
                 }
             } else {
                 String nombreJ = partida.getNombreJugador((int) obj[1]);

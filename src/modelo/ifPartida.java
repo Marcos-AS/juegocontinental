@@ -89,7 +89,8 @@ public interface ifPartida extends IObservableRemoto, Serializable {
     int comprobarBajarse(int numJugador, int[] cartasABajar) throws RemoteException;
     void finPartida() throws RemoteException;
     boolean cortar(int numJugador) throws RemoteException;
-    void crearPartida(String vista, int observadorIndex, UUID idJugador, int cantJugadoresDeseada) throws RemoteException;
+    void crearPartida(String vista, int observadorIndex, UUID idJugador,
+                      int cantJugadoresDeseada) throws RemoteException;
     ifCarta getCarta(int numJugador, int iCarta) throws RemoteException;
     void acomodarEnJuegoAjeno(int numJugador, int iCarta, int numJuego) throws RemoteException;
     ArrayList<ifCarta> getMano(UUID idSolicitante, int idObjetivo) throws RemoteException;

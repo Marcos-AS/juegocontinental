@@ -4,6 +4,8 @@ import controlador.Controlador;
 import modelo.ifCarta;
 import modelo.ifJugador;
 
+import javax.swing.*;
+import java.awt.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
@@ -147,6 +149,30 @@ public interface ifVista {
         for (ifCarta c : mano)
             manoString.add(cartaToString(c));
         return manoString;
+    }
+
+    static int menuInicial(boolean enCurso, String nombreVista) throws RemoteException {
+        int eleccion = 0;
+        do {
+            try {
+                eleccion = Integer.parseInt(preguntarInputInicial(enCurso, nombreVista));
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        } while (eleccion < 1 || eleccion > 4);
+        return eleccion;
+    }
+
+    static String preguntarInputInicial(boolean enCurso, String nombreVista) throws RemoteException {
+        UIManager.put("OptionPane.messageFont", new Font("Arial", Font.PLAIN, 18));
+        UIManager.put("TextField.font", new Font("Arial", Font.PLAIN, 16));
+        String mostrar;
+        if (enCurso) {
+            mostrar = MENU_INICIAR + "\nYA HAY UNA PARTIDA INICIADA";
+        } else {
+            mostrar = MENU_INICIAR;
+        }
+        return JOptionPane.showInputDialog(null, mostrar,"Menú inicial - " + nombreVista,JOptionPane.QUESTION_MESSAGE);
     }
 
     void mostrarAcomodoCarta(String nombre);

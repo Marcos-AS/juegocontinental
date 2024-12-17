@@ -25,7 +25,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         boolean partidaCreada = false;
         boolean partidaIniciada = false;
         do {
-            eleccion = menuInicial();
+            eleccion = ifVista.menuInicial(ctrl.isPartidaEnCurso(), nombreVista);
             switch (eleccion) {
                 case ifVista.ELECCION_CREAR_PARTIDA: {
                     if (!ctrl.isPartidaEnCurso()) {
@@ -75,17 +75,43 @@ public class VentanaConsola extends JFrame implements ifVista {
         } while (eleccion != -1 && !partidaIniciada);
     }
 
+    public void mostrarInfo(String s) {
+        JOptionPane.showMessageDialog(null, s,
+                "Jugador: " + nombreVista, JOptionPane.INFORMATION_MESSAGE);
+    }
 
-    private int menuInicial() throws RemoteException {
-        int eleccion = 0;
-        do {
-            try {
-                eleccion = Integer.parseInt(preguntarInputInicial());
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
-        } while (eleccion < 1 || eleccion > 4);
-        return eleccion;
+    public String preguntarInput(String s) {
+        String resp;
+        do
+            resp = JOptionPane.showInputDialog(null, s,nombreVista,JOptionPane.QUESTION_MESSAGE);
+        while (!validarEntrada(resp));
+        return resp;
+    }
+
+    public boolean validarEntrada(String resp) {
+        boolean valida = true;
+        // si el usuario cerró el diálogo o presionó "Cancelar"
+        if (resp == null) {
+            JOptionPane.showMessageDialog(null, "No se puede cancelar esta entrada. Por favor, ingresa un valor.", "Error", JOptionPane.ERROR_MESSAGE);
+            valida = false;
+        }
+
+        // Validar si la entrada está vacía o solo contiene espacios en blanco
+        if (resp.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "La entrada no puede estar vacía. Intenta de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
+            valida = false;
+        }
+        return valida;
+    }
+
+    public void mostrarRanking(Object[] ranking) {
+        StringBuilder s = new StringBuilder("Ranking de mejores jugadores: \n");
+        int i = 1;
+        for (Object o : ranking) {
+            s.append(i).append(" - ").append(o).append("\n");
+            i++;
+        }
+        mostrarInfo(s.toString());
     }
 
     public void setControlador(Controlador ctrl) {
@@ -108,31 +134,10 @@ public class VentanaConsola extends JFrame implements ifVista {
         }
     }
 
-    public void mostrarInfo(String s) {
-        JOptionPane.showMessageDialog(null, s,
-                "Jugador: " + nombreVista, JOptionPane.INFORMATION_MESSAGE);
-    }
-
     public void mostrarCartas(ArrayList<String> cartas) {
         JOptionPane.showMessageDialog(null, getCartasString(cartas),
                 "Jugador: " + nombreVista, JOptionPane.INFORMATION_MESSAGE);
 
-    }
-
-    private boolean validarEntrada(String resp) {
-        boolean valida = true;
-        // si el usuario cerró el diálogo o presionó "Cancelar"
-        if (resp == null) {
-            JOptionPane.showMessageDialog(null, "No se puede cancelar esta entrada. Por favor, ingresa un valor.", "Error", JOptionPane.ERROR_MESSAGE);
-            valida = false;
-        }
-
-        // Validar si la entrada está vacía o solo contiene espacios en blanco
-        if (resp.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "La entrada no puede estar vacía. Intenta de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
-            valida = false;
-        }
-        return valida;
     }
 
     private String mostrarInputDialog(String mostrar, String titulo, int ancho, int largo) {
@@ -178,14 +183,6 @@ public class VentanaConsola extends JFrame implements ifVista {
         return resp;
     }
 
-    public String preguntarInput(String s) {
-        String resp;
-        do
-            resp = JOptionPane.showInputDialog(null, s,nombreVista,JOptionPane.QUESTION_MESSAGE);
-        while (!validarEntrada(resp));
-        return resp;
-    }
-
     public String preguntarInputRobar(ArrayList<String> cartas)
             throws RemoteException {
         String mostrar = getCartasString(cartas) + "\n Pozo: " + getPozoString(ctrl.getPozo()) + "\n " + ifVista.MENU_ROBAR;
@@ -210,18 +207,6 @@ public class VentanaConsola extends JFrame implements ifVista {
     public boolean isRespAfirmativa(String eleccion) {
         String e = eleccion.toLowerCase();
         return e.equals("si") || eleccion.equals("s");
-    }
-
-    public String preguntarInputInicial() throws RemoteException {
-        UIManager.put("OptionPane.messageFont", new Font("Arial", Font.PLAIN, 18));
-        UIManager.put("TextField.font", new Font("Arial", Font.PLAIN, 16));
-        String mostrar;
-        if (ctrl.isPartidaEnCurso()) {
-            mostrar = ifVista.MENU_INICIAR + "\nYA HAY UNA PARTIDA INICIADA";
-        } else {
-            mostrar = ifVista.MENU_INICIAR;
-        }
-        return JOptionPane.showInputDialog(null, mostrar,"Menú inicial - " + nombreVista,JOptionPane.QUESTION_MESSAGE);
     }
 
     public String getPozoString(ifCarta c) {
@@ -369,16 +354,6 @@ public class VentanaConsola extends JFrame implements ifVista {
         for (int i = 0; i < puntos.length; i++) {
             s.append(ctrl.getJugadorPartida(i).getNombre())
                             .append(": ").append(puntos[i]).append("\n");
-        }
-        mostrarInfo(s.toString());
-    }
-
-    private void mostrarRanking(Object[] ranking) {
-        StringBuilder s = new StringBuilder("Ranking de mejores jugadores: \n");
-        int i = 1;
-        for (Object o : ranking) {
-            s.append(i).append(" - ").append(o).append("\n");
-            i++;
         }
         mostrarInfo(s.toString());
     }
