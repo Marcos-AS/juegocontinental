@@ -181,7 +181,7 @@ public class Controlador implements IControladorRemoto {
                     mostrarJuegosEnMesa(numJugador+1);
                     break;
                 case ifVista.ELECCION_VER_POZO:
-                    vista.mostrarInfo(vista.getPozoString(getPozo()));
+                    vista.mostrarInfo(ifVista.getPozoString(getPozo()));
                     break;
             }
             if (partida.getMano(idJugador, numJugador).isEmpty()) {

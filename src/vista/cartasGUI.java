@@ -17,18 +17,21 @@ public class cartasGUI extends JFrame{
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
+        setVisible(true);
+    }
 
+    public void addCartasToPanel(String pozo, ArrayList<String> cartas) {
         // Panel principal para el mazo y el pozo
         JPanel panelCartas = new JPanel(new FlowLayout(FlowLayout.CENTER, 50, 20));
         panelCartas.setBackground(new Color(34, 139, 34)); // Fondo verde estilo mesa
 
         // Carta del Pozo (última carta visible)
-        cartaPozo = new JLabel(new ImageIcon("pozo-ultima-carta.png")); // Cambia por la ruta correcta
+        cartaPozo = new JLabel(new ImageIcon(ifVista.asociarRuta(pozo))); // Cambia por la ruta correcta
         cartaPozo.setToolTipText("Robar carta del pozo");
         panelCartas.add(cartaPozo);
 
         // Carta del Mazo (dada vuelta)
-        cartaMazo = new JLabel(new ImageIcon("src/vista/imgs/carta-dada-vuelta.png"));
+        cartaMazo = new JLabel(new ImageIcon("vista/cartas/carta-dada-vuelta.png"));
         cartaMazo.setToolTipText("Robar carta del mazo");
         panelCartas.add(cartaMazo);
 
@@ -40,12 +43,17 @@ public class cartasGUI extends JFrame{
         panelMano = new JPanel(new FlowLayout());
         panelMano.setBorder(BorderFactory.createTitledBorder("Tu mano"));
         panelMano.setBackground(Color.LIGHT_GRAY);
+        for (String carta : cartas) {
+            ImageIcon imagen = new ImageIcon(ifVista.asociarRuta(carta));
+            panelMano.add(new JButton(imagen));
+        }
 
         // Añadir todo a la ventana principal
         add(panelCartas, BorderLayout.CENTER);
         add(panelMano, BorderLayout.SOUTH);
 
-        setVisible(true);
+        revalidate();
+        repaint();
     }
 
 //    public void mostrarCartas(ArrayList<String> cartas) {

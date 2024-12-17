@@ -14,6 +14,9 @@ import java.util.ArrayList;
 public class GUI extends JFrame implements ifVista {
     private Controlador ctrl;
     private String nombreVista;
+    private JLabel cartaPozo;
+    private JLabel cartaMazo;
+    private cartasGUI panelMesa;
 
     public void iniciar() throws RemoteException {
         nombreVista = preguntarInput("Indica tu nombre:");
@@ -62,8 +65,10 @@ public class GUI extends JFrame implements ifVista {
                                 " Seleccione la opción 'Crear partida' ");
                     } else if (inicioPartida == Eventos.FALTAN_JUGADORES) {
                         mostrarInfo("Esperando que ingresen más jugadores...");
+                        panelMesa = new cartasGUI();
                     } else if (inicioPartida == Eventos.INICIAR_PARTIDA) {
                         ctrl.notificarComienzoPartida();
+                        panelMesa = new cartasGUI();
                         ctrl.partida();
                     }
                 } else {
@@ -87,47 +92,26 @@ public class GUI extends JFrame implements ifVista {
         return new ImageIcon(ruta);
     }
 
-    public String asociarRuta(String carta) {
-        return "\\src\\vista\\cartas\\" + carta + ".png";
-    }
+
 
     public String preguntarInputRobar(ArrayList<String> cartas) throws RemoteException {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(crearPanelCartas(cartas), BorderLayout.CENTER);
-
-        JLabel mensaje = new JLabel("Selecciona una opción para robar:");
-        mensaje.setHorizontalAlignment(SwingConstants.CENTER);
-        panel.add(mensaje, BorderLayout.NORTH);
-
-        String[] opciones = {"Robar del mazo", "Robar del pozo"};
-        int seleccion = JOptionPane.showOptionDialog(this, panel, "Robar carta",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, opciones, opciones[0]);
-
-        return seleccion == 0 ? "Mazo" : "Pozo";
+        panelMesa.addCartasToPanel(ifVista.getPozoString(ctrl.getPozo()), cartas);
+        return null; //tiene que ir un string, que indique si se robó del mazo o del pozo
     }
 
-    private JPanel crearPanelCartas(ArrayList<String> cartas) {
-        JPanel panel = new JPanel();
-        panel.setLayout(new FlowLayout());
-
-        for (String carta : cartas) {
-            //JLabel label = crearLabelConImagen(carta);
-            //panel.add(label);
-        }
-
-        return panel;
-    }
 
     public int preguntarCartaParaAcomodar(ArrayList<String> cartas) {
-        JPanel panel = crearPanelCartas(cartas);
+        //JPanel panel = crearPanelCartas(cartas);
 
         JLabel mensaje = new JLabel("Selecciona la carta que quieres acomodar:");
         mensaje.setHorizontalAlignment(SwingConstants.CENTER);
 
-        int seleccion = JOptionPane.showOptionDialog(this, new Object[]{mensaje, panel}, "Acomodar carta",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, cartas.toArray(), null);
+        //int seleccion = JOptionPane.showOptionDialog(this,
+//                new Object[]{mensaje, panel}, "Acomodar carta",
+//                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, cartas.toArray(), null);
 
-        return seleccion;
+  //      return seleccion;
+        return 0;
     }
 
     public void mostrarJuegos(ArrayList<ArrayList<String>> juegos) {
@@ -140,8 +124,8 @@ public class GUI extends JFrame implements ifVista {
             titulo.setFont(new Font("Arial", Font.BOLD, 16));
             panel.add(titulo);
 
-            JPanel panelCartas = crearPanelCartas(juego);
-            panel.add(panelCartas);
+            //JPanel panelCartas = crearPanelCartas(juego);
+            //panel.add(panelCartas);
             numJuego++;
         }
 
@@ -176,14 +160,14 @@ public class GUI extends JFrame implements ifVista {
         int[] indicesSeleccionados = new int[numCartas];
 
         for (int i = 0; i < numCartas; i++) {
-            JPanel panel = crearPanelCartas(cartas);
+            //JPanel panel = crearPanelCartas(cartas);
             JLabel mensaje = new JLabel("Selecciona la carta " + (i + 1) + " que quieres bajar:");
             mensaje.setHorizontalAlignment(SwingConstants.CENTER);
 
-            int seleccion = JOptionPane.showOptionDialog(this, new Object[]{mensaje, panel}, "Seleccionar carta",
-                    JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, cartas.toArray(), null);
+            //int seleccion = JOptionPane.showOptionDialog(this, new Object[]{mensaje, panel}, "Seleccionar carta",
+                    //JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, cartas.toArray(), null);
 
-            indicesSeleccionados[i] = seleccion;
+            //indicesSeleccionados[i] = seleccion;
         }
 
         return indicesSeleccionados;
@@ -191,21 +175,25 @@ public class GUI extends JFrame implements ifVista {
 
     private int preguntarCantParaBajar(ArrayList<String> cartas) {
         String[] opciones = {"3", "4"};
-        int seleccion = JOptionPane.showOptionDialog(this, "¿Cuántas cartas quieres bajar para el juego?",
-                "Seleccionar cantidad", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, opciones, opciones[0]);
+        int seleccion = JOptionPane.showOptionDialog(this,
+                "¿Cuántas cartas quieres bajar para el juego?",
+                "Seleccionar cantidad", JOptionPane.DEFAULT_OPTION,
+                JOptionPane.PLAIN_MESSAGE, null, opciones, opciones[0]);
         return seleccion + 3; // Devuelve 3 o 4 dependiendo de la selección
     }
 
     public int preguntarQueBajarParaPozo(ArrayList<String> cartas) {
-        JPanel panel = crearPanelCartas(cartas);
+        //JPanel panel = crearPanelCartas(cartas);
 
         JLabel mensaje = new JLabel("Selecciona la carta que quieres tirar al pozo:");
         mensaje.setHorizontalAlignment(SwingConstants.CENTER);
 
-        int seleccion = JOptionPane.showOptionDialog(this, new Object[]{mensaje, panel}, "Tirar al pozo",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, cartas.toArray(), null);
+        //int seleccion = JOptionPane.showOptionDialog(this,
+        //        new Object[]{mensaje, panel}, "Tirar al pozo",
+        //        JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+        //        null, cartas.toArray(), null);
 
-        return seleccion;
+        return 0;
     }
 
     public void mostrarPuntosRonda(int[] puntos) throws RemoteException {
@@ -314,8 +302,4 @@ public class GUI extends JFrame implements ifVista {
         return isRespAfirmativa(respuesta);
     }
 
-    @Override
-    public String getPozoString(ifCarta c) {
-        return c.toString();
-    }
 }

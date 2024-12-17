@@ -185,7 +185,7 @@ public class VentanaConsola extends JFrame implements ifVista {
 
     public String preguntarInputRobar(ArrayList<String> cartas)
             throws RemoteException {
-        String mostrar = getCartasString(cartas) + "\n Pozo: " + getPozoString(ctrl.getPozo()) + "\n " + ifVista.MENU_ROBAR;
+        String mostrar = getCartasString(cartas) + "\n Pozo: " + ifVista.getPozoString(ctrl.getPozo()) + "\n " + ifVista.MENU_ROBAR;
         String resp;
         do
             resp = JOptionPane.showInputDialog(null, mostrar,nombreVista,JOptionPane.QUESTION_MESSAGE);
@@ -195,7 +195,7 @@ public class VentanaConsola extends JFrame implements ifVista {
 
     public String preguntarInputRobarCastigo(ArrayList<String> cartas)
             throws RemoteException {
-        String mostrar = getCartasString(cartas) + "\n Pozo: " + getPozoString(ctrl.getPozo()) + "\n " + ifVista.PREGUNTA_ROBAR_CASTIGO;
+        String mostrar = getCartasString(cartas) + "\n Pozo: " + ifVista.getPozoString(ctrl.getPozo()) + "\n " + ifVista.PREGUNTA_ROBAR_CASTIGO;
         String resp;
         do
             resp = JOptionPane.showInputDialog(null, mostrar,nombreVista,JOptionPane.QUESTION_MESSAGE);
@@ -207,16 +207,6 @@ public class VentanaConsola extends JFrame implements ifVista {
     public boolean isRespAfirmativa(String eleccion) {
         String e = eleccion.toLowerCase();
         return e.equals("si") || eleccion.equals("s");
-    }
-
-    public String getPozoString(ifCarta c) {
-        String s;
-        if (c == null) {
-            s = "Pozo vacío";
-        } else {
-            s = ifVista.cartaToString(c);
-        }
-        return s;
     }
 
     public void mostrarComienzaPartida(ArrayList<String> jugadores) {

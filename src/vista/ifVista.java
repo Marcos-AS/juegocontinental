@@ -175,6 +175,20 @@ public interface ifVista {
         return JOptionPane.showInputDialog(null, mostrar,"Menú inicial - " + nombreVista,JOptionPane.QUESTION_MESSAGE);
     }
 
+    static String asociarRuta(String carta) {
+        return "\\src\\vista\\cartas\\" + carta + ".png";
+    }
+
+    static String getPozoString(ifCarta c) {
+        String s;
+        if (c == null) {
+            s = "Pozo vacío";
+        } else {
+            s = ifVista.cartaToString(c);
+        }
+        return s;
+    }
+
     void mostrarAcomodoCarta(String nombre);
     void comienzoTurno(String nomJ, int numJ) throws RemoteException;
     void mostrarInfo(String s);
@@ -192,7 +206,6 @@ public interface ifVista {
     boolean preguntarSiQuiereSeguirBajandoJuegos(ArrayList<String> cartas);
     int[] preguntarQueBajarParaJuego(ArrayList<String> cartas);
     int preguntarQueBajarParaPozo(ArrayList<String> cartas);
-    String getPozoString(ifCarta c);
     void mostrarPuntosRonda(int[] puntos) throws RemoteException;
     void iniciar() throws RemoteException;
     String preguntarInputRobar(ArrayList<String> cartas)
