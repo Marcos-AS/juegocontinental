@@ -265,8 +265,13 @@ public class GUI extends JFrame implements ifVista {
 
     @Override
     public void mostrarInfo(String s) {
-        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(this, s,
-                "Jugador: " + nombreVista, JOptionPane.INFORMATION_MESSAGE));
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                JOptionPane.showMessageDialog(GUI.this, s,
+                        "Jugador: " + nombreVista, JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
     }
 
     @Override

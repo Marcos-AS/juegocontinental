@@ -124,6 +124,7 @@ public class Controlador implements IControladorRemoto {
                     vista.mostrarInfo(nombre + " bajó un juego.");
                 }
             } else {
+                System.out.println("fin turno");
                 String nombreJ = partida.getNombreJugador((int) obj[1]);
                 vista.mostrarInfo("Finalizó el turno de " + nombreJ);
                 partida.desarrolloPartida();
