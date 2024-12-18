@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class GUI extends JFrame implements ifVista {
     private Controlador ctrl;
@@ -95,8 +96,7 @@ public class GUI extends JFrame implements ifVista {
 
 
     public String preguntarInputRobar(ArrayList<String> cartas) throws RemoteException {
-        panelMesa.addCartasToPanel(ifVista.getPozoString(ctrl.getPozo()), cartas);
-        return null; //tiene que ir un string, que indique si se robó del mazo o del pozo
+        return panelMesa.addCartasToPanel(ifVista.getPozoString(ctrl.getPozo()), cartas);
     }
 
 
@@ -115,24 +115,8 @@ public class GUI extends JFrame implements ifVista {
     }
 
     public void mostrarJuegos(ArrayList<ArrayList<String>> juegos) {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
-        int numJuego = 1;
-        for (ArrayList<String> juego : juegos) {
-            JLabel titulo = new JLabel("Juego " + numJuego + ":");
-            titulo.setFont(new Font("Arial", Font.BOLD, 16));
-            panel.add(titulo);
-
-            //JPanel panelCartas = crearPanelCartas(juego);
-            //panel.add(panelCartas);
-            numJuego++;
-        }
-
-        JScrollPane scrollPane = new JScrollPane(panel);
-        scrollPane.setPreferredSize(new Dimension(400, 300));
-
-        JOptionPane.showMessageDialog(this, scrollPane, "Juegos bajados", JOptionPane.PLAIN_MESSAGE);
+        System.out.println("bajado");
+        panelMesa.mostrarJuegos(juegos);
     }
 
     public void setControlador(Controlador ctrl) {
@@ -155,45 +139,49 @@ public class GUI extends JFrame implements ifVista {
         return true;
     }
 
+//    public int[] preguntarQueBajarParaJuego(ArrayList<String> cartas) {
+//        panelMesa.limpiarSeleccion();
+//        panelMesa.activarBotonFinalizarSeleccion();
+//        int[] iCartas = panelMesa.obtenerCartasSeleccionadas();
+//        System.out.println(Arrays.toString(iCartas));
+//        return iCartas;
+//    }
+
     public int[] preguntarQueBajarParaJuego(ArrayList<String> cartas) {
-        int numCartas = preguntarCantParaBajar(cartas);
-        int[] indicesSeleccionados = new int[numCartas];
-
-        for (int i = 0; i < numCartas; i++) {
-            //JPanel panel = crearPanelCartas(cartas);
-            JLabel mensaje = new JLabel("Selecciona la carta " + (i + 1) + " que quieres bajar:");
-            mensaje.setHorizontalAlignment(SwingConstants.CENTER);
-
-            //int seleccion = JOptionPane.showOptionDialog(this, new Object[]{mensaje, panel}, "Seleccionar carta",
-                    //JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, cartas.toArray(), null);
-
-            //indicesSeleccionados[i] = seleccion;
+        int[] cartasABajar = new int[preguntarCantParaBajar(cartas)];
+        int iCarta;
+        for (int i = 0; i < cartasABajar.length; i++) {
+            do {
+                iCarta = Integer.parseInt(preguntarInputMenu("Carta " + (i + 1) +
+                                ":\nIndica el índice de la carta que quieres bajar: ",
+                        getCartasString(cartas)));
+            } while (iCarta < 0 || iCarta >= cartas.size());
+            cartasABajar[i] = iCarta;
         }
-
-        return indicesSeleccionados;
+        return cartasABajar;
     }
 
     private int preguntarCantParaBajar(ArrayList<String> cartas) {
-        String[] opciones = {"3", "4"};
-        int seleccion = JOptionPane.showOptionDialog(this,
-                "¿Cuántas cartas quieres bajar para el juego?",
-                "Seleccionar cantidad", JOptionPane.DEFAULT_OPTION,
-                JOptionPane.PLAIN_MESSAGE, null, opciones, opciones[0]);
-        return seleccion + 3; // Devuelve 3 o 4 dependiendo de la selección
+        int numCartas = 0;
+        while (numCartas > 4 || numCartas < 3) {
+            numCartas = Integer.parseInt(
+                    preguntarInputMenu("Cuantas cartas quieres bajar para el juego? (3 o 4)",
+                            getCartasString(cartas)));
+        }
+        return numCartas;
     }
 
     public int preguntarQueBajarParaPozo(ArrayList<String> cartas) {
-        //JPanel panel = crearPanelCartas(cartas);
-
-        JLabel mensaje = new JLabel("Selecciona la carta que quieres tirar al pozo:");
-        mensaje.setHorizontalAlignment(SwingConstants.CENTER);
-
-        //int seleccion = JOptionPane.showOptionDialog(this,
-        //        new Object[]{mensaje, panel}, "Tirar al pozo",
-        //        JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
-        //        null, cartas.toArray(), null);
-
-        return 0;
+        String cartasStr = getCartasString(cartas); //modificar
+        int eleccion = Integer.parseInt(
+                preguntarInputMenu("Indica el índice de carta para tirar al pozo: ",
+                        ""));
+        while (eleccion < 0 || eleccion >= cartas.size()) {
+            eleccion = Integer.parseInt(preguntarInputMenu("Ese índice es inválido." +
+                    " Vuelve a ingresar un índice de carta", cartasStr));
+        }
+        panelMesa.eliminarCartaDeMano(eleccion, cartas);
+        return eleccion;
     }
 
     public void mostrarPuntosRonda(int[] puntos) throws RemoteException {
@@ -244,10 +232,11 @@ public class GUI extends JFrame implements ifVista {
 
     @Override
     public int menuBajar(ArrayList<String> cartasStr) {
-        String[] opciones = {"Bajar al juego", "Descartar"};
-        int seleccion = JOptionPane.showOptionDialog(this, "Selecciona una opción:", "Menú Bajar",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, opciones, opciones[0]);
-        return seleccion;
+        panelMesa.actualizarManoJugador(cartasStr);
+        panelMesa.activarBotonesBajar();
+
+        // Esperar hasta que el botón sea presionado
+        return panelMesa.esperarAccion();
     }
 
     @Override
@@ -262,11 +251,6 @@ public class GUI extends JFrame implements ifVista {
     @Override
     public String preguntarInputRobarCastigo(ArrayList<String> cartas) throws RemoteException {
         return preguntarInput("Selecciona una carta para robar como castigo:");
-    }
-
-    @Override
-    public boolean isRespAfirmativa(String eleccion) {
-        return eleccion.equalsIgnoreCase("sí") || eleccion.equalsIgnoreCase("yes");
     }
 
     @Override
@@ -293,13 +277,14 @@ public class GUI extends JFrame implements ifVista {
 
     @Override
     public String preguntarInputMenu(String s, String cartas) {
-        return preguntarInput(s + "\nCartas disponibles: " + cartas);
+        return preguntarInput(s);
     }
 
     @Override
     public boolean preguntarSiQuiereSeguirBajandoJuegos(ArrayList<String> cartas) {
-        String respuesta = preguntarInput("¿Quieres seguir bajando juegos? (sí/no)");
-        return isRespAfirmativa(respuesta);
+        String resp = preguntarInputMenu("Deseas bajar un juego? (Si/No)"
+                , "");
+        return ifVista.isRespAfirmativa(resp);
     }
 
 }

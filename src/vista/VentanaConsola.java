@@ -203,12 +203,6 @@ public class VentanaConsola extends JFrame implements ifVista {
         return resp;
     }
 
-    @Override
-    public boolean isRespAfirmativa(String eleccion) {
-        String e = eleccion.toLowerCase();
-        return e.equals("si") || eleccion.equals("s");
-    }
-
     public void mostrarComienzaPartida(ArrayList<String> jugadores) {
         StringBuilder s = new StringBuilder("COMIENZA LA PARTIDA\nJugadores:");
         int i = 1;
@@ -300,7 +294,7 @@ public class VentanaConsola extends JFrame implements ifVista {
     public boolean preguntarSiQuiereSeguirBajandoJuegos(ArrayList<String> cartas) {
         String resp = preguntarInputMenu("Deseas bajar un juego? (Si/No)"
                 , getCartasString(cartas));
-        return isRespAfirmativa(resp);
+        return ifVista.isRespAfirmativa(resp);
     }
 
     public int[] preguntarQueBajarParaJuego(ArrayList<String> cartas) {

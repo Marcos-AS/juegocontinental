@@ -190,6 +190,11 @@ public interface ifVista {
         return s;
     }
 
+    static boolean isRespAfirmativa(String eleccion) {
+        String e = eleccion.toLowerCase();
+        return e.equals("si") || eleccion.equals("s");
+    }
+
     void mostrarAcomodoCarta(String nombre);
     void comienzoTurno(String nomJ, int numJ) throws RemoteException;
     void mostrarInfo(String s);
@@ -213,5 +218,4 @@ public interface ifVista {
             throws RemoteException;
     String preguntarInputRobarCastigo(ArrayList<String> cartas) throws RemoteException;
     void opcionesIniciales() throws RemoteException;
-    boolean isRespAfirmativa(String eleccion);
 }

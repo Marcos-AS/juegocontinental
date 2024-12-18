@@ -20,6 +20,7 @@ public class Controlador implements IControladorRemoto {
     private int partidasJugadas = 0;
 
 
+
     public Controlador(ifVista vista) {
         this.vista = vista;
         idJugador = UUID.randomUUID();
@@ -384,7 +385,7 @@ public class Controlador implements IControladorRemoto {
             vista.mostrarInfo(nombre + " puede robar con castigo.");
             String eleccion = vista.preguntarInputRobarCastigo(enviarManoJugador(numJugadorRobo));
             if (Integer.parseInt(eleccion) == ifVista.ELECCION_ROBAR_CON_CASTIGO
-                    || vista.isRespAfirmativa(eleccion)) {
+                    || ifVista.isRespAfirmativa(eleccion)) {
                 partida.robarConCastigo();
             } else {
                 partida.removeJugadorRoboCastigo();
