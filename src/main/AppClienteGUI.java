@@ -2,15 +2,10 @@ package main;
 
 import controlador.Controlador;
 import rmimvc.src.RMIMVCException;
-//import rmimvc.src.Util;
 import rmimvc.src.cliente.Cliente;
 import vista.GUI;
-import vista.VentanaConsola;
 import vista.ifVista;
-
-//import javax.swing.*;
 import java.rmi.RemoteException;
-//import java.util.ArrayList;
 import java.util.Random;
 
 public class AppClienteGUI {

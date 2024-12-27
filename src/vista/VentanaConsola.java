@@ -75,6 +75,16 @@ public class VentanaConsola extends JFrame implements ifVista {
         } while (eleccion != -1 && !partidaIniciada);
     }
 
+    @Override
+    public void cambioTurno() {
+
+    }
+
+    @Override
+    public void finTurno() {
+
+    }
+
     public void mostrarInfo(String s) {
         JOptionPane.showMessageDialog(null, s,
                 "Jugador: " + nombreVista, JOptionPane.INFORMATION_MESSAGE);
@@ -183,9 +193,9 @@ public class VentanaConsola extends JFrame implements ifVista {
         return resp;
     }
 
-    public String preguntarInputRobar(ArrayList<String> cartas)
+    private String preguntarInputRobar(ArrayList<String> cartas, String combo)
             throws RemoteException {
-        String mostrar = getCartasString(cartas) + "\n Pozo: " + ifVista.getPozoString(ctrl.getPozo()) + "\n " + ifVista.MENU_ROBAR;
+        String mostrar = combo + "\n" + getCartasString(cartas) + "\n Pozo: " + ifVista.getPozoString(ctrl.getPozo()) + "\n " + ifVista.MENU_ROBAR;
         String resp;
         do
             resp = JOptionPane.showInputDialog(null, mostrar,nombreVista,JOptionPane.QUESTION_MESSAGE);
@@ -228,9 +238,9 @@ public class VentanaConsola extends JFrame implements ifVista {
         return s.toString();
     }
 
-    public int menuBajar(ArrayList<String> cartasStr) {
+    public int menuBajar(ArrayList<String> cartasStr, String combo) {
         int eleccion = 0;
-        String s = getCartasString(cartasStr) + "\n";
+        String s = combo + "\n" + getCartasString(cartasStr) + "\n";
         while (eleccion < 1 || eleccion > 8) {
             s += """
                 Elije una opción:

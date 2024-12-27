@@ -44,9 +44,10 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     }
 
     public void desarrolloPartida() throws RemoteException {
-        if (!isRondaEmpezada()) {
+        notificarObservadores(NOTIFICACION_INICIO);
+
+        if (!isRondaEmpezada())
             empezarRonda();
-        }
         int i = getNumTurno(); //cambio de número de jugador, cambio de turno
         //partida.notificarObservadores(NOTIFICACION_COMIENZO_TURNO);
         //System.out.println("numero de jugador: " + i);
@@ -307,12 +308,14 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     }
 
     public void empezarRonda() throws RemoteException {
-        setRondaEmpezada(true);
-        //partida.notificarObservadores(NOTIFICACION_COMIENZO_RONDA);
-        crearMazo();
-        repartirCartas();
-        iniciarPozo();
-        setNumTurno(numJugadorQueEmpiezaRonda);
+        if (!isRondaEmpezada()) {
+            setRondaEmpezada(true);
+            //partida.notificarObservadores(NOTIFICACION_COMIENZO_RONDA);
+            crearMazo();
+            repartirCartas();
+            iniciarPozo();
+            setNumTurno(numJugadorQueEmpiezaRonda);
+        }
     }
 
     public void setTurnoJugador(int numJugador, boolean valor) throws RemoteException {

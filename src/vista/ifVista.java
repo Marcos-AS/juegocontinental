@@ -203,7 +203,7 @@ public interface ifVista {
     int getNumJugadorAcomodar();
     String getNombreVista();
     String getCartasString(ArrayList<String> cartas);
-    int menuBajar(ArrayList<String> cartasStr);
+    int menuBajar(ArrayList<String> cartasStr, String combo);
     int[] preguntarParaOrdenarCartas(ArrayList<String> cartas);
     int preguntarCartaParaAcomodar(ArrayList<String> cartas);
     void mostrarJuegos(ArrayList<ArrayList<String>> juegos);
@@ -214,8 +214,8 @@ public interface ifVista {
     int preguntarQueBajarParaPozo(ArrayList<String> cartas);
     void mostrarPuntosRonda(int[] puntos) throws RemoteException;
     void iniciar() throws RemoteException;
-    String preguntarInputRobar(ArrayList<String> cartas)
-            throws RemoteException;
     String preguntarInputRobarCastigo(ArrayList<String> cartas) throws RemoteException;
     void opcionesIniciales() throws RemoteException;
+    void cambioTurno();
+    void finTurno();
 }

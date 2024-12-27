@@ -2,64 +2,17 @@ package main;
 
 import controlador.Controlador;
 import rmimvc.src.RMIMVCException;
-//import rmimvc.src.Util;
 import rmimvc.src.cliente.Cliente;
-import vista.GUI;
 import vista.VentanaConsola;
 import vista.ifVista;
-
-//import javax.swing.*;
-import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
-//import java.util.ArrayList;
 import java.util.Random;
 
 
 public class AppClienteConsola {
 
     public static void main(String[] args) throws UnknownHostException {
-
-//        ArrayList<String> ips = Util.getIpDisponibles();
-//        String ip = (String) JOptionPane.showInputDialog(
-//                null,
-//                "Seleccione la IP en la que escucha peticiones el cliente",
-//                "IP del cliente",
-//                JOptionPane.QUESTION_MESSAGE,
-//                null,
-//                ips.toArray(),
-//                null
-//        );
-//        String port = (String) JOptionPane.showInputDialog(
-//                null,
-//                "Seleccione el puerto en el que escucha peticiones el cliente",
-//                "Puerto del cliente",
-//                JOptionPane.QUESTION_MESSAGE,
-//                null,
-//                null,
-//                9999
-//        );
-//        String ipServer = (String) JOptionPane.showInputDialog(
-//                null,
-//                "Seleccione la IP en la que se ejecuta el servidor",
-//                "IP del servidor",
-//                JOptionPane.QUESTION_MESSAGE,
-//                null,
-//                ips.toArray(),
-//                null
-//        );
-//        String portServer = (String) JOptionPane.showInputDialog(
-//                null,
-//                "Seleccione el puerto en el que escucha peticiones el servidor",
-//                "Puerto del servidor",
-//                JOptionPane.QUESTION_MESSAGE,
-//                null,
-//                null,
-//                8888
-//        );
-
-        //creacion de la vista y el controlador
         ifVista vista = new VentanaConsola();
         Controlador ctrl = new Controlador(vista);
         vista.setControlador(ctrl);

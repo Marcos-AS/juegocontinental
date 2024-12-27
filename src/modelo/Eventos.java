@@ -32,5 +32,9 @@ public enum Eventos implements Serializable {
     FALTAN_JUGADORES,
     INICIAR_PARTIDA,
     PARTIDA_AUN_NO_CREADA,
-    NUEVO_MENSAJE
+    NUEVO_MENSAJE,
+    NOTIFICACION_INICIO,
+    FIN_TURNO,
+    CONTINUA_TURNO,
+    BAJO_JUEGOS
 }
