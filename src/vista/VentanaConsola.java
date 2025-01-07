@@ -14,10 +14,30 @@ import java.util.ArrayList;
 public class VentanaConsola extends JFrame implements ifVista {
     private Controlador ctrl;
     private String nombreVista;
+    private final JFrame frame = new JFrame("Mano");
+    private JPanel panelMano;
+    private JPanel panelPozo;
+    private int manoSize;
+
 
     public void iniciar() throws RemoteException {
         nombreVista = preguntarInput("Indica tu nombre:");
+        setFrame();
         opcionesIniciales();
+    }
+
+    private void setFrame() {
+        frame.setSize(400,800);
+        panelPozo = new JPanel();
+        JLabel labelPozo = new JLabel("Pozo:\n");
+        panelPozo.add(labelPozo);
+        frame.add(panelPozo);
+
+        panelMano = new JPanel();
+        JLabel label = new JLabel("Mano:\n");
+        panelMano.add(label);
+        frame.add(panelMano);
+        frame.setVisible(true);
     }
 
     public void opcionesIniciales() throws RemoteException {
@@ -83,6 +103,27 @@ public class VentanaConsola extends JFrame implements ifVista {
     @Override
     public void finTurno() {
 
+    }
+
+    @Override
+    public void actualizarManoJugador(ArrayList<String> cartas) {
+        manoSize = cartas.size();
+        String cartasStr = String.join(", ", cartas);
+        JLabel labelCartas = new JLabel(cartasStr);
+        panelMano.removeAll();
+        panelMano.add(new JLabel("Mano:\n"));
+        panelMano.add(labelCartas);
+        panelMano.repaint();
+        panelMano.revalidate();
+    }
+
+    @Override
+    public void actualizarPozo(String cartaATirar) {
+        panelPozo.removeAll();
+        JLabel labelPozo = new JLabel("Pozo:\n"+cartaATirar);
+        panelPozo.add(labelPozo);
+        panelPozo.repaint();
+        panelPozo.revalidate();
     }
 
     public void mostrarInfo(String s) {
@@ -183,11 +224,10 @@ public class VentanaConsola extends JFrame implements ifVista {
         return null;
     }
 
-    public String preguntarInputMenu(String s, String cartas) {
-        String mostrar = cartas + "\n " + s;
+    public String preguntarInputMenu(String s) {
         String resp;
         do
-            resp = JOptionPane.showInputDialog(null, mostrar,nombreVista,JOptionPane.QUESTION_MESSAGE);
+            resp = JOptionPane.showInputDialog(null, s,nombreVista,JOptionPane.QUESTION_MESSAGE);
             //resp = mostrarInputDialog(mostrar, nombreVista, 600, 600);
         while (!validarEntrada(resp));
         return resp;
@@ -203,12 +243,10 @@ public class VentanaConsola extends JFrame implements ifVista {
         return resp;
     }
 
-    public String preguntarInputRobarCastigo(ArrayList<String> cartas)
-            throws RemoteException {
-        String mostrar = getCartasString(cartas) + "\n Pozo: " + ifVista.getPozoString(ctrl.getPozo()) + "\n " + ifVista.PREGUNTA_ROBAR_CASTIGO;
+    public String preguntarInputRobarCastigo() {
         String resp;
         do
-            resp = JOptionPane.showInputDialog(null, mostrar,nombreVista,JOptionPane.QUESTION_MESSAGE);
+            resp = JOptionPane.showInputDialog(null, ifVista.PREGUNTA_ROBAR_CASTIGO,nombreVista,JOptionPane.QUESTION_MESSAGE);
         while (!validarEntrada(resp));
         return resp;
     }
@@ -238,9 +276,9 @@ public class VentanaConsola extends JFrame implements ifVista {
         return s.toString();
     }
 
-    public int menuBajar(ArrayList<String> cartasStr, String combo) {
+    public int menuBajar(String combo) {
         int eleccion = 0;
-        String s = combo + "\n" + getCartasString(cartasStr) + "\n";
+        String s = combo + "\n";
         while (eleccion < 1 || eleccion > 8) {
             s += """
                 Elije una opción:
@@ -257,14 +295,13 @@ public class VentanaConsola extends JFrame implements ifVista {
         return eleccion;
     }
 
-    public int[] preguntarParaOrdenarCartas(ArrayList<String> cartas) {
+    public int[] preguntarParaOrdenarCartas() {
         int[] elecciones = new int[2];
         int cartaSeleccion = -1;
-        int cantCartas = cartas.size();
+        int cantCartas = manoSize;
         while (cartaSeleccion < 0 || cartaSeleccion > cantCartas - 1) {
             cartaSeleccion = Integer.parseInt(
-                    preguntarInputMenu("Elije el número de carta que quieres mover: ",
-                            getCartasString(cartas)));
+                    preguntarInputMenu("Elije el número de carta que quieres mover: "));
         }
         elecciones[0] = cartaSeleccion;
 
@@ -272,16 +309,16 @@ public class VentanaConsola extends JFrame implements ifVista {
         while (cartaSeleccion < 0 || cartaSeleccion > cantCartas - 1) {
             cartaSeleccion = Integer.parseInt(
                     preguntarInputMenu("Elije el número de destino al que quieres" +
-                            " mover la carta: ", getCartasString(cartas)));
+                            " mover la carta: "));
         }
         elecciones[1] = cartaSeleccion;
         return elecciones;
     }
 
-    public int preguntarCartaParaAcomodar(ArrayList<String> cartas) {
+    public int preguntarCartaParaAcomodar() {
         return Integer.parseInt(
                 preguntarInputMenu("Indica el número de carta que quieres acomodar" +
-                        " en un juego", getCartasString(cartas)));
+                        " en un juego"));
     }
 
     public void mostrarAcomodoCarta(String nombre) {
@@ -301,44 +338,39 @@ public class VentanaConsola extends JFrame implements ifVista {
         }
     }
 
-    public boolean preguntarSiQuiereSeguirBajandoJuegos(ArrayList<String> cartas) {
-        String resp = preguntarInputMenu("Deseas bajar un juego? (Si/No)"
-                , getCartasString(cartas));
+    public boolean preguntarSiQuiereSeguirBajandoJuegos() {
+        String resp = preguntarInputMenu("Deseas bajar un juego? (Si/No)");
         return ifVista.isRespAfirmativa(resp);
     }
 
-    public int[] preguntarQueBajarParaJuego(ArrayList<String> cartas) {
-        int[] cartasABajar = new int[preguntarCantParaBajar(cartas)];
+    public int[] preguntarQueBajarParaJuego() {
+        int[] cartasABajar = new int[preguntarCantParaBajar()];
         int iCarta;
         for (int i = 0; i < cartasABajar.length; i++) {
             do {
                 iCarta = Integer.parseInt(preguntarInputMenu("Carta " + (i + 1) +
-                        ":\nIndica el índice de la carta que quieres bajar: ",
-                        getCartasString(cartas)));
-            } while (iCarta < 0 || iCarta >= cartas.size());
+                        ":\nIndica el índice de la carta que quieres bajar: "));
+            } while (iCarta < 0 || iCarta >= manoSize);
             cartasABajar[i] = iCarta;
         }
         return cartasABajar;
     }
 
-    private int preguntarCantParaBajar(ArrayList<String> cartas) {
+    private int preguntarCantParaBajar() {
         int numCartas = 0;
         while (numCartas > 4 || numCartas < 3) {
             numCartas = Integer.parseInt(
-                    preguntarInputMenu("Cuantas cartas quieres bajar para el juego? (3 o 4)",
-                            getCartasString(cartas)));
+                    preguntarInputMenu("Cuantas cartas quieres bajar para el juego? (3 o 4)"));
         }
         return numCartas;
     }
 
-    public int preguntarQueBajarParaPozo(ArrayList<String> cartas) {
-        String cartasStr = getCartasString(cartas); //modificar
+    public int preguntarQueBajarParaPozo() {
         int eleccion = Integer.parseInt(
-                preguntarInputMenu("Indica el índice de carta para tirar al pozo: ",
-                        cartasStr));
-        while (eleccion < 0 || eleccion >= cartas.size()) {
+                preguntarInputMenu("Indica el índice de carta para tirar al pozo: "));
+        while (eleccion < 0 || eleccion >= manoSize) {
             eleccion = Integer.parseInt(preguntarInputMenu("Ese índice es inválido." +
-                    " Vuelve a ingresar un índice de carta", cartasStr));
+                    " Vuelve a ingresar un índice de carta"));
         }
         return eleccion;
     }

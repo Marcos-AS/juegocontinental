@@ -32,6 +32,7 @@ public class GUI implements ifVista {
     private JButton acomodarPropioBoton;
     private JButton acomodarAjenoBoton;
     private String resultadoRobar;
+    private int manoSize;
 
 
     public void iniciar() throws RemoteException {
@@ -45,7 +46,6 @@ public class GUI implements ifVista {
         frame.setSize(800,600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setIconImage(new ImageIcon(ifVista.asociarRuta("cartas_inicio")).getImage());
-        
 
         panelMap = new HashMap<>();
         cardLayout = new CardLayout();
@@ -108,20 +108,12 @@ public class GUI implements ifVista {
 
         botonJugar.addActionListener(e -> {
             try {
-                if (ctrl.isPartidaEnCurso()) {
-                    if (nombreVista == null) nombreVista = preguntarInput("Indica tu nombre: ");
-                    Eventos inicioPartida = ctrl.jugarPartidaRecienIniciada();
-                    if (inicioPartida == Eventos.PARTIDA_AUN_NO_CREADA) {
-                        mostrarInfo("La partida aun no ha sido creada." +
-                                " Seleccione la opción 'Crear partida' ");
-                    } else if (inicioPartida == Eventos.FALTAN_JUGADORES) {
-                        mostrarInfo("Esperando que ingresen más jugadores...");
-                    } else if (inicioPartida == Eventos.INICIAR_PARTIDA) {
-                        //ctrl.notificarComienzoPartida();
-                        ctrl.partida();
-                    }
-                } else {
-                    mostrarInfo("Primero tienes que crear una partida");
+                Eventos inicioPartida = ctrl.jugarPartidaRecienIniciada();
+                if (inicioPartida == Eventos.FALTAN_JUGADORES) {
+                    mostrarInfo("Esperando que ingresen más jugadores...");
+                } else if (inicioPartida == Eventos.INICIAR_PARTIDA) {
+                    //ctrl.notificarComienzoPartida();
+                    ctrl.partida();
                 }
             } catch (RemoteException ex) {
                 throw new RuntimeException(ex);
@@ -139,14 +131,7 @@ public class GUI implements ifVista {
         }
     }
 
-    private ImageIcon cargarImagenCarta(String nombreCarta) {
-        String ruta = "recursos/cartas/" + nombreCarta + ".png"; // Ruta de las imágenes
-        return new ImageIcon(ruta);
-    }
-
-    public void finTurno() {
-        cambioTurno();
-    }
+    //  PARTIDA funciones agregadas--------------------------------------------------------
 
     public void cambioTurno() {
         String nombre = ctrl.getTurnoDe();
@@ -157,6 +142,10 @@ public class GUI implements ifVista {
         }
     }
 
+    public void finTurno() {
+        cambioTurno();
+    }
+
     private void jugar() {
         JPanel panel = panelMap.get("Jugar");
         panel.removeAll();
@@ -165,38 +154,55 @@ public class GUI implements ifVista {
 
         crearBotones(panel);
 
-        try {
-            ctrl.empezarRonda();
-            panel.add(addCartasToPanel(ifVista.getPozoString(ctrl.getPozo()))
-                    ,BorderLayout.CENTER);
-            panel.add(addManoToPanel(ctrl.enviarManoJugador(ctrl.getNumJugador(nombreVista))),
-                    BorderLayout.SOUTH);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
+        panel.add(addCartasToPanel(), BorderLayout.CENTER);
+        panel.add(addManoToPanel(), BorderLayout.SOUTH);
+        ctrl.empezarRonda();
 
         cardLayout.show(cardPanel,"Jugar");
     }
 
     private void crearBotones(JPanel panel) {
         bajarJuegoBoton = new JButton("Bajar Juego");
-        bajarJuegoBoton.addActionListener(e -> manejarAccionBoton(ifVista.ELECCION_BAJARSE));
+        bajarJuegoBoton.addActionListener(e -> {
+            try {
+                ctrl.switchMenuBajar(ifVista.ELECCION_BAJARSE);
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         tirarAlPozoBoton = new JButton("Tirar al pozo");
-        tirarAlPozoBoton.addActionListener(e -> manejarAccionBoton(ifVista.ELECCION_TIRAR_AL_POZO));
+        tirarAlPozoBoton.addActionListener(e -> {
+            try {
+                ctrl.switchMenuBajar(ifVista.ELECCION_TIRAR_AL_POZO);
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         acomodarPropioBoton = new JButton("Acomodar en un juego propio");
-        acomodarPropioBoton.addActionListener(e -> manejarAccionBoton(ifVista.ELECCION_ACOMODAR_JUEGO_PROPIO));
+        acomodarPropioBoton.addActionListener(e -> {
+            try {
+                ctrl.switchMenuBajar(ifVista.ELECCION_ACOMODAR_JUEGO_PROPIO);
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         acomodarAjenoBoton = new JButton("Acomodar en un juego ajeno");
-        acomodarAjenoBoton.addActionListener(e -> manejarAccionBoton(ifVista.ELECCION_ACOMODAR_JUEGO_AJENO));
+        acomodarAjenoBoton.addActionListener(e -> {
+            try {
+                ctrl.switchMenuBajar(ifVista.ELECCION_ACOMODAR_JUEGO_AJENO);
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         JPanel panelBotones = new JPanel();
         bajarJuegoBoton.setEnabled(false);
         tirarAlPozoBoton.setEnabled(false);
         acomodarPropioBoton.setEnabled(false);
         acomodarAjenoBoton.setEnabled(false);
-
         panelBotones.add(bajarJuegoBoton);
         panelBotones.add(tirarAlPozoBoton);
         panelBotones.add(acomodarPropioBoton);
@@ -205,46 +211,32 @@ public class GUI implements ifVista {
         panel.add(panelBotones, BorderLayout.SOUTH);
     }
 
-    private void manejarAccionBoton(int eleccion) {
-        try {
-            int numJugador = ctrl.getNumJugador(nombreVista);
-            boolean bajoJuegos = ctrl.switchMenuBajar(eleccion);
-            boolean corte = ctrl.finRonda();
-            if (ctrl.isTurnoActual(numJugador)) {
-                jugar();
-            } else if (!corte) {
-                if (bajoJuegos) {
-                    ctrl.incPuedeBajar(numJugador);
-                }
-                ctrl.finTurno(numJugador);
-            }
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
+//    private void manejarAccionBoton(int eleccion) {
+//        try {
+//            int numJugador = ctrl.getNumJugador(nombreVista);
+//            boolean bajoJuegos = ctrl.switchMenuBajar(eleccion);
+//            boolean corte = ctrl.finRonda();
+//            if (ctrl.isTurnoActual(numJugador)) {
+//                jugar();
+//            } else if (!corte) {
+//                if (bajoJuegos) {
+//                    ctrl.incPuedeBajar(numJugador);
+//                }
+//                ctrl.finTurno(numJugador);
+//            }
+//        } catch (RemoteException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//    }
 
-    }
-
-    public JPanel addManoToPanel(ArrayList<String> cartas) {
-        // Panel para la mano del jugador
-        panelMano = new JPanel(new FlowLayout());
-        panelMano.setBorder(BorderFactory.createTitledBorder("Tu mano"));
-        panelMano.setBackground(Color.LIGHT_GRAY);
-        for (int i = 0; i < cartas.size(); i++) {
-            JButton botonCarta = getImageButtonCarta(cartas.get(i), i);
-            panelMano.add(botonCarta);
-        }
-        return panelMano;
-    }
-
-    public JPanel addCartasToPanel(String pozo) {
-
+    private JPanel addCartasToPanel() {
         // Panel principal para el mazo y el pozo
         JPanel panelCartas = new JPanel(new FlowLayout(FlowLayout.CENTER, 50, 20));
         panelCartas.setBackground(fondo); // Fondo verde estilo mesa
 
         // Carta del Pozo (última carta visible)
-        cartaPozo = getImageButton(pozo);
-        new JLabel(new ImageIcon(ifVista.asociarRuta(pozo)));
+        cartaPozo = new JButton();
         cartaPozo.setToolTipText("Robar carta del pozo");
 
         panelPozoConBorde = new JPanel();
@@ -266,6 +258,66 @@ public class GUI implements ifVista {
         return panelCartas;
     }
 
+    private class CartaListener extends MouseAdapter {
+        private String origen;
+
+        public CartaListener(String origen) {
+            this.origen = origen; // "pozo" o "mazo"
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            JButton boton = (JButton) e.getSource();
+            robarCarta(origen, boton);
+        }
+    }
+
+    private void robarCarta(String origen, JButton botonOrigen) {
+        botonOrigen.setEnabled(false);
+        if ("pozo".equals(origen)) {
+            cartaPozo.setVisible(false);
+            panelPozoConBorde.setBorder(BorderFactory.createLineBorder(Color.GREEN, 5));
+            resultadoRobar = "2"; // Si robó del pozo
+            ctrl.robarDelPozo();
+        } else if ("mazo".equals(origen)) {
+            resultadoRobar = "1"; // Si robó del mazo
+            ctrl.robarDelMazo();
+            try {
+                if (ctrl.getPozo() != null) {
+                    ctrl.ejecutarRoboCastigo();
+                }
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+        try {
+            menuBajar(ifVista.mostrarCombinacionRequerida(ctrl.getRonda()));
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public JButton getImageButton(String carta) {
+        ImageIcon imagen = new ImageIcon(ifVista.asociarRuta(carta));
+        Image imagenRedimensionada =
+                imagen.getImage().getScaledInstance(80, 120, Image.SCALE_SMOOTH);
+
+        // Crear el ImageIcon con la imagen redimensionada
+        ImageIcon iconRedimensionado = new ImageIcon(imagenRedimensionada);
+        return new JButton(iconRedimensionado);
+    }
+
+    public JPanel addManoToPanel() {
+        // Panel para la mano del jugador
+        panelMano = new JPanel(new FlowLayout());
+        panelMano.setBorder(BorderFactory.createTitledBorder("Tu mano"));
+        panelMano.setBackground(Color.LIGHT_GRAY);
+        for (int i = 0; i < 6; i++) {
+            panelMano.add(new JButton());
+        }
+        return panelMano;
+    }
 
     private void esperar(String nombre) {
         JPanel panel = panelMap.get("Esperar");
@@ -334,19 +386,55 @@ public class GUI implements ifVista {
         panel.add(scroll,BorderLayout.CENTER);
     }
 
+    //IMPLEMENTACIÓN DE IFVISTA ---------------------------------------------------
 
-    public int preguntarCartaParaAcomodar(ArrayList<String> cartas) {
-        //JPanel panel = crearPanelCartas(cartas);
-
-        JLabel mensaje = new JLabel("Selecciona la carta que quieres acomodar:");
-        mensaje.setHorizontalAlignment(SwingConstants.CENTER);
-
-        //int seleccion = JOptionPane.showOptionDialog(this,
-//                new Object[]{mensaje, panel}, "Acomodar carta",
-//                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, cartas.toArray(), null);
-
-  //      return seleccion;
+    @Override
+    public int menuBajar(String combo) {
+        activarBotonesBajar();
         return 0;
+    }
+
+    public void actualizarManoJugador(ArrayList<String> cartas) {
+        manoSize = cartas.size();
+        panelMano.removeAll();
+        for (String carta : cartas) {
+            //System.out.println("cargando desde " + carta);
+            panelMano.add(getImageButton(carta));
+        }
+        panelMano.revalidate();
+        panelMano.repaint();
+    }
+
+
+
+    private void activarBotonesBajar() {
+        bajarJuegoBoton.setEnabled(true);
+        tirarAlPozoBoton.setEnabled(true);
+        acomodarPropioBoton.setEnabled(true);
+        acomodarAjenoBoton.setEnabled(true);
+    }
+
+    public int preguntarQueBajarParaPozo() {
+        int eleccion = Integer.parseInt(
+                preguntarInputMenu("Indica el índice de carta para tirar al pozo: "));
+        while (eleccion < 0 || eleccion >= manoSize) {
+            eleccion = Integer.parseInt(preguntarInputMenu("Ese índice es inválido." +
+                    " Vuelve a ingresar un índice de carta"));
+        }
+        return eleccion;
+    }
+
+    public void actualizarPozo(String cartaATirar) {
+        panelPozoConBorde.removeAll();
+        panelPozoConBorde.add(getImageButton(cartaATirar));
+        panelPozoConBorde.revalidate();
+        panelPozoConBorde.repaint();
+    }
+
+    public int preguntarCartaParaAcomodar() {
+        return Integer.parseInt(
+                preguntarInputMenu("Indica el número de carta que quieres acomodar" +
+                        " en un juego"));
     }
 
     public void mostrarJuegos(ArrayList<ArrayList<String>> juegos) {
@@ -399,49 +487,26 @@ public class GUI implements ifVista {
         return true;
     }
 
-//    public int[] preguntarQueBajarParaJuego(ArrayList<String> cartas) {
-//        panelMesa.limpiarSeleccion();
-//        panelMesa.activarBotonFinalizarSeleccion();
-//        int[] iCartas = panelMesa.obtenerCartasSeleccionadas();
-//        System.out.println(Arrays.toString(iCartas));
-//        return iCartas;
-//    }
-
-    public int[] preguntarQueBajarParaJuego(ArrayList<String> cartas) {
-        int[] cartasABajar = new int[preguntarCantParaBajar(cartas)];
+    public int[] preguntarQueBajarParaJuego() {
+        int[] cartasABajar = new int[preguntarCantParaBajar()];
         int iCarta;
         for (int i = 0; i < cartasABajar.length; i++) {
             do {
                 iCarta = Integer.parseInt(preguntarInputMenu("Carta " + (i + 1) +
-                                ":\nIndica el índice de la carta que quieres bajar: ",
-                        getCartasString(cartas)));
-            } while (iCarta < 0 || iCarta >= cartas.size());
+                                ":\nIndica el índice de la carta que quieres bajar: "));
+            } while (iCarta < 0 || iCarta >= manoSize);
             cartasABajar[i] = iCarta;
         }
         return cartasABajar;
     }
 
-    private int preguntarCantParaBajar(ArrayList<String> cartas) {
+    private int preguntarCantParaBajar() {
         int numCartas = 0;
         while (numCartas > 4 || numCartas < 3) {
             numCartas = Integer.parseInt(
-                    preguntarInputMenu("Cuantas cartas quieres bajar para el juego? (3 o 4)",
-                            getCartasString(cartas)));
+                    preguntarInputMenu("Cuantas cartas quieres bajar para el juego? (3 o 4)"));
         }
         return numCartas;
-    }
-
-    public int preguntarQueBajarParaPozo(ArrayList<String> cartas) {
-        String cartasStr = getCartasString(cartas); //modificar
-        int eleccion = Integer.parseInt(
-                preguntarInputMenu("Indica el índice de carta para tirar al pozo: ",
-                        ""));
-        while (eleccion < 0 || eleccion >= cartas.size()) {
-            eleccion = Integer.parseInt(preguntarInputMenu("Ese índice es inválido." +
-                    " Vuelve a ingresar un índice de carta", cartasStr));
-        }
-        eliminarCartaDeMano(eleccion, cartas);
-        return eleccion;
     }
 
     public void mostrarPuntosRonda(int[] puntos) throws RemoteException {
@@ -490,26 +555,36 @@ public class GUI implements ifVista {
         return String.join(", ", cartas);
     }
 
-    @Override
-    public int menuBajar(ArrayList<String> cartasStr, String combo) {
-        actualizarManoJugador(cartasStr);
-        activarBotonesBajar();
-        return 0;
-    }
+
 
     @Override
-    public int[] preguntarParaOrdenarCartas(ArrayList<String> cartas) {
-        int[] indices = new int[cartas.size()];
-        for (int i = 0; i < cartas.size(); i++) {
-            indices[i] = i;
+    public int[] preguntarParaOrdenarCartas() {
+        int[] elecciones = new int[2];
+        int cartaSeleccion = -1;
+        int cantCartas = manoSize;
+        while (cartaSeleccion < 0 || cartaSeleccion > cantCartas - 1) {
+            cartaSeleccion = Integer.parseInt(
+                    preguntarInputMenu("Elije el número de carta que quieres mover: "));
         }
-        return indices;
+        elecciones[0] = cartaSeleccion;
+
+        cartaSeleccion = -1;
+        while (cartaSeleccion < 0 || cartaSeleccion > cantCartas - 1) {
+            cartaSeleccion = Integer.parseInt(
+                    preguntarInputMenu("Elije el número de destino al que quieres" +
+                            " mover la carta: "));
+        }
+        elecciones[1] = cartaSeleccion;
+        return elecciones;
     }
 
     @Override
-    public String preguntarInputRobarCastigo(ArrayList<String> cartas) throws RemoteException {
-        return preguntarInput("Selecciona una carta para robar como castigo:");
-    }
+    public String preguntarInputRobarCastigo() {
+        String resp;
+        do
+            resp = JOptionPane.showInputDialog(null, ifVista.PREGUNTA_ROBAR_CASTIGO,nombreVista,JOptionPane.QUESTION_MESSAGE);
+        while (!validarEntrada(resp));
+        return resp;    }
 
     @Override
     public void mostrarAcomodoCarta(String nombre) {
@@ -535,130 +610,13 @@ public class GUI implements ifVista {
 
 
     @Override
-    public String preguntarInputMenu(String s, String cartas) {
+    public String preguntarInputMenu(String s) {
         return preguntarInput(s);
     }
 
     @Override
-    public boolean preguntarSiQuiereSeguirBajandoJuegos(ArrayList<String> cartas) {
-        String resp = preguntarInputMenu("Deseas bajar un juego? (Si/No)"
-                , "");
+    public boolean preguntarSiQuiereSeguirBajandoJuegos() {
+        String resp = preguntarInputMenu("Deseas bajar un juego? (Si/No)");
         return ifVista.isRespAfirmativa(resp);
     }
-
-    public JButton getImageButton(String carta) {
-        ImageIcon imagen = new ImageIcon(ifVista.asociarRuta(carta));
-        Image imagenRedimensionada =
-                imagen.getImage().getScaledInstance(80, 120, Image.SCALE_SMOOTH);
-
-        // Crear el ImageIcon con la imagen redimensionada
-        ImageIcon iconRedimensionado = new ImageIcon(imagenRedimensionada);
-        return new JButton(iconRedimensionado);
-    }
-
-    public JButton getImageButtonCarta(String carta, int indice) {
-        ImageIcon imagen = new ImageIcon(ifVista.asociarRuta(carta));
-        Image imagenRedimensionada =
-                imagen.getImage().getScaledInstance(80, 120, Image.SCALE_SMOOTH);
-
-        // Crear el ImageIcon con la imagen redimensionada
-        ImageIcon iconRedimensionado = new ImageIcon(imagenRedimensionada);
-        JButton boton = new JButton(iconRedimensionado);
-        boton.setToolTipText("Selecciona esta carta");
-        boton.addActionListener(e -> {
-            System.out.println("Se hizo clic en la carta con índice: " + indice);
-        }); //evento
-        return boton;
-    }
-
-    public void eliminarCartaDeMano(int index, ArrayList<String> cartas) {
-        String cartaATirar = cartas.remove(index);
-
-        // Limpiar el panel de la mano
-        panelMano.removeAll();
-
-        // Agregar los botones de las cartas restantes
-        for (int i = 0; i < cartas.size(); i++) {
-            JButton botonCarta = getImageButtonCarta(cartas.get(i), i);
-            panelMano.add(botonCarta);
-        }
-//        revalidate();
-//        repaint();
-
-        actualizarCartaPozo(cartaATirar);
-        panelPozoConBorde.revalidate();
-        panelPozoConBorde.repaint();
-    }
-
-    public void actualizarCartaPozo(String carta) {
-        cartaPozo = getImageButton(carta);
-        panelPozoConBorde.removeAll();
-        panelPozoConBorde.add(cartaPozo);
-    }
-
-    public void actualizarManoJugador(ArrayList<String> cartas) {
-        panelMano.removeAll();  // Limpiar la mano actual
-
-        // Agregar las nuevas cartas
-        for (String carta : cartas) {
-            System.out.println("cargando desde " + carta);
-            panelMano.add(getImageButton(carta));
-        }
-
-        // Revalidate y repaint para actualizar la interfaz
-        panelMano.revalidate();
-        panelMano.repaint();
-    }
-
-    public void activarBotonesBajar() {
-        bajarJuegoBoton.setEnabled(true);
-        tirarAlPozoBoton.setEnabled(true);
-        acomodarPropioBoton.setEnabled(true);
-        acomodarAjenoBoton.setEnabled(true);
-    }
-
-    // Listener para manejar clics en las cartas
-    private class CartaListener extends MouseAdapter {
-        private String origen;
-
-        public CartaListener(String origen) {
-            this.origen = origen; // "pozo" o "mazo"
-        }
-
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            JButton boton = (JButton) e.getSource();
-            robarCarta(origen, boton);
-        }
-    }
-
-    // Método para manejar el robo de cartas
-    private void robarCarta(String origen, JButton botonOrigen) {
-        botonOrigen.setEnabled(false);
-        if ("pozo".equals(origen)) {
-            cartaPozo.setVisible(false);
-            panelPozoConBorde.setBorder(BorderFactory.createLineBorder(Color.GREEN, 5));
-            resultadoRobar = "2"; // Si robó del pozo
-            ctrl.robarDelPozo();
-        } else if ("mazo".equals(origen)) {
-            resultadoRobar = "1"; // Si robó del mazo
-            ctrl.robarDelMazo();
-            try {
-                if (ctrl.getPozo() != null) {
-                    ctrl.ejecutarRoboCastigo();
-                }
-            } catch (RemoteException e) {
-                throw new RuntimeException(e);
-            }
-
-        }
-        try {
-            int numJugador = ctrl.getNumJugador(nombreVista);
-            menuBajar(ctrl.enviarManoJugador(numJugador),
-                    ifVista.mostrarCombinacionRequerida(ctrl.getRonda()));
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 }

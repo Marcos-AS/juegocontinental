@@ -121,6 +121,12 @@ public class Controlador implements IControladorRemoto {
 //                if (!vista.getNombreVista().equals(nombre)) {
 //                    vista.mostrarInfo(nombre + " bajó un juego.");
 //                }
+            } else if (obj[0] == NOTIFICACION_ACTUALIZAR_MANO){
+                vista.actualizarManoJugador(enviarManoJugador((ArrayList<Carta>) obj[1]));
+            } else if (obj[0] == NOTIFICACION_ACTUALIZAR_POZO){
+                vista.actualizarPozo(ifVista.cartaToString((ifCarta) obj[1]));
+            } else if (obj[0] == NOTIFICACION_INICIO_POZO){
+                vista.actualizarPozo(ifVista.cartaToString((ifCarta) obj[1]));
             } else {
                 //System.out.println("fin turno");
                 //String nombreJ = partida.getNombreJugador((int) obj[1]);
@@ -131,9 +137,21 @@ public class Controlador implements IControladorRemoto {
         }
     }
 
+    public void partida() throws RemoteException {
+        partida.desarrolloPartida();
+    }
+
     public String getTurnoDe() {
         try {
             return partida.getNombreJugador(partida.getNumTurno());
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void empezarRonda() {
+        try {
+            partida.empezarRonda();
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -159,29 +177,12 @@ public class Controlador implements IControladorRemoto {
         return nombresJugadores;
     }
 
-    public void partida() throws RemoteException {
-        partida.desarrolloPartida();
-//        if (!isPartidaEnCurso())
-//            vista.opcionesIniciales();
-    }
-
     public int getRonda() throws RemoteException {
         return partida.getNumRonda();
     }
 
     public ifCarta getPozo() throws RemoteException {
-        ifCarta c = null;
-        if (!partida.getPozo().isEmpty())
-            c = partida.getPrimeraDelPozo();
-        return c;
-    }
-
-    public void empezarRonda() {
-        try {
-            partida.empezarRonda();
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
+        return partida.getPozo();
     }
 
     public void ejecutarRoboCastigo() {
@@ -200,12 +201,13 @@ public class Controlador implements IControladorRemoto {
         int numJugador = partida.getNumTurno();
         boolean bajoJuegos = false;
         if (partida.isTurnoActual(numJugador)) {
+            partida.actualizarMano(numJugador);
             switch (eleccion) {
                 case ifVista.ELECCION_BAJARSE:
                     bajoJuegos = bajarse(numJugador);
                     break;
                 case ifVista.ELECCION_TIRAR_AL_POZO:
-                    tirarAlPozoTurno(numJugador, enviarManoJugador(numJugador));
+                    tirarAlPozoTurno();
                     break;
                 case ifVista.ELECCION_ORDENAR_CARTAS:
                     ordenarCartas(numJugador);
@@ -230,31 +232,12 @@ public class Controlador implements IControladorRemoto {
         return bajoJuegos;
     }
 
-    public boolean finRonda() throws RemoteException {
-        int numJugador = partida.getNumTurno();
-        boolean finRonda = false;
-        if (partida.getMano(idJugador, numJugador).isEmpty()) {
-            finRonda = true;
-            partida.finRonda(numJugador);
-            finPartida();
-        }
-        return finRonda;
-    }
-
-    public void finPartida() throws RemoteException {
-        if(getRonda()>=partida.getTotalRondas()) {
-            partida.finPartida();
-            partidasJugadas++;
-        }
-    }
-
-    public void finTurno(int numJugador) throws RemoteException {
-        partida.finTurno();
-    }
-
-    public void incPuedeBajar(int numJugador) throws RemoteException {
-        partida.incPuedeBajar(numJugador);
-    }
+//    public void finPartida() throws RemoteException {
+//        if(getRonda()>=partida.getTotalRondas()) {
+//            partida.finPartida();
+//            partidasJugadas++; //ver que hacer con esto
+//        }
+//    }
 
     public boolean isTurnoActual(int numJugador) throws RemoteException {
         return partida.isTurnoActual(numJugador);
@@ -262,19 +245,10 @@ public class Controlador implements IControladorRemoto {
 
     public void desarrolloTurno() throws RemoteException {
         int numJugador = partida.getNumTurno();
-        //vista.mostrarCartas(enviarManoJugador(numJugador));
-        boolean bajoJuegos = false;
-        boolean corte = false;
+        partida.actualizarMano(numJugador);
         while(partida.isTurnoActual(numJugador)) {
-            int eleccion = vista.menuBajar(enviarManoJugador(numJugador),ifVista.mostrarCombinacionRequerida(getRonda()));
-            bajoJuegos = switchMenuBajar(eleccion);
-            corte = finRonda();
-        }
-        if (!corte) {
-            if (bajoJuegos) {
-               incPuedeBajar(numJugador);
-            }
-            finTurno(numJugador);
+            int eleccion = vista.menuBajar(ifVista.mostrarCombinacionRequerida(getRonda()));
+            switchMenuBajar(eleccion);
         }
     }
 
@@ -308,8 +282,7 @@ public class Controlador implements IControladorRemoto {
     }
 
     public void ordenarCartas(int numJugador) throws RemoteException {
-        ArrayList<String> cartas = enviarManoJugador(numJugador);
-        int[] cartasOrdenacion = vista.preguntarParaOrdenarCartas(cartas);
+        int[] cartasOrdenacion = vista.preguntarParaOrdenarCartas();
         partida.moverCartaEnMano(numJugador, cartasOrdenacion[0], cartasOrdenacion[1]);
     }
 
@@ -320,7 +293,7 @@ public class Controlador implements IControladorRemoto {
     public void acomodarPropio(int numJugador) throws RemoteException {
         ArrayList<ArrayList<String>> juegos = enviarJuegosJugador(numJugador);
         if (!juegos.isEmpty()) {
-            int cartaAcomodar = vista.preguntarCartaParaAcomodar(enviarManoJugador(numJugador));
+            int cartaAcomodar = vista.preguntarCartaParaAcomodar();
             vista.mostrarJuegos(juegos);
             acomodarEnJuegoPropio(cartaAcomodar,numJugador,
                     Integer.parseInt(vista
@@ -334,7 +307,7 @@ public class Controlador implements IControladorRemoto {
         if (hayJuegosEnMesa(numJugador)) {
             mostrarJuegosEnMesa(numJugador+1);
             int iCartaAcomodar =
-                    vista.preguntarCartaParaAcomodar(enviarManoJugador(numJugador));
+                    vista.preguntarCartaParaAcomodar();
             int numJugadorAcomodar = vista.getNumJugadorAcomodar();
             vista.mostrarJuegos(enviarJuegosJugador(numJugadorAcomodar));
             acomodarEnJuegoAjeno(iCartaAcomodar,
@@ -346,16 +319,9 @@ public class Controlador implements IControladorRemoto {
         }
     }
 
-    public ArrayList<String> enviarManoJugador(int numJugador) throws RemoteException {
-        ArrayList<String> manoString = new ArrayList<>();
-        try {
-            ArrayList<ifCarta> cs = partida.getMano(idJugador,numJugador);
-            if (cs!= null)
-                manoString = ifVista.cartasToStringArray(cs);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return manoString;
+    public ArrayList<String> enviarManoJugador(ArrayList<Carta> mano) throws RemoteException {
+        ArrayList<ifCarta> cs = new ArrayList<>(mano);
+        return ifVista.cartasToStringArray(cs);
     }
 
     public int getNumJugador(String nombreJugador) {
@@ -427,15 +393,13 @@ public class Controlador implements IControladorRemoto {
     private boolean bajarseYComprobarCortar(int numJugador) throws RemoteException {
         boolean puedeCortar = false;
         boolean bajoJuegos = false;
-        ArrayList<String> cartas = enviarManoJugador(numJugador);
-        while (!puedeCortar && vista.preguntarSiQuiereSeguirBajandoJuegos(cartas)) {
-            if (bajarse(numJugador, vista.preguntarQueBajarParaJuego(cartas))) {
+        while (!puedeCortar && vista.preguntarSiQuiereSeguirBajandoJuegos()) {
+            if (bajarse(numJugador, vista.preguntarQueBajarParaJuego())) {
                 bajoJuegos = true;
                 Object[] o = new Object[2];
                 o[0] = NOTIFICACION_BAJO_JUEGO;
                 o[1] = numJugador;
                 partida.notificarObservadores(o);
-                cartas = enviarManoJugador(numJugador);
                 puedeCortar = Comprobar.comprobarPosibleCorte(getRonda(),
                         partida.getTriosBajados(numJugador),
                         partida.getEscalerasBajadas(numJugador));
@@ -463,9 +427,11 @@ public class Controlador implements IControladorRemoto {
         return bajo;
     }
 
-    public void tirarAlPozoTurno(int numJugador, ArrayList<String> mano)
+    public void tirarAlPozoTurno()
             throws RemoteException {
-        int cartaATirar = vista.preguntarQueBajarParaPozo(mano);
+        int numJugador = partida.getNumTurno();
+        //partida.actualizarMano(numJugador);
+        int cartaATirar = vista.preguntarQueBajarParaPozo();
         partida.tirarAlPozo(numJugador, cartaATirar);
     }
 
@@ -474,7 +440,7 @@ public class Controlador implements IControladorRemoto {
             int numJugadorRobo = partida.getNumJugadorRoboCastigo();
             //String nombre = partida.getNombreJugador(numJugadorRobo);
             //vista.mostrarInfo(nombre + " puede robar con castigo.");
-            String eleccion = vista.preguntarInputRobarCastigo(enviarManoJugador(numJugadorRobo));
+            String eleccion = vista.preguntarInputRobarCastigo();
             if (Integer.parseInt(eleccion) == ifVista.ELECCION_ROBAR_CON_CASTIGO
                     || ifVista.isRespAfirmativa(eleccion)) {
                 partida.robarConCastigo();

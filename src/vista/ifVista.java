@@ -176,7 +176,6 @@ public interface ifVista {
     }
 
     static String asociarRuta(String carta) {
-        //return "\\src\\vista\\cartas\\" + carta + ".png";
         return "src/vista/cartas/" + carta + ".png";
     }
 
@@ -203,19 +202,21 @@ public interface ifVista {
     int getNumJugadorAcomodar();
     String getNombreVista();
     String getCartasString(ArrayList<String> cartas);
-    int menuBajar(ArrayList<String> cartasStr, String combo);
-    int[] preguntarParaOrdenarCartas(ArrayList<String> cartas);
-    int preguntarCartaParaAcomodar(ArrayList<String> cartas);
+    int menuBajar(String combo);
+    int[] preguntarParaOrdenarCartas();
+    int preguntarCartaParaAcomodar();
     void mostrarJuegos(ArrayList<ArrayList<String>> juegos);
     String preguntarInput(String s);
-    String preguntarInputMenu(String s, String cartas);
-    boolean preguntarSiQuiereSeguirBajandoJuegos(ArrayList<String> cartas);
-    int[] preguntarQueBajarParaJuego(ArrayList<String> cartas);
-    int preguntarQueBajarParaPozo(ArrayList<String> cartas);
+    String preguntarInputMenu(String s);
+    boolean preguntarSiQuiereSeguirBajandoJuegos();
+    int[] preguntarQueBajarParaJuego();
+    int preguntarQueBajarParaPozo();
     void mostrarPuntosRonda(int[] puntos) throws RemoteException;
     void iniciar() throws RemoteException;
-    String preguntarInputRobarCastigo(ArrayList<String> cartas) throws RemoteException;
+    String preguntarInputRobarCastigo() throws RemoteException;
     void opcionesIniciales() throws RemoteException;
     void cambioTurno();
     void finTurno();
+    void actualizarManoJugador(ArrayList<String> cartas);
+    void actualizarPozo(String cartaATirar);
 }
