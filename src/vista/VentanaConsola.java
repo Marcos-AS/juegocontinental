@@ -117,13 +117,13 @@ public class VentanaConsola extends JFrame implements ifVista {
 
     @Override
     public void actualizarPozo(String cartaATirar) {
-//        panelPozo.removeAll();
         JLabel labelPozo;
         if (cartaATirar.isEmpty()) {
             labelPozo = new JLabel("Pozo vacío");
         } else {
             labelPozo = new JLabel("<html>Pozo:<br>"+cartaATirar+"</html>");
         }
+        panelPozo.removeAll();
         panelPozo.add(labelPozo);
         panelPozo.repaint();
         panelPozo.revalidate();

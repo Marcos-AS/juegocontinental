@@ -124,13 +124,13 @@ public class Controlador implements IControladorRemoto {
 //                    vista.mostrarInfo(nombre + " ha iniciado una partida nueva");
 //                    break;
 //                }
-//                case NOTIFICACION_BAJO_JUEGO: {
-    //                String nombre = partida.getNombreJugador((int)obj[1]);
-    //                if (!vista.getNombreVista().equals(nombre)) {
-    //                    vista.mostrarInfo(nombre + " bajó un juego.");
-    //                }
-//                    break;
-//                }
+                case NOTIFICACION_BAJO_JUEGO: {
+                    String nombre = partida.getNombreJugador(partida.getNumTurno());
+                    if (!vista.getNombreVista().equals(nombre)) {
+                        vista.mostrarInfo(nombre + " bajó un juego.");
+                    }
+                    break;
+                }
             }
         }
     }
@@ -202,7 +202,7 @@ public class Controlador implements IControladorRemoto {
             partida.actualizarMano(numJugador);
             switch (eleccion) {
                 case ifVista.ELECCION_BAJARSE:
-                    bajoJuegos = bajarse(numJugador);
+                    bajoJuegos = bajarJuegos(numJugador);
                     break;
                 case ifVista.ELECCION_TIRAR_AL_POZO:
                     tirarAlPozoTurno();
@@ -272,7 +272,7 @@ public class Controlador implements IControladorRemoto {
         }
     }
 
-    public boolean bajarse(int numJugador) throws RemoteException {
+    public boolean bajarJuegos(int numJugador) throws RemoteException {
         int cantVecesQueBajo = partida.getPuedeBajar(numJugador);
         if (cantVecesQueBajo == 0) {
             vista.mostrarInfo(ifVista.ADVERTENCIA_BAJARSE);
@@ -392,10 +392,7 @@ public class Controlador implements IControladorRemoto {
         while (!puedeCortar && vista.preguntarSiQuiereSeguirBajandoJuegos()) {
             if (bajarse(numJugador, vista.preguntarQueBajarParaJuego())) {
                 bajoJuegos = true;
-                Object[] o = new Object[2];
-                o[0] = NOTIFICACION_BAJO_JUEGO;
-                o[1] = numJugador;
-                partida.notificarObservadores(o);
+                partida.notificarObservadores(NOTIFICACION_BAJO_JUEGO);
                 puedeCortar = Comprobar.comprobarPosibleCorte(getRonda(),
                         partida.getTriosBajados(numJugador),
                         partida.getEscalerasBajadas(numJugador));

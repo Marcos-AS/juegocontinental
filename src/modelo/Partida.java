@@ -244,7 +244,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         jugadores.get(numTurno).getMano().add(pozo);
         pozo = null;
         actualizarMano(numTurno);
-        notificarObservador(numJugadorQueEmpiezaRonda,NOTIFICACION_ACTUALIZAR_POZO);
+        notificarObservadores(NOTIFICACION_ACTUALIZAR_POZO);
     }
 
     public void roboCastigo() throws RemoteException {
@@ -300,7 +300,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     public void tirarAlPozo(int numJugador, int cartaATirar) throws RemoteException {
         pozo = (jugadores.get(numJugador).getMano().remove(cartaATirar));
         jugadores.get(numJugador).setTurnoActual(false);
-        notificarObservador(numJugador, NOTIFICACION_ACTUALIZAR_POZO);
+        notificarObservadores(NOTIFICACION_ACTUALIZAR_POZO);
         isFinRonda();
     }
 
@@ -373,8 +373,10 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         PartidaJugadores.moverCartaEnMano(jugadores, numJugador, i, i1);
     }
 
-    public void bajarJuego(int numJugador, int[] cartasABajar, int tipoJuego) throws RemoteException {
+    public void bajarJuego(int numJugador, int[] cartasABajar, int tipoJuego)
+            throws RemoteException {
         PartidaJugadores.bajarJuego(jugadores, numJugador, cartasABajar, tipoJuego);
+        actualizarMano(numJugador);
     }
 
     public void setPuedeBajar(int numJugador, int i) throws RemoteException {
