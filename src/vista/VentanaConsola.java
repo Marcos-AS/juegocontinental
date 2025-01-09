@@ -17,6 +17,7 @@ public class VentanaConsola extends JFrame implements ifVista {
     private final JFrame frame = new JFrame("Mano");
     private JPanel panelMano;
     private JPanel panelPozo;
+    private JPanel panelInfoRonda;
     private int manoSize;
 
 
@@ -27,15 +28,13 @@ public class VentanaConsola extends JFrame implements ifVista {
     }
 
     private void setFrame() {
+        frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
         frame.setSize(400,800);
         panelPozo = new JPanel();
-        JLabel labelPozo = new JLabel("Pozo:\n");
-        panelPozo.add(labelPozo);
-        frame.add(panelPozo);
-
         panelMano = new JPanel();
-        JLabel label = new JLabel("Mano:\n");
-        panelMano.add(label);
+        panelInfoRonda = new JPanel();
+        frame.add(panelInfoRonda);
+        frame.add(panelPozo);
         frame.add(panelMano);
         frame.setVisible(true);
     }
@@ -108,10 +107,8 @@ public class VentanaConsola extends JFrame implements ifVista {
     @Override
     public void actualizarManoJugador(ArrayList<String> cartas) {
         manoSize = cartas.size();
-        String cartasStr = String.join(", ", cartas);
-        JLabel labelCartas = new JLabel(cartasStr);
-        panelMano.removeAll();
-        panelMano.add(new JLabel("Mano:\n"));
+        String cartasStr = String.join("<br>", cartas);
+        JLabel labelCartas = new JLabel("<html>Mano:<br>" + cartasStr + "</html>");
         panelMano.add(labelCartas);
         panelMano.repaint();
         panelMano.revalidate();
@@ -119,11 +116,23 @@ public class VentanaConsola extends JFrame implements ifVista {
 
     @Override
     public void actualizarPozo(String cartaATirar) {
-        panelPozo.removeAll();
-        JLabel labelPozo = new JLabel("Pozo:\n"+cartaATirar);
+//        panelPozo.removeAll();
+        JLabel labelPozo;
+        if (cartaATirar.isEmpty()) {
+            labelPozo = new JLabel("Pozo vacío");
+        } else {
+            labelPozo = new JLabel("<html>Pozo:<br>"+cartaATirar+"</html>");
+        }
         panelPozo.add(labelPozo);
         panelPozo.repaint();
         panelPozo.revalidate();
+    }
+
+    public void comienzoTurno(int ronda) {
+        JLabel label = new JLabel(ifVista.mostrarCombinacionRequerida(ronda));
+        panelInfoRonda.add(label);
+        panelInfoRonda.revalidate();
+        panelInfoRonda.repaint();
     }
 
     public void mostrarInfo(String s) {
@@ -174,17 +183,6 @@ public class VentanaConsola extends JFrame implements ifVista {
                         " juegos bajados quieres acomodar: "));
     }
 
-    public void comienzoTurno(String nomJ, int numJ) throws RemoteException {
-        mostrarInfo(ifVista.mostrarCombinacionRequerida(ctrl.getRonda()));
-        if (!nomJ.equals(nombreVista)) {
-            mostrarInfo("--------------------------\nEs el turno de "
-                    + nomJ);
-        } else {
-            mostrarInfo("************\nEs tu turno.");
-            ctrl.setTurno(numJ, true);
-        }
-    }
-
     public void mostrarCartas(ArrayList<String> cartas) {
         JOptionPane.showMessageDialog(null, getCartasString(cartas),
                 "Jugador: " + nombreVista, JOptionPane.INFORMATION_MESSAGE);
@@ -233,12 +231,10 @@ public class VentanaConsola extends JFrame implements ifVista {
         return resp;
     }
 
-    private String preguntarInputRobar(ArrayList<String> cartas, String combo)
-            throws RemoteException {
-        String mostrar = combo + "\n" + getCartasString(cartas) + "\n Pozo: " + ifVista.getPozoString(ctrl.getPozo()) + "\n " + ifVista.MENU_ROBAR;
+    public String preguntarInputRobar() {
         String resp;
         do
-            resp = JOptionPane.showInputDialog(null, mostrar,nombreVista,JOptionPane.QUESTION_MESSAGE);
+            resp = JOptionPane.showInputDialog(null, ifVista.MENU_ROBAR,nombreVista,JOptionPane.QUESTION_MESSAGE);
         while (!validarEntrada(resp));
         return resp;
     }

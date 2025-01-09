@@ -195,7 +195,7 @@ public interface ifVista {
     }
 
     void mostrarAcomodoCarta(String nombre);
-    void comienzoTurno(String nomJ, int numJ) throws RemoteException;
+    void comienzoTurno(int ronda) throws RemoteException;
     void mostrarInfo(String s);
     void mostrarCartas(ArrayList<String> cartas);
     void mostrarComienzaPartida(ArrayList<String> jugadores);
@@ -214,6 +214,7 @@ public interface ifVista {
     void mostrarPuntosRonda(int[] puntos) throws RemoteException;
     void iniciar() throws RemoteException;
     String preguntarInputRobarCastigo() throws RemoteException;
+    String preguntarInputRobar();
     void opcionesIniciales() throws RemoteException;
     void cambioTurno();
     void finTurno();

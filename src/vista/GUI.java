@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class GUI implements ifVista {
     private Controlador ctrl;
@@ -26,12 +27,13 @@ public class GUI implements ifVista {
     private JButton cartaMazo;
     private JPanel panelMano;
     private JPanel panelPozoConBorde;
+    private JPanel panelInfoRonda;
     private CountDownLatch latch;
     private JButton bajarJuegoBoton;
     private JButton tirarAlPozoBoton;
     private JButton acomodarPropioBoton;
     private JButton acomodarAjenoBoton;
-    private String resultadoRobar;
+    private String resultadoRobar = "0";
     private int manoSize;
 
 
@@ -156,7 +158,6 @@ public class GUI implements ifVista {
 
         panel.add(addCartasToPanel(), BorderLayout.CENTER);
         panel.add(addManoToPanel(), BorderLayout.SOUTH);
-        ctrl.empezarRonda();
 
         cardLayout.show(cardPanel,"Jugar");
     }
@@ -269,6 +270,9 @@ public class GUI implements ifVista {
         public void mouseClicked(MouseEvent e) {
             JButton boton = (JButton) e.getSource();
             robarCarta(origen, boton);
+            if (latch!=null) {
+                latch.countDown();
+            }
         }
     }
 
@@ -278,23 +282,8 @@ public class GUI implements ifVista {
             cartaPozo.setVisible(false);
             panelPozoConBorde.setBorder(BorderFactory.createLineBorder(Color.GREEN, 5));
             resultadoRobar = "2"; // Si robó del pozo
-            ctrl.robarDelPozo();
         } else if ("mazo".equals(origen)) {
             resultadoRobar = "1"; // Si robó del mazo
-            ctrl.robarDelMazo();
-            try {
-                if (ctrl.getPozo() != null) {
-                    ctrl.ejecutarRoboCastigo();
-                }
-            } catch (RemoteException e) {
-                throw new RuntimeException(e);
-            }
-
-        }
-        try {
-            menuBajar(ifVista.mostrarCombinacionRequerida(ctrl.getRonda()));
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -387,6 +376,23 @@ public class GUI implements ifVista {
     }
 
     //IMPLEMENTACIÓN DE IFVISTA ---------------------------------------------------
+
+    @Override
+    public String preguntarInputRobar() {
+        int tiempoLimite = 15;
+        latch = new CountDownLatch(1);
+        try {
+            boolean clicDetectado = latch.await(tiempoLimite, TimeUnit.SECONDS);
+            if (clicDetectado) {
+                return resultadoRobar;
+            } else {
+                return "1";
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return "1";
+        }
+    }
 
     @Override
     public int menuBajar(String combo) {
@@ -592,8 +598,7 @@ public class GUI implements ifVista {
     }
 
     @Override
-    public void comienzoTurno(String nomJ, int numJ) throws RemoteException {
-        JOptionPane.showMessageDialog(frame, "Es el turno de " + nomJ + " (Jugador " + numJ + ")", "Comienzo de Turno", JOptionPane.INFORMATION_MESSAGE);
+    public void comienzoTurno(int ronda) throws RemoteException {
     }
 
     @Override

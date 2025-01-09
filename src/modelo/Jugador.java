@@ -21,11 +21,9 @@ public class Jugador extends ObservableRemoto implements Serializable, ifJugador
     public int escalerasBajadas;
     public int puntosPartida = 0;
     public boolean ganador = false;
-    private UUID idJugador;
 
     public Jugador(String nombre) throws RemoteException {
         this.nombre = nombre;
-        idJugador = UUID.randomUUID();
     }
 
     protected void resetMano() {
@@ -207,9 +205,5 @@ public class Jugador extends ObservableRemoto implements Serializable, ifJugador
 
     public void sumarPartida(Partida p) throws RemoteException {
         partidas.add(p);
-    }
-
-    protected UUID getIdJugador() {
-        return idJugador;
     }
 }
