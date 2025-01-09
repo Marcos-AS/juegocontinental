@@ -109,6 +109,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         manoSize = cartas.size();
         String cartasStr = String.join("<br>", cartas);
         JLabel labelCartas = new JLabel("<html>Mano:<br>" + cartasStr + "</html>");
+        panelMano.removeAll();
         panelMano.add(labelCartas);
         panelMano.repaint();
         panelMano.revalidate();

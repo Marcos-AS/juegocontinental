@@ -288,8 +288,8 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
             repartirCartas();
             iniciarPozo();
             setNumTurno(numJugadorQueEmpiezaRonda);
-            actualizarMano(numJugadorQueEmpiezaRonda);
-            notificarObservador(numJugadorQueEmpiezaRonda,NOTIFICACION_ACTUALIZAR_POZO);
+            notificarObservadores(NOTIFICACION_ACTUALIZAR_MANO);
+            notificarObservadores(NOTIFICACION_ACTUALIZAR_POZO);
         }
     }
 
