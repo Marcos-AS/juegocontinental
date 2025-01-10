@@ -42,20 +42,16 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         return Partida.instancia;
     }
 
-    public void desarrolloPartida() throws RemoteException {
-        notificarObservadores(NOTIFICACION_CAMBIO_TURNO);
-
+    public void inicioPartida() throws RemoteException {
         if (!isRondaEmpezada())
             empezarRonda();
+        notificarObservadores(NOTIFICACION_CAMBIO_TURNO);
+    }
 
-        notificarObservador(numTurno, NOTIFICACION_ROBO);
-        if (isRoboDelMazo(numTurno) && !isPozoEmpty()) {
-            roboCastigo();
-        }
-        notificarObservador(numTurno, NOTIFICACION_DESARROLLO_TURNO);
+    public void finTurno() throws RemoteException {
         if (!isFinRonda()) {
             incTurno();
-            notificarObservador(numTurno,NOTIFICACION_FIN_TURNO);
+            notificarObservador(numTurno,NOTIFICACION_CAMBIO_TURNO);
         }
     }
 
@@ -237,6 +233,9 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     public void robarDelMazo() throws RemoteException {
         PartidaJugadores.robarDelMazo(jugadores, numTurno, mazo);
         actualizarMano(numTurno);
+        if (pozo!=null) {
+            roboCastigo();
+        }
     }
 
     public void setRoboDelMazo(int i, boolean b) throws RemoteException{

@@ -99,12 +99,19 @@ public class VentanaConsola extends JFrame implements ifVista {
 
     @Override
     public void cambioTurno() {
-
+        String nombre = ctrl.getTurnoDe();
+        if (nombre.equals(nombreVista)) {
+            jugar();
+        }
     }
 
-    @Override
-    public void finTurno() {
-
+    private void jugar() {
+        ctrl.desarrolloRobo();
+        try {
+            ctrl.desarrolloTurno();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

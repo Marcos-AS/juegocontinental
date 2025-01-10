@@ -221,7 +221,6 @@ public interface ifVista {
     String preguntarInputRobar();
     void opcionesIniciales() throws RemoteException;
     void cambioTurno();
-    void finTurno();
     void actualizarManoJugador(ArrayList<String> cartas);
     void actualizarPozo(String cartaATirar);
 }

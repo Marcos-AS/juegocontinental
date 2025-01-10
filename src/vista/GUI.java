@@ -144,10 +144,6 @@ public class GUI implements ifVista {
         }
     }
 
-    public void finTurno() {
-        cambioTurno();
-    }
-
     private void jugar() {
         JPanel panel = panelMap.get("Jugar");
         panel.removeAll();
