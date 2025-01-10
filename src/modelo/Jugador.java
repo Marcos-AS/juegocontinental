@@ -5,7 +5,6 @@ import rmimvc.src.observer.ObservableRemoto;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class Jugador extends ObservableRemoto implements Serializable, ifJugador {
     protected String nombre;

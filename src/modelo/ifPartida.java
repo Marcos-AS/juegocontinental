@@ -109,8 +109,6 @@ public interface ifPartida extends IObservableRemoto, Serializable {
 
     void robarConCastigo() throws RemoteException;
     void empezarRonda() throws RemoteException;
-    void roboCastigo() throws RemoteException;
-
     void setTurnoJugador(int numJugador, boolean valor) throws RemoteException;
 
     void tirarAlPozo(int numJugador, int cartaATirar) throws RemoteException;
@@ -126,4 +124,5 @@ public interface ifPartida extends IObservableRemoto, Serializable {
     int getPuedeBajar(int numJugadorRoboCastigo) throws RemoteException;
     boolean isFinRonda() throws RemoteException;
     void inicioRonda() throws RemoteException;
+    void incPuedeBajar(int numJugador) throws RemoteException;
 }

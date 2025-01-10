@@ -1,13 +1,8 @@
 package vista;
 
 import controlador.Controlador;
-import modelo.Eventos;
-import modelo.ifCarta;
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
@@ -19,6 +14,7 @@ public class VentanaConsola extends JFrame implements ifVista {
     private JPanel panelPozo;
     private JPanel panelInfoRonda;
     private JPanel panelPuntuacion;
+    private JPanel panelJuegos;
     private int manoSize;
 
 
@@ -35,10 +31,12 @@ public class VentanaConsola extends JFrame implements ifVista {
         panelMano = new JPanel();
         panelInfoRonda = new JPanel();
         panelPuntuacion = new JPanel();
+        panelJuegos = new JPanel();
         frame.add(panelPuntuacion);
         frame.add(panelInfoRonda);
         frame.add(panelPozo);
         frame.add(panelMano);
+        frame.add(panelJuegos);
         frame.setVisible(true);
     }
 
@@ -63,13 +61,13 @@ public class VentanaConsola extends JFrame implements ifVista {
                 case ifVista.ELECCION_JUGAR_PARTIDA: {
                     if (partidaCreada || ctrl.isPartidaEnCurso()) {
                         if (nombreVista == null) nombreVista = preguntarInput("Indica tu nombre: ");
-                        Eventos inicioPartida = ctrl.jugarPartidaRecienIniciada();
-                        if (inicioPartida == Eventos.PARTIDA_AUN_NO_CREADA) {
+                        int inicioPartida = ctrl.jugarPartidaRecienIniciada().ordinal();
+                        if (inicioPartida == PARTIDA_AUN_NO_CREADA) {
                             mostrarInfo("La partida aun no ha sido creada." +
                                     " Seleccione la opción 'Crear partida' ");
-                        } else if (inicioPartida == Eventos.FALTAN_JUGADORES) {
+                        } else if (inicioPartida == FALTAN_JUGADORES) {
                             mostrarInfo("Esperando que ingresen más jugadores...");
-                        } else if (inicioPartida == Eventos.INICIAR_PARTIDA) {
+                        } else if (inicioPartida == INICIAR_PARTIDA) {
                             ctrl.notificarComienzoPartida();
                             partidaIniciada = true;
                             ctrl.partida();
@@ -340,15 +338,22 @@ public class VentanaConsola extends JFrame implements ifVista {
     }
 
     public void mostrarJuegos(ArrayList<ArrayList<String>> juegos) {
+        StringBuilder mostrar = new StringBuilder("<html>Juegos de " + nombreVista + "<br>");
         int numJuego = 1;
-        if (juegos.isEmpty()) {
-            mostrarInfo("No tiene juegos bajados.");
-        } else {
-            for (ArrayList<String> juego : juegos) {
-                mostrarInfo("Juego N° " + numJuego + ":\n" + getCartasString(juego));
-                numJuego++;
-            }
+//        if (juegos.isEmpty()) {
+//            mostrarInfo("No tiene juegos bajados.");
+//        }
+//        else {
+        for (ArrayList<String> juego : juegos) {
+            mostrar.append("Juego N° ").append(numJuego).append(": ").append(getCartasString(juego)).append("<br>");
+            numJuego++;
         }
+        JLabel labelJuegos = new JLabel(String.valueOf(mostrar));
+        panelJuegos.removeAll();
+        panelJuegos.add(labelJuegos);
+        panelJuegos.revalidate();
+        panelJuegos.repaint();
+//        }
     }
 
     public boolean preguntarSiQuiereSeguirBajandoJuegos() {

@@ -1,7 +1,6 @@
 package modelo;
 
 import rmimvc.src.observer.ObservableRemoto;
-
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 

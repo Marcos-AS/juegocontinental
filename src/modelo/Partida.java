@@ -3,7 +3,6 @@ package modelo;
 import rmimvc.src.observer.IObservadorRemoto;
 import rmimvc.src.observer.ObservableRemoto;
 import serializacion.Serializador;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -227,7 +226,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         PartidaJugadores.robarDelMazo(jugadores, numTurno, mazo);
         actualizarMano(numTurno);
         if (pozo!=null) {
-            roboCastigo();
+            notificarRoboConCastigo(numTurno);
         }
     }
 
@@ -242,12 +241,8 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         notificarObservadores(NOTIFICACION_ACTUALIZAR_POZO);
     }
 
-    public void roboCastigo() throws RemoteException {
-        setRoboDelMazo(numTurno, false);
-        notificarRoboConCastigo(numTurno);
-    }
-
     public void notificarRoboConCastigo(int numJugador) throws RemoteException {
+        setRoboDelMazo(numTurno, false);
         jugadoresQuePuedenRobarConCastigo = new ArrayList<>();
         ArrayList<Integer> jugadoresQueNoPuedenRobarConCastigo = new ArrayList<>();
 
@@ -358,7 +353,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         removerObservadores();
     }
 
-    private void incPuedeBajar(int numJugador) throws RemoteException {
+    public void incPuedeBajar(int numJugador) throws RemoteException {
         jugadores.get(numJugador).incrementarPuedeBajar();
     }
 

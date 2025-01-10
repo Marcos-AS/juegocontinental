@@ -7,16 +7,12 @@ import vista.ifVista;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Objects;
-
 import static modelo.Eventos.*;
-
 
 public class Controlador implements IControladorRemoto {
     ifVista vista;
     ifPartida partida;
     private int partidasJugadas = 0;
-
-
 
     public Controlador(ifVista vista) {
         this.vista = vista;
@@ -110,8 +106,7 @@ public class Controlador implements IControladorRemoto {
                 case NOTIFICACION_BAJO_JUEGO: {
                     String nombre = partida.getNombreJugador(partida.getNumTurno());
                     if (!vista.getNombreVista().equals(nombre)) {
-                        //vista.mostrarInfo(nombre + " bajó un juego.");
-                        //MOSTRAR DE OTRA FORMA!!
+                        vista.mostrarJuegos(enviarJuegosJugador(partida.getNumTurno()));
                     }
                     break;
                 }
@@ -352,12 +347,16 @@ public class Controlador implements IControladorRemoto {
         boolean puedeCortar = false;
         boolean bajoJuegos = false;
         while (!puedeCortar && vista.preguntarSiQuiereSeguirBajandoJuegos()) {
-            if (bajarse(numJugador, vista.preguntarQueBajarParaJuego())) {
+            if (partida.comprobarBajarse(numJugador, vista.preguntarQueBajarParaJuego())
+            != Comprobar.JUEGO_INVALIDO) {
                 bajoJuegos = true;
+                partida.incPuedeBajar(numJugador);
                 partida.notificarObservadores(NOTIFICACION_BAJO_JUEGO);
                 puedeCortar = Comprobar.comprobarPosibleCorte(getRonda(),
                         partida.getTriosBajados(numJugador),
                         partida.getEscalerasBajadas(numJugador));
+            } else {
+                vista.mostrarInfo(ifVista.MOSTRAR_JUEGO_INVALIDO);
             }
         }
         if (puedeCortar) {
@@ -368,18 +367,6 @@ public class Controlador implements IControladorRemoto {
             vista.mostrarInfo("Para cortar faltan " + faltante[0] + " trios y " + faltante[1] + " escaleras");
         }
         return bajoJuegos;
-    }
-
-    public boolean bajarse(int numJugador, int [] cartasABajar) throws RemoteException {
-        boolean bajo = false;
-        int tipoJuego = partida.comprobarBajarse(numJugador, cartasABajar);
-        if(tipoJuego != Comprobar.JUEGO_INVALIDO) {
-            vista.mostrarJuegos(enviarJuegosJugador(numJugador));
-            bajo = true;
-        } else {
-            vista.mostrarInfo(ifVista.MOSTRAR_JUEGO_INVALIDO);
-        }
-        return bajo;
     }
 
     public void tirarAlPozoTurno()

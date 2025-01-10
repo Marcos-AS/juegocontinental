@@ -26,6 +26,9 @@ public interface ifVista {
     int ELECCION_RANKING = 3;
     int ELECCION_REGLAS = 4;
     int ELECCION_SALIR = -1;
+    int FALTAN_JUGADORES = 18;
+    int INICIAR_PARTIDA = 19;
+    int PARTIDA_AUN_NO_CREADA = 20;
     String NO_PUEDE_ACOMODAR = "No puede acomodar porque no tienes o no hay juegos bajados o porque la carta que deseas acomodar no hace juego con el juego elegido.";
     String ADVERTENCIA_BAJARSE = "Recuerda que sólo puedes bajar tus juegos dos veces durante la ronda,\n una en cualquier turno y otra si se procede a cortar.";
     String YA_NO_PUEDE_BAJAR = "No puedes volver a bajar juegos en esta ronda (tampoco robar con castigo).";

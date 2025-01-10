@@ -1,7 +1,6 @@
 package vista;
 
 import controlador.Controlador;
-import modelo.Eventos;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -110,10 +109,10 @@ public class GUI implements ifVista {
 
         botonJugar.addActionListener(e -> {
             try {
-                Eventos inicioPartida = ctrl.jugarPartidaRecienIniciada();
-                if (inicioPartida == Eventos.FALTAN_JUGADORES) {
+                int inicioPartida = ctrl.jugarPartidaRecienIniciada().ordinal();
+                if (inicioPartida == FALTAN_JUGADORES) {
                     mostrarInfo("Esperando que ingresen más jugadores...");
-                } else if (inicioPartida == Eventos.INICIAR_PARTIDA) {
+                } else if (inicioPartida == INICIAR_PARTIDA) {
                     //ctrl.notificarComienzoPartida();
                     ctrl.partida();
                 }
