@@ -47,7 +47,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
 
         if (!isRondaEmpezada())
             empezarRonda();
-        notificarObservadores(NOTIFICACION_COMIENZO_TURNO);
 
         notificarObservador(numTurno, NOTIFICACION_ROBO);
         if (isRoboDelMazo(numTurno) && !isPozoEmpty()) {
@@ -281,15 +280,28 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     }
 
     public void empezarRonda() throws RemoteException {
-        if (!isRondaEmpezada()) {
-            setRondaEmpezada(true);
-            //partida.notificarObservadores(NOTIFICACION_COMIENZO_RONDA);
+        if (!rondaEmpezada) {
+            rondaEmpezada = true;
             crearMazo();
             repartirCartas();
             iniciarPozo();
-            setNumTurno(numJugadorQueEmpiezaRonda);
-            notificarObservadores(NOTIFICACION_ACTUALIZAR_MANO);
+            numTurno = numJugadorQueEmpiezaRonda;
+            notificarObservadores(NOTIFICACION_COMIENZO_RONDA);
+            actualizarManoJugadores();
             notificarObservadores(NOTIFICACION_ACTUALIZAR_POZO);
+        }
+    }
+
+    private void actualizarManoJugadores() throws RemoteException {
+        int i = numTurno;
+        int n = 0;
+        while (n < jugadores.size()) {
+            actualizarMano(i);
+            i++;
+            if (i>jugadores.size()-1) {
+                i = 0;
+            }
+            n++;
         }
     }
 

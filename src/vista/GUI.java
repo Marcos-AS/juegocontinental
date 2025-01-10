@@ -598,7 +598,7 @@ public class GUI implements ifVista {
     }
 
     @Override
-    public void comienzoTurno(int ronda) throws RemoteException {
+    public void comienzoRonda(int ronda) throws RemoteException {
     }
 
     @Override

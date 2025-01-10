@@ -129,8 +129,9 @@ public class VentanaConsola extends JFrame implements ifVista {
         panelPozo.revalidate();
     }
 
-    public void comienzoTurno(int ronda) {
+    public void comienzoRonda(int ronda) {
         JLabel label = new JLabel(ifVista.mostrarCombinacionRequerida(ronda));
+        panelInfoRonda.removeAll();
         panelInfoRonda.add(label);
         panelInfoRonda.revalidate();
         panelInfoRonda.repaint();

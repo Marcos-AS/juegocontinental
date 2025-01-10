@@ -69,12 +69,9 @@ public class Controlador implements IControladorRemoto {
                     vista.mostrarInfo("No puede robar con castigo porque ya bajó uno o más juegos a la mesa");
                     break;
                 }
-                case NOTIFICACION_COMIENZO_TURNO:
-                    vista.comienzoTurno(partida.getNumRonda());
+                case NOTIFICACION_COMIENZO_RONDA:
+                    vista.comienzoRonda(partida.getNumRonda());
                     break;
-//                case NOTIFICACION_COMIENZO_RONDA:
-//                    vista.mostrarInfo("Comienza la ronda " + getRonda());
-//                    break;
 //                case NOTIFICACION_NUEVO_JUGADOR:
 //                    String nombreJugador = partida.getJugadores().get(partida.getJugadores().size()-1).getNombre();
 //                    vista.mostrarInfo(nombreJugador + " ha ingresado.");
