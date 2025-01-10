@@ -94,9 +94,6 @@ public class Controlador implements IControladorRemoto {
                         partida.setNumeroJugador(numJugador, observadorIndex);
                     }
                     break;
-//                case NOTIFICACION_FIN_PARTIDA:
-//                    vista.mostrarInfo("La partida ha finalizado.");
-//                    break;
                 case NOTIFICACION_CORTE_RONDA: {
                     String nombreJ = getJugadorPartida(partida.getNumJugadorCorte()).getNombre();
                     if (!nombreJ.equals(vista.getNombreVista())) {
@@ -111,11 +108,11 @@ public class Controlador implements IControladorRemoto {
                     vista.mostrarPuntosRonda(partida.getPuntosJugadores());
                     break;
                 }
-//                case NOTIFICACION_GANADOR: {
-//                    String ganador = partida.getGanador().getNombre();
-//                    vista.mostrarInfo(ganador + " es el ganador!");
-//                    break;
-//                }
+                case NOTIFICACION_GANADOR: {
+                    String ganador = partida.getGanador().getNombre();
+                    vista.mostrarInfo(ganador + " es el ganador!");
+                    break;
+                }
 //                case NOTIFICACION_NUEVA_PARTIDA: {
 //                    String nombre = getJugadorPartida(partida.getNumJugadorQueEmpezoPartida()).getNombre();
 //                    vista.mostrarInfo(nombre + " ha iniciado una partida nueva");
@@ -247,6 +244,7 @@ public class Controlador implements IControladorRemoto {
             int eleccion = vista.menuBajar(ifVista.mostrarCombinacionRequerida(getRonda()));
             switchMenuBajar(eleccion);
         }
+        partida.actualizarMano(numJugador);
     }
 
     public void desarrolloRobo() {

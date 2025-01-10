@@ -24,7 +24,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     private int numTurno;
     private ArrayList<Integer> jugadoresQuePuedenRobarConCastigo;
     private int numJugadorCorte;
-    private static final int TOTAL_RONDAS = 1;
+    private static final int TOTAL_RONDAS = 7;
     private int cantJugadoresDeseada;
     private boolean enCurso = false;
     private int numJugadorQueEmpezoPartida;
@@ -362,7 +362,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         determinarGanador(); //al finalizar las rondas
         serializarGanador();
         notificarObservadores(NOTIFICACION_GANADOR);
-        notificarObservadores(NOTIFICACION_FIN_PARTIDA);
         //lo siguiente es para poder seguir jugando otras partidas
         removerObservadores();
     }

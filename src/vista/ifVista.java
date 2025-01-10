@@ -72,6 +72,10 @@ public interface ifVista {
         - Ronda 6: Un trío y dos escaleras
         - Ronda 7: Tres escaleras
         
+        REPARTO DE CARTAS:
+        En la 1ra ronda se reparten 6 cartas y en cada ronda se reparte una carta más llegando a 13 cartas en la 7ma ronda.
+        Cuando se termina de repartir se deja el mazo en el medio y se da vuelta la primera.
+        
         DEFINICIONES
         ------------------------------------------------------------------------------------------------------------------------------------------------------------
         Trío: 3 cartas con el mismo número, sin importar el palo.

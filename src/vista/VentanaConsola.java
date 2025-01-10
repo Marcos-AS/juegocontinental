@@ -18,6 +18,7 @@ public class VentanaConsola extends JFrame implements ifVista {
     private JPanel panelMano;
     private JPanel panelPozo;
     private JPanel panelInfoRonda;
+    private JPanel panelPuntuacion;
     private int manoSize;
 
 
@@ -33,6 +34,8 @@ public class VentanaConsola extends JFrame implements ifVista {
         panelPozo = new JPanel();
         panelMano = new JPanel();
         panelInfoRonda = new JPanel();
+        panelPuntuacion = new JPanel();
+        frame.add(panelPuntuacion);
         frame.add(panelInfoRonda);
         frame.add(panelPozo);
         frame.add(panelMano);
@@ -384,7 +387,11 @@ public class VentanaConsola extends JFrame implements ifVista {
             s.append(ctrl.getJugadorPartida(i).getNombre())
                             .append(": ").append(puntos[i]).append("\n");
         }
-        mostrarInfo(s.toString());
+        JLabel labelPuntos = new JLabel(String.valueOf(s));
+        panelPuntuacion.removeAll();
+        panelPuntuacion.add(labelPuntos);
+        panelPuntuacion.revalidate();
+        panelPuntuacion.repaint();
     }
 
  }
