@@ -125,7 +125,7 @@ public class Controlador implements IControladorRemoto {
     }
 
     public void partida() throws RemoteException {
-        partida.inicioPartida();
+        partida.inicioRonda();
     }
 
     public String getTurnoDe() {

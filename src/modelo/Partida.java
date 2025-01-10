@@ -42,17 +42,10 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         return Partida.instancia;
     }
 
-    public void inicioPartida() throws RemoteException {
+    public void inicioRonda() throws RemoteException {
         if (!isRondaEmpezada())
             empezarRonda();
         notificarObservadores(NOTIFICACION_CAMBIO_TURNO);
-    }
-
-    public void finTurno() throws RemoteException {
-        if (!isFinRonda()) {
-            incTurno();
-            notificarObservador(numTurno,NOTIFICACION_CAMBIO_TURNO);
-        }
     }
 
     public boolean isTurnoActual(int numJugador) throws RemoteException {
@@ -318,16 +311,12 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         notificarObservadores(NOTIFICACION_ACTUALIZAR_POZO);
     }
 
-//    boolean bajoJuegos = false;
-//    boolean corte = false;
-//    bajoJuegos = switchMenuBajar(eleccion);
-//    corte = finRonda();
-//    if (!corte) {
-//        if (bajoJuegos) {
-//            incPuedeBajar(numJugador);
-//        }
-//        finTurno(numJugador);
-//    }
+    public void finTurno() throws RemoteException {
+        if (!isFinRonda()) {
+            incTurno();
+            notificarObservador(numTurno,NOTIFICACION_CAMBIO_TURNO);
+        }
+    }
 
     public boolean isFinRonda() throws RemoteException {
         boolean fin = false;
@@ -336,6 +325,8 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
             finRonda(numTurno);
             if (numRonda >= TOTAL_RONDAS) {
                 finPartida();
+            } else {
+                inicioRonda();
             }
         }
         return fin;
