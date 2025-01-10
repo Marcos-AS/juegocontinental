@@ -107,7 +107,11 @@ public class VentanaConsola extends JFrame implements ifVista {
     @Override
     public void actualizarManoJugador(ArrayList<String> cartas) {
         manoSize = cartas.size();
-        String cartasStr = String.join("<br>", cartas);
+        String cartasStr = "";
+        int i = 1;
+        for (String carta : cartas) {
+            cartasStr = i + " - " + carta + "<br>";
+        }
         JLabel labelCartas = new JLabel("<html>Mano:<br>" + cartasStr + "</html>");
         panelMano.removeAll();
         panelMano.add(labelCartas);
@@ -159,7 +163,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         }
 
         // Validar si la entrada está vacía o solo contiene espacios en blanco
-        if (resp.trim().isEmpty()) {
+        else if (resp.trim().isEmpty()) {
             JOptionPane.showMessageDialog(null, "La entrada no puede estar vacía. Intenta de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
             valida = false;
         }
@@ -299,7 +303,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         int cantCartas = manoSize;
         while (cartaSeleccion < 0 || cartaSeleccion > cantCartas - 1) {
             cartaSeleccion = Integer.parseInt(
-                    preguntarInputMenu("Elije el número de carta que quieres mover: "));
+                    preguntarInputMenu("Elije el número de carta que quieres mover: "))-1;
         }
         elecciones[0] = cartaSeleccion;
 
@@ -307,7 +311,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         while (cartaSeleccion < 0 || cartaSeleccion > cantCartas - 1) {
             cartaSeleccion = Integer.parseInt(
                     preguntarInputMenu("Elije el número de destino al que quieres" +
-                            " mover la carta: "));
+                            " mover la carta: "))-1;
         }
         elecciones[1] = cartaSeleccion;
         return elecciones;
@@ -347,7 +351,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         for (int i = 0; i < cartasABajar.length; i++) {
             do {
                 iCarta = Integer.parseInt(preguntarInputMenu("Carta " + (i + 1) +
-                        ":\nIndica el índice de la carta que quieres bajar: "));
+                        ":\nIndica el índice de la carta que quieres bajar: "))-1;
             } while (iCarta < 0 || iCarta >= manoSize);
             cartasABajar[i] = iCarta;
         }
@@ -365,10 +369,10 @@ public class VentanaConsola extends JFrame implements ifVista {
 
     public int preguntarQueBajarParaPozo() {
         int eleccion = Integer.parseInt(
-                preguntarInputMenu("Indica el índice de carta para tirar al pozo: "));
+                preguntarInputMenu("Indica el índice de carta para tirar al pozo: "))-1;
         while (eleccion < 0 || eleccion >= manoSize) {
             eleccion = Integer.parseInt(preguntarInputMenu("Ese índice es inválido." +
-                    " Vuelve a ingresar un índice de carta"));
+                    " Vuelve a ingresar un índice de carta"))-1;
         }
         return eleccion;
     }
