@@ -44,10 +44,6 @@ public class Controlador implements IControladorRemoto {
                     vista.actualizarPozo(actualizar);
                     break;
                 }
-                case NOTIFICACION_ACTUALIZAR_MANO: {
-                    vista.actualizarManoJugador(enviarManoJugador(partida.getMano()));
-                    break;
-                }
                 case NOTIFICACION_ROBO: {
                     desarrolloRobo();
                     break;
@@ -128,6 +124,11 @@ public class Controlador implements IControladorRemoto {
                     }
                     break;
                 }
+            }
+        }
+        else if (o instanceof Object[] obj) {
+            if (obj[0] == NOTIFICACION_ACTUALIZAR_MANO) {
+                vista.actualizarManoJugador(enviarManoJugador((ArrayList<Carta>) obj[1]));
             }
         }
     }

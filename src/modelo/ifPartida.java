@@ -124,5 +124,4 @@ public interface ifPartida extends IObservableRemoto, Serializable {
     String getNombreJugador(int numJugador) throws RemoteException;
 
     int getPuedeBajar(int numJugadorRoboCastigo) throws RemoteException;
-    ArrayList<Carta> getMano() throws RemoteException;
 }

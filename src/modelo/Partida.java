@@ -374,11 +374,10 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     }
 
     public void actualizarMano(int numJugador) throws RemoteException {
-        notificarObservador(numJugador, NOTIFICACION_ACTUALIZAR_MANO);
-    }
-
-    public ArrayList<Carta> getMano() throws RemoteException {
-        return jugadores.get(numTurno).getMano();
+        Object[] o = new Object[2];
+        o[0] = NOTIFICACION_ACTUALIZAR_MANO;
+        o[1] = jugadores.get(numJugador).getMano();
+        notificarObservador(numJugador, o);
     }
 
     public void moverCartaEnMano(int numJugador, int i, int i1) throws RemoteException {
