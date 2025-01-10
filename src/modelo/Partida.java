@@ -43,7 +43,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     }
 
     public void desarrolloPartida() throws RemoteException {
-        notificarObservadores(NOTIFICACION_INICIO);
+        notificarObservadores(NOTIFICACION_CAMBIO_TURNO);
 
         if (!isRondaEmpezada())
             empezarRonda();
@@ -53,6 +53,10 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
             roboCastigo();
         }
         notificarObservador(numTurno, NOTIFICACION_DESARROLLO_TURNO);
+        if (!isFinRonda()) {
+            incTurno();
+            notificarObservador(numTurno,NOTIFICACION_FIN_TURNO);
+        }
     }
 
     public boolean isTurnoActual(int numJugador) throws RemoteException {
@@ -313,7 +317,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         pozo = (jugadores.get(numJugador).getMano().remove(cartaATirar));
         jugadores.get(numJugador).setTurnoActual(false);
         notificarObservadores(NOTIFICACION_ACTUALIZAR_POZO);
-        isFinRonda();
     }
 
 //    boolean bajoJuegos = false;
@@ -327,13 +330,16 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
 //        finTurno(numJugador);
 //    }
 
-    private void isFinRonda() throws RemoteException {
+    public boolean isFinRonda() throws RemoteException {
+        boolean fin = false;
         if (getMano(numTurno).isEmpty()) {
+            fin = true;
             finRonda(numTurno);
             if (numRonda >= TOTAL_RONDAS) {
                 finPartida();
             }
         }
+        return fin;
     }
 
     private void finRonda(int numJugador) throws RemoteException {
@@ -363,14 +369,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
 
     private void incPuedeBajar(int numJugador) throws RemoteException {
         jugadores.get(numJugador).incrementarPuedeBajar();
-    }
-
-    private void finTurno() throws RemoteException {
-        Object[] notif = new Object[2];
-        notif[0] = NOTIFICACION_FIN_TURNO;
-        notif[1] = getNumTurno();
-        incTurno();
-        notificarObservadores(notif);
     }
 
     public void actualizarMano(int numJugador) throws RemoteException {

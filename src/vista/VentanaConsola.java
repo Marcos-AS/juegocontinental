@@ -270,7 +270,7 @@ public class VentanaConsola extends JFrame implements ifVista {
     }
 
     public String getCartasString(ArrayList<String> cartas) {
-        int i = 0;
+        int i = 1;
         StringBuilder s = new StringBuilder();
         for (String carta : cartas) {
             s.append(i).append(" - ").append(carta).append("\n");

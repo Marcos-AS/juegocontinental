@@ -31,8 +31,12 @@ public class Controlador implements IControladorRemoto {
     public void actualizar(IObservableRemoto observable, Object o) throws RemoteException {
         if (o instanceof Eventos e) {
             switch (e) {
-                case NOTIFICACION_INICIO: {
+                case NOTIFICACION_CAMBIO_TURNO: {
                     vista.cambioTurno();
+                    break;
+                }
+                case NOTIFICACION_FIN_TURNO: {
+                    partida.desarrolloPartida();
                     break;
                 }
                 case NOTIFICACION_ACTUALIZAR_POZO: {
@@ -197,7 +201,6 @@ public class Controlador implements IControladorRemoto {
         int numJugador = partida.getNumTurno();
         boolean bajoJuegos = false;
         if (partida.isTurnoActual(numJugador)) {
-            partida.actualizarMano(numJugador);
             switch (eleccion) {
                 case ifVista.ELECCION_BAJARSE:
                     bajoJuegos = bajarJuegos(numJugador);
@@ -240,6 +243,7 @@ public class Controlador implements IControladorRemoto {
         int numJugador = partida.getNumTurno();
         partida.actualizarMano(numJugador);
         while(partida.isTurnoActual(numJugador)) {
+            partida.actualizarMano(numJugador);
             int eleccion = vista.menuBajar(ifVista.mostrarCombinacionRequerida(getRonda()));
             switchMenuBajar(eleccion);
         }
@@ -421,7 +425,6 @@ public class Controlador implements IControladorRemoto {
     public void tirarAlPozoTurno()
             throws RemoteException {
         int numJugador = partida.getNumTurno();
-        //partida.actualizarMano(numJugador);
         int cartaATirar = vista.preguntarQueBajarParaPozo();
         partida.tirarAlPozo(numJugador, cartaATirar);
     }
