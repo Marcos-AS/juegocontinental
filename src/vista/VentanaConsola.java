@@ -107,10 +107,11 @@ public class VentanaConsola extends JFrame implements ifVista {
     @Override
     public void actualizarManoJugador(ArrayList<String> cartas) {
         manoSize = cartas.size();
-        String cartasStr = "";
+        StringBuilder cartasStr = new StringBuilder();
         int i = 1;
         for (String carta : cartas) {
-            cartasStr = i + " - " + carta + "<br>";
+            cartasStr.append(i).append(" - ").append(carta).append("<br>");
+            i++;
         }
         JLabel labelCartas = new JLabel("<html>Mano:<br>" + cartasStr + "</html>");
         panelMano.removeAll();
