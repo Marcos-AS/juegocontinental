@@ -390,17 +390,15 @@ public class Controlador implements IControladorRemoto {
     }
 
     public void roboCastigo() throws RemoteException {
-        if(partida.puedeRobarConCastigo()) {
-            //int numJugadorRobo = partida.getNumJugadorRoboCastigo();
-            //String nombre = partida.getNombreJugador(numJugadorRobo);
-            //vista.mostrarInfo(nombre + " puede robar con castigo.");
-            String eleccion = vista.preguntarInputRobarCastigo();
-            if (Integer.parseInt(eleccion) == ifVista.ELECCION_ROBAR_CON_CASTIGO
-                    || ifVista.isRespAfirmativa(eleccion)) {
-                partida.robarConCastigo();
-            } else {
-                partida.removeJugadorRoboCastigo();
-            }
+        //int numJugadorRobo = partida.getNumJugadorRoboCastigo();
+        //String nombre = partida.getNombreJugador(numJugadorRobo);
+        //vista.mostrarInfo(nombre + " puede robar con castigo.");
+        String eleccion = vista.preguntarInputRobarCastigo();
+        if (Integer.parseInt(eleccion) == ifVista.ELECCION_ROBAR_CON_CASTIGO
+                || ifVista.isRespAfirmativa(eleccion)) {
+            partida.robarConCastigo();
+        } else {
+            partida.removeJugadorRoboCastigo();
         }
     }
 

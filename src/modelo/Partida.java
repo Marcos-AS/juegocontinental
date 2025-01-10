@@ -271,7 +271,9 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         int num = getNumJugadorRoboCastigo();
         PartidaJugadores.robarDelMazo(jugadores,num,mazo);
         jugadores.get(num).getMano().add(pozo);
+        pozo = null;
         actualizarMano(num);
+        notificarObservadores(NOTIFICACION_ACTUALIZAR_POZO);
         notificarObservadores(NOTIFICACION_HUBO_ROBO_CASTIGO);
     }
 

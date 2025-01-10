@@ -389,10 +389,10 @@ public class VentanaConsola extends JFrame implements ifVista {
     }
 
     public void mostrarPuntosRonda(int[] puntos) throws RemoteException {
-        StringBuilder s = new StringBuilder("Puntuación: \n");
+        StringBuilder s = new StringBuilder("<html>Puntuación<br>");
         for (int i = 0; i < puntos.length; i++) {
             s.append(ctrl.getJugadorPartida(i).getNombre())
-                            .append(": ").append(puntos[i]).append("\n");
+                            .append(": ").append(puntos[i]).append("<br>");
         }
         JLabel labelPuntos = new JLabel(String.valueOf(s));
         panelPuntuacion.removeAll();
