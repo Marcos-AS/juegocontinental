@@ -69,9 +69,6 @@ public class Controlador implements IControladorRemoto {
                     vista.mostrarInfo("Se ha iniciado una partida.");
                     break;
                 }
-                case NOTIFICACION_COMIENZO_PARTIDA:
-                    partida.empezarRonda();
-                    break;
                 case NOTIFICACION_AGREGAR_OBSERVADOR:
                     int observadorIndex = partida.getObservadorIndex(this);
                     int numJugador = partida.getJugador(vista.getNombreVista()).getNumeroJugador();
@@ -420,8 +417,8 @@ public class Controlador implements IControladorRemoto {
         return inicio;
     }
 
-    public void notificarComienzoPartida() throws RemoteException {
-        partida.notificarObservadores(NOTIFICACION_COMIENZO_PARTIDA);
+    public void empezarRonda() throws RemoteException {
+        partida.empezarRonda();
     }
 
     private int getCantJugActuales() throws RemoteException {

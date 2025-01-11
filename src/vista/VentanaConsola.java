@@ -73,8 +73,8 @@ public class VentanaConsola extends JFrame implements ifVista {
                         } else if (inicioPartida == FALTAN_JUGADORES) {
                             mostrarInfo("Esperando que ingresen más jugadores...");
                         } else if (inicioPartida == INICIAR_PARTIDA) {
-                            ctrl.notificarComienzoPartida();
                             partidaIniciada = true;
+                            ctrl.empezarRonda();
                             ctrl.cambioTurno();
                         }
                     } else {
