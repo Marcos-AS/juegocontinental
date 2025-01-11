@@ -113,6 +113,5 @@ public interface ifPartida extends IObservableRemoto, Serializable {
     String getNombreJugador(int numJugador) throws RemoteException;
 
     int getPuedeBajar(int numJugadorRoboCastigo) throws RemoteException;
-    boolean isFinRonda() throws RemoteException;
     void incPuedeBajar(int numJugador) throws RemoteException;
 }

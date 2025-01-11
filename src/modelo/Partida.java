@@ -18,7 +18,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     private int numRonda = 1;
     private Carta pozo;
     private ArrayList<Carta> mazo;
-    private boolean rondaEmpezada = false;
     private int numJugadorQueEmpiezaRonda;
     private int numTurno;
     private ArrayList<Integer> jugadoresQuePuedenRobarConCastigo;
@@ -249,20 +248,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         notificarObservadores(NOTIFICACION_HUBO_ROBO_CASTIGO);
     }
 
-    public void empezarRonda() throws RemoteException {
-        if (!rondaEmpezada) {
-            rondaEmpezada = true;
-            crearMazo();
-            repartirCartas();
-            iniciarPozo();
-            numTurno = numJugadorQueEmpiezaRonda;
-            notificarObservadores(NOTIFICACION_COMIENZO_RONDA);
-            actualizarManoJugadores();
-            notificarObservadores(NOTIFICACION_ACTUALIZAR_POZO);
-            notificarObservadores(NOTIFICACION_ACTUALIZAR_JUEGOS);
-        }
-    }
-
     private void actualizarManoJugadores() throws RemoteException {
         int i = numTurno;
         int n = 0;
@@ -287,25 +272,34 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     }
 
     public void finTurno() throws RemoteException {
-        if (!isFinRonda()) {
+        if (isFinRonda()) {
+            finRonda(numTurno);
+            if (numRonda >= TOTAL_RONDAS) {
+                finPartida();
+            } else {
+                empezarRonda();
+            }
+        } else {
             incTurno();
         }
     }
 
-    public boolean isFinRonda() throws RemoteException {
-        boolean fin = false;
-        if (getMano(numTurno).isEmpty()) {
-            fin = true;
-            finRonda(numTurno);
-            if (numRonda >= TOTAL_RONDAS) {
-                finPartida();
-            }
-        }
-        return fin;
+    private boolean isFinRonda() throws RemoteException {
+        return getMano(numTurno).isEmpty();
+    }
+
+    public void empezarRonda() throws RemoteException {
+        crearMazo();
+        repartirCartas();
+        iniciarPozo();
+        numTurno = numJugadorQueEmpiezaRonda;
+        notificarObservadores(NOTIFICACION_COMIENZO_RONDA);
+        actualizarManoJugadores();
+        notificarObservadores(NOTIFICACION_ACTUALIZAR_POZO);
+        notificarObservadores(NOTIFICACION_ACTUALIZAR_JUEGOS);
     }
 
     private void finRonda(int numJugador) throws RemoteException {
-        rondaEmpezada = false;
         setTurnoJugador(numJugador, false);
         setNumJugadorCorte(numJugador);
         incrementarNumJugadorQueEmpiezaRonda();
