@@ -5,6 +5,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class VentanaConsola extends JFrame implements ifVista {
     private Controlador ctrl;
@@ -281,7 +283,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         int i = 1;
         StringBuilder s = new StringBuilder();
         for (String carta : cartas) {
-            s.append(i).append(" - ").append(carta).append("\n");
+            s.append(i).append(" - ").append(carta).append("||");
             i++;
         }
         return s.toString();
@@ -342,7 +344,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         }
         else {
             for (ArrayList<String> juego : juegos) {
-                mostrar.append("Juego N° ").append(numJuego).append(": ").append(getCartasString(juego)).append("<br>");
+                mostrar.append("Juego N° ").append(numJuego).append(": <br>").append(getCartasString(juego)).append("<br>");
                 numJuego++;
             }
         }
@@ -371,10 +373,19 @@ public class VentanaConsola extends JFrame implements ifVista {
             do {
                 iCarta = Integer.parseInt(preguntarInputMenu("Carta " + (i + 1) +
                         ":\nIndica el índice de la carta que quieres bajar: "))-1;
-            } while (iCarta < 0 || iCarta >= manoSize);
+            } while (iCarta < 0 || iCarta >= manoSize || estaEnCartasABajar(cartasABajar,iCarta));
             cartasABajar[i] = iCarta;
         }
         return cartasABajar;
+    }
+
+    private boolean estaEnCartasABajar(int[] cartasABajar, int valor) {
+        for (int carta : cartasABajar) {
+            if (carta == valor) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private int preguntarCantParaBajar() {
