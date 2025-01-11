@@ -224,4 +224,5 @@ public interface ifVista {
     void actualizarManoJugador(ArrayList<String> cartas);
     void actualizarPozo(String cartaATirar);
     void actualizarJuegos();
+    void actualizarRestricciones(boolean restriccion);
 }

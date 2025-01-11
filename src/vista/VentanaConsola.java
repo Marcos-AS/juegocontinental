@@ -17,6 +17,7 @@ public class VentanaConsola extends JFrame implements ifVista {
     private JPanel panelInfoRonda;
     private JPanel panelPuntuacion;
     private JPanel panelJuegos;
+    private JPanel panelRestricciones;
     private int manoSize;
 
 
@@ -34,11 +35,13 @@ public class VentanaConsola extends JFrame implements ifVista {
         panelInfoRonda = new JPanel();
         panelPuntuacion = new JPanel();
         panelJuegos = new JPanel();
+        panelRestricciones = new JPanel();
         frame.add(panelPuntuacion);
         frame.add(panelInfoRonda);
         frame.add(panelPozo);
         frame.add(panelMano);
         frame.add(panelJuegos);
+        frame.add(panelRestricciones);
         frame.setVisible(true);
     }
 
@@ -150,6 +153,16 @@ public class VentanaConsola extends JFrame implements ifVista {
         panelInfoRonda.add(label);
         panelInfoRonda.revalidate();
         panelInfoRonda.repaint();
+    }
+
+    public void actualizarRestricciones(boolean restriccion) {
+        panelRestricciones.removeAll();
+        if (restriccion) {
+            Label label = new Label("Ya no puede robar con castigo y no puede volver a bajar en esta mano");
+            panelRestricciones.add(label);
+        }
+            panelRestricciones.revalidate();
+            panelRestricciones.repaint();
     }
 
     public void mostrarInfo(String s) {

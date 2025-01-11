@@ -40,6 +40,11 @@ public class Controlador implements IControladorRemoto {
                     vista.actualizarPozo(actualizar);
                     break;
                 }
+                case NOTIFICACION_ACTUALIZAR_JUEGOS: {
+                    vista.actualizarRestricciones(false);
+                    vista.actualizarJuegos();
+                    break;
+                }
                 case NOTIFICACION_ROBO_CASTIGO: {
                     roboCastigo();
                     break;
@@ -50,7 +55,7 @@ public class Controlador implements IControladorRemoto {
                     break;
                 }
                 case NOTIFICACION_NO_PUEDE_ROBO_CASTIGO: {
-                    vista.mostrarInfo("No puede robar con castigo porque ya bajó uno o más juegos a la mesa");
+                    vista.actualizarRestricciones(true);
                     break;
                 }
                 case NOTIFICACION_COMIENZO_RONDA:
@@ -104,8 +109,7 @@ public class Controlador implements IControladorRemoto {
 //                    break;
 //                }
                 case NOTIFICACION_BAJO_JUEGO: {
-                    String nombre = partida.getNombreJugador(partida.getNumTurno());
-                    vista.mostrarJuegos(nombre,enviarJuegosJugador(partida.getNumTurno()));
+                    mostrarJuegosEnMesa(partida.getNumTurno());
                     break;
                 }
             }
