@@ -432,6 +432,11 @@ public class GUI implements ifVista {
         panelPozoConBorde.repaint();
     }
 
+    @Override
+    public void actualizarJuegos() {
+
+    }
+
     public int preguntarCartaParaAcomodar() {
         return Integer.parseInt(
                 preguntarInputMenu("Indica el número de carta que quieres acomodar" +
