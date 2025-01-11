@@ -114,7 +114,7 @@ public class GUI implements ifVista {
                     mostrarInfo("Esperando que ingresen más jugadores...");
                 } else if (inicioPartida == INICIAR_PARTIDA) {
                     //ctrl.notificarComienzoPartida();
-                    ctrl.partida();
+                    ctrl.cambioTurno();
                 }
             } catch (RemoteException ex) {
                 throw new RuntimeException(ex);
