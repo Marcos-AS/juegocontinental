@@ -11,7 +11,6 @@ import java.util.List;
 public class VentanaConsola extends JFrame implements ifVista {
     private Controlador ctrl;
     private String nombreVista;
-    private final JFrame frame = new JFrame("Mano");
     private JPanel panelMano;
     private JPanel panelPozo;
     private JPanel panelInfoRonda;
@@ -28,6 +27,7 @@ public class VentanaConsola extends JFrame implements ifVista {
     }
 
     private void setFrame() {
+        JFrame frame = new JFrame("Mano " + nombreVista);
         frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
         frame.setSize(500,800);
         panelPozo = new JPanel();
@@ -104,17 +104,14 @@ public class VentanaConsola extends JFrame implements ifVista {
     public void cambioTurno() {
         String nombre = ctrl.getTurnoDe();
         if (nombre.equals(nombreVista)) {
-            jugar();
-        }
-    }
-
-    private void jugar() {
-        ctrl.desarrolloRobo();
-        try {
-            ctrl.desarrolloTurno();
-            ctrl.cambioTurno();
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
+            ctrl.desarrolloRobo();
+            //jugar();
+            try {
+                ctrl.desarrolloTurno();
+                ctrl.cambioTurno();
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

@@ -300,7 +300,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     }
 
     private void finRonda(int numJugador) throws RemoteException {
-        setTurnoJugador(numJugador, false);
         setNumJugadorCorte(numJugador);
         incrementarNumJugadorQueEmpiezaRonda();
         numRonda++;
@@ -431,7 +430,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         if (numTurno>jugadores.size()-1) {
             numTurno = 0;
         }
-        jugadores.get(numTurno).setTurnoActual(true);
     }
 
     public boolean isPozoEmpty() throws RemoteException {
@@ -442,7 +440,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     public void crearYAgregarJugador(String nombre, int numObservador) throws RemoteException {
         Jugador nuevoJugador = new Jugador(nombre);
         nuevoJugador.setNumeroJugador(numObservador);
-        nuevoJugador.setTurnoActual(true);
         jugadores.add(nuevoJugador);
         jugadores.get(jugadores.size()-1).sumarPartida(this);
     }

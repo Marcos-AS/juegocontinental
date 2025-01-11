@@ -116,7 +116,9 @@ public class Controlador implements IControladorRemoto {
 
     public String getTurnoDe() {
         try {
-            return partida.getNombreJugador(partida.getNumTurno());
+            int numTurno = partida.getNumTurno();
+            partida.setTurnoJugador(numTurno,true);
+            return partida.getNombreJugador(numTurno);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -185,10 +187,16 @@ public class Controlador implements IControladorRemoto {
     }
 
     public void cambioTurno() throws RemoteException {
-        partida.notificarObservador(partida.getNumTurno(),NOTIFICACION_CAMBIO_TURNO);
+        partida.notificarObservadores(NOTIFICACION_CAMBIO_TURNO);
     }
 
     public void desarrolloRobo() {
+        try {
+            if (getRonda()==3)
+                System.out.println("entra en robo");
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
         String eleccion = vista.preguntarInputRobar();
         if (Objects.equals(eleccion, "1")) {
             robarDelMazo();
