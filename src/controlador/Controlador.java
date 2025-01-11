@@ -109,7 +109,7 @@ public class Controlador implements IControladorRemoto {
 //                    break;
 //                }
                 case NOTIFICACION_BAJO_JUEGO: {
-                    mostrarJuegosEnMesa(partida.getNumTurno());
+                    mostrarJuegosEnMesa();
                     break;
                 }
             }
@@ -289,7 +289,7 @@ public class Controlador implements IControladorRemoto {
             throws RemoteException {
         if(partida.comprobarAcomodarCarta(numJugador, iCarta, numJuego, getRonda())) {
             vista.mostrarAcomodoCarta(partida.getNombreJugador(numJugador));
-            mostrarJuegosEnMesa(numJugador);
+            mostrarJuegosEnMesa();
         } else {
             vista.mostrarInfo(ifVista.NO_PUEDE_ACOMODAR);
         }
@@ -310,16 +310,11 @@ public class Controlador implements IControladorRemoto {
         return hay;
     }
 
-    public void mostrarJuegosEnMesa(int numJugador) throws RemoteException {
-        int cantJugadoresPartida = getCantJugActuales();
+    public void mostrarJuegosEnMesa() throws RemoteException {
         vista.actualizarJuegos();
-        for (int j = 0; j < cantJugadoresPartida-1; j++) {
-            if (numJugador>cantJugadoresPartida-1) {
-                numJugador = 0;
-            }
-            vista.mostrarJuegos(partida.getNombreJugador(numJugador),
-                    enviarJuegosJugador(numJugador));
-            numJugador++;
+        for (int j = 0; j < getCantJugActuales(); j++) {
+            vista.mostrarJuegos(partida.getNombreJugador(j),
+                    enviarJuegosJugador(j));
         }
     }
 
@@ -328,7 +323,7 @@ public class Controlador implements IControladorRemoto {
         if (partida.comprobarAcomodarCarta(numJugadorAcomodar,iCarta,numJuego,getRonda())) {
             partida.acomodarEnJuegoAjeno(numJugador,iCarta,numJuego);
             vista.mostrarAcomodoCarta(partida.getNombreJugador(numJugadorAcomodar));
-            mostrarJuegosEnMesa(numJugador+1);
+            mostrarJuegosEnMesa();
         } else {
             vista.mostrarInfo(ifVista.NO_PUEDE_ACOMODAR);
         }
