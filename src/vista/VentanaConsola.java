@@ -283,7 +283,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         int i = 1;
         StringBuilder s = new StringBuilder();
         for (String carta : cartas) {
-            s.append(i).append(" - ").append(carta).append("||");
+            s.append(i).append(" - ").append(carta).append(" || ");
             i++;
         }
         return s.toString();
@@ -373,16 +373,22 @@ public class VentanaConsola extends JFrame implements ifVista {
             do {
                 iCarta = Integer.parseInt(preguntarInputMenu("Carta " + (i + 1) +
                         ":\nIndica el índice de la carta que quieres bajar: "))-1;
-            } while (iCarta < 0 || iCarta >= manoSize || estaEnCartasABajar(cartasABajar,iCarta));
+            } while (iCarta < 0 || iCarta >= manoSize);
             cartasABajar[i] = iCarta;
+        }
+        if (hayRepetidos(cartasABajar)) {
+            mostrarInfo("Debe ingresar los índices de nuevo");
+            preguntarQueBajarParaJuego();
         }
         return cartasABajar;
     }
 
-    private boolean estaEnCartasABajar(int[] cartasABajar, int valor) {
-        for (int carta : cartasABajar) {
-            if (carta == valor) {
-                return true;
+    public static boolean hayRepetidos(int[] array) {
+        for (int i = 0; i < array.length; i++) {
+            for (int j = i + 1; j < array.length; j++) {
+                if (array[i] == array[j]) {
+                    return true;
+                }
             }
         }
         return false;
