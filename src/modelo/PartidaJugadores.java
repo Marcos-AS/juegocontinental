@@ -146,7 +146,8 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
         return arrayPuntos;
     }
 
-    public static Jugador determinarGanador(ArrayList<Jugador> jugadoresActuales) throws RemoteException {
+    public static Jugador determinarGanador(ArrayList<Jugador> jugadoresActuales)
+            throws RemoteException {
         Jugador ganador = jugadoresActuales.get(0);
         int menosPuntos = ganador.getPuntosPartida();
         for(Jugador j: jugadoresActuales) {

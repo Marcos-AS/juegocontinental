@@ -14,7 +14,7 @@ public interface ifVista {
     int ELECCION_TIRAR_AL_POZO = 2;
     int ELECCION_ORDENAR_CARTAS = 3;
     int ELECCION_ACOMODAR_JUEGO_PROPIO = 4;
-    int ELECCION_ACOMODAR_JUEGO_AJENO = 6;
+    int ELECCION_ACOMODAR_JUEGO_AJENO = 5;
     int ELECCION_ROBAR_DEL_MAZO = 1;
     int ELECCION_ROBAR_DEL_POZO = 2;
     int ELECCION_ROBAR_CON_CASTIGO = 2;
@@ -31,8 +31,16 @@ public interface ifVista {
     String YA_NO_PUEDE_BAJAR = "No puedes volver a bajar juegos en esta ronda (tampoco robar con castigo).";
     String MOSTRAR_JUEGO_INVALIDO = "No puedes bajar porque la combinacion elegida no forma un juego valido para la ronda\n";
     String PREGUNTA_NUMERO_JUEGO = "En qué número de juego quieres acomodar tu carta?";
-    String MENU_ROBAR = "Querés robar del mazo o robar del pozo?\n1 - Robar del mazo\n2 - Robar del pozo\nElige una opción: ";
     String PREGUNTA_ROBAR_CASTIGO = "Quieres robar con castigo? (robar del pozo y robar del mazo)\n1 - No\n2 - Si";
+    String MENU_ROBAR = "Querés robar del mazo o robar del pozo?\n1 - Robar del mazo\n2 - Robar del pozo\n-1 - Guardar partida y salir\nElige una opción: ";
+    String MENU_BAJAR = """
+        Elije una opción:
+        1 - Bajar uno o más juegos
+        2 - Tirar al pozo
+        3 - Ordenar cartas
+        4 - Acomodar en un juego bajado propio
+        5 - Acomodar en un juego bajado ajeno
+        -1 - Guardar partida y salir""";
     String MENU_INICIAR = """
         Bienvenido al juego Continental
         Elije una opción:
@@ -206,7 +214,7 @@ public interface ifVista {
     int getNumJugadorAcomodar();
     String getNombreVista();
     String getCartasString(ArrayList<String> cartas);
-    int menuBajar(String combo);
+    int menuBajar();
     int[] preguntarParaOrdenarCartas();
     int preguntarCartaParaAcomodar();
     void mostrarJuegos(String nombreJugador, ArrayList<ArrayList<String>> juegos);

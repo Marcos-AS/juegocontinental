@@ -114,4 +114,5 @@ public interface ifPartida extends IObservableRemoto, Serializable {
 
     int getPuedeBajar(int numJugadorRoboCastigo) throws RemoteException;
     void incPuedeBajar(int numJugador) throws RemoteException;
+    void guardarPartida() throws RemoteException;
 }

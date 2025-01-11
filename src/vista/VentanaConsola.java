@@ -246,7 +246,6 @@ public class VentanaConsola extends JFrame implements ifVista {
         String resp;
         do
             resp = JOptionPane.showInputDialog(null, s,nombreVista,JOptionPane.QUESTION_MESSAGE);
-            //resp = mostrarInputDialog(mostrar, nombreVista, 600, 600);
         while (!validarEntrada(resp));
         return resp;
     }
@@ -292,18 +291,11 @@ public class VentanaConsola extends JFrame implements ifVista {
         return s.toString();
     }
 
-    public int menuBajar(String combo) {
+    public int menuBajar() {
         int eleccion = 0;
-        String s = combo + "\n";
-        while (eleccion < 1 || eleccion > 8) {
-            s += """
-                Elije una opción:
-                1 - Bajar uno o más juegos
-                2 - Tirar al pozo
-                3 - Ordenar cartas
-                4 - Acomodar en un juego bajado propio
-                5 - Acomodar en un juego bajado ajeno""";
-            eleccion = Integer.parseInt(preguntarInput(s));
+        while (eleccion < ELECCION_BAJARSE || eleccion > ELECCION_ACOMODAR_JUEGO_AJENO) {
+            eleccion = Integer.parseInt(preguntarInput(MENU_BAJAR));
+            if (eleccion == ELECCION_SALIR) break;
         }
         return eleccion;
     }

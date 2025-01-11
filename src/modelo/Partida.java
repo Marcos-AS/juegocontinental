@@ -40,6 +40,10 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         return Partida.instancia;
     }
 
+    public void guardarPartida() throws RemoteException {
+
+    }
+
     public boolean isTurnoActual(int numJugador) throws RemoteException {
         return jugadores.get(numJugador).isTurnoActual();
     }
@@ -314,7 +318,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
 
     private void finPartida() throws RemoteException {
         setEnCurso();
-        determinarGanador(); //al finalizar las rondas
+        determinarGanador();
         serializarGanador();
         notificarObservadores(NOTIFICACION_GANADOR);
         //lo siguiente es para poder seguir jugando otras partidas

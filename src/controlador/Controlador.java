@@ -179,7 +179,8 @@ public class Controlador implements IControladorRemoto {
         int numJugador = partida.getNumTurno();
         partida.actualizarMano(numJugador);
         while(partida.isTurnoActual(numJugador)) {
-            int eleccion = vista.menuBajar(ifVista.mostrarCombinacionRequerida(getRonda()));
+            int eleccion = vista.menuBajar();
+            if (eleccion == ifVista.ELECCION_SALIR) break;
             switchMenuBajar(eleccion);
             partida.actualizarMano(numJugador);
         }

@@ -390,7 +390,7 @@ public class GUI implements ifVista {
     }
 
     @Override
-    public int menuBajar(String combo) {
+    public int menuBajar() {
         activarBotonesBajar();
         return 0;
     }
