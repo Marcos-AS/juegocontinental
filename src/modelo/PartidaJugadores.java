@@ -167,10 +167,11 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
     }
 
     public static void resetearJuegosJugadores(ArrayList<Jugador> jugadoresActuales) throws RemoteException {
-        for (Jugador Jugador : jugadoresActuales) {
-            Jugador.setTriosBajados(0);
-            Jugador.setEscalerasBajadas(0);
-            Jugador.setPuedeBajar(0);
+        for (Jugador jugador : jugadoresActuales) {
+            jugador.setTriosBajados(0);
+            jugador.setEscalerasBajadas(0);
+            jugador.setPuedeBajar(0);
+            jugador.resetJuegos();
         }
     }
 

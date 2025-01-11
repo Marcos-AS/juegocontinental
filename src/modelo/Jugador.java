@@ -205,4 +205,8 @@ public class Jugador extends ObservableRemoto implements Serializable, ifJugador
     public void sumarPartida(Partida p) throws RemoteException {
         partidas.add(p);
     }
+
+    public void resetJuegos() {
+        juegos = new ArrayList<>();
+    }
 }
