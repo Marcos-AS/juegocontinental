@@ -42,7 +42,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     }
 
     public void inicioRonda() throws RemoteException {
-        if (!isRondaEmpezada())
+        if (!rondaEmpezada)
             empezarRonda();
         notificarObservadores(NOTIFICACION_CAMBIO_TURNO);
     }
@@ -114,7 +114,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         setNumJugadorQueEmpezoPartida(observadorIndex);
         numJugadorQueEmpiezaRonda = observadorIndex;
         notificarObservador(observadorIndex, NOTIFICACION_NUEVA_PARTIDA_PROPIO);
-
     }
 
     private ArrayList<ifCarta> getMano(int numJugador) throws RemoteException {
@@ -174,12 +173,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     }
 
     @Override
-    public int getTotalRondas() throws RemoteException {
-        return TOTAL_RONDAS;
-    }
-
-
-    @Override
     public int getNumRonda() throws RemoteException {
         return numRonda;
     }
@@ -194,19 +187,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     public Jugador getJugador(String nombreJugador)  throws RemoteException{
         return PartidaJugadores.getJugador(jugadores, nombreJugador);
     }
-
-
-    @Override
-    public boolean isRondaEmpezada() throws RemoteException {
-        return rondaEmpezada;
-    }
-
-
-    @Override
-    public void setRondaEmpezada(boolean rondaEmpezada) throws RemoteException {
-        this.rondaEmpezada = rondaEmpezada;
-    }
-
 
     @Override
     public void crearMazo() throws RemoteException {
@@ -315,7 +295,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     public void finTurno() throws RemoteException {
         if (!isFinRonda()) {
             incTurno();
-            notificarObservador(numTurno,NOTIFICACION_CAMBIO_TURNO);
         }
     }
 
@@ -334,7 +313,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     }
 
     private void finRonda(int numJugador) throws RemoteException {
-        setRondaEmpezada(false);
+        rondaEmpezada = false;
         setTurnoJugador(numJugador, false);
         setNumJugadorCorte(numJugador);
         incrementarNumJugadorQueEmpiezaRonda();
@@ -405,11 +384,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     @Override
     public String getNombreJugador(int numJugador) throws RemoteException {
         return jugadores.get(numJugador).getNombre();
-    }
-
-    @Override
-    public int getNumJugadorQueEmpiezaRonda() throws RemoteException {
-        return numJugadorQueEmpiezaRonda;
     }
 
     @Override

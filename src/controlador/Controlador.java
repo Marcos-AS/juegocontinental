@@ -199,6 +199,10 @@ public class Controlador implements IControladorRemoto {
         partida.finTurno();
     }
 
+    public void finTurno() throws RemoteException {
+        partida.notificarObservador(partida.getNumTurno(),NOTIFICACION_CAMBIO_TURNO);
+    }
+
     public void desarrolloRobo() {
         String eleccion = vista.preguntarInputRobar();
         if (Objects.equals(eleccion, "1")) {

@@ -112,6 +112,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         ctrl.desarrolloRobo();
         try {
             ctrl.desarrolloTurno();
+            ctrl.finTurno();
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
