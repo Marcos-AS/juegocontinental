@@ -114,7 +114,7 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
     }
 
     public static int sumarPuntos(Jugador j) throws RemoteException {
-        int puntos = 0;
+        int puntos = j.puntosPartida;
         for (Carta c : j.getMano()) {
             int num = c.getNumero();
             switch (num) {

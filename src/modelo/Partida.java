@@ -412,6 +412,9 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     @Override
     public void incrementarNumJugadorQueEmpiezaRonda() throws RemoteException {
         numJugadorQueEmpiezaRonda++;
+        if (numJugadorQueEmpiezaRonda >= jugadores.size()) {
+            numJugadorQueEmpiezaRonda = 0;
+        }
     }
 
     @Override
