@@ -293,13 +293,9 @@ public class GUI implements ifVista {
     }
 
     public JPanel addManoToPanel() {
-        // Panel para la mano del jugador
         panelMano = new JPanel(new FlowLayout());
         panelMano.setBorder(BorderFactory.createTitledBorder("Tu mano"));
         panelMano.setBackground(Color.LIGHT_GRAY);
-        for (int i = 0; i < 6; i++) {
-            panelMano.add(new JButton());
-        }
         return panelMano;
     }
 
