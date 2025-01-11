@@ -282,6 +282,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
             notificarObservadores(NOTIFICACION_COMIENZO_RONDA);
             actualizarManoJugadores();
             notificarObservadores(NOTIFICACION_ACTUALIZAR_POZO);
+            notificarObservadores(NOTIFICACION_ACTUALIZAR_JUEGOS);
         }
     }
 

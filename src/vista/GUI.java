@@ -437,6 +437,11 @@ public class GUI implements ifVista {
 
     }
 
+    @Override
+    public void actualizarRestricciones(boolean restriccion) {
+
+    }
+
     public int preguntarCartaParaAcomodar() {
         return Integer.parseInt(
                 preguntarInputMenu("Indica el número de carta que quieres acomodar" +
