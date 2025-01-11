@@ -113,7 +113,7 @@ public class GUI implements ifVista {
                 if (inicioPartida == FALTAN_JUGADORES) {
                     mostrarInfo("Esperando que ingresen más jugadores...");
                 } else if (inicioPartida == INICIAR_PARTIDA) {
-                    //ctrl.notificarComienzoPartida();
+                    ctrl.empezarRonda();
                     ctrl.cambioTurno();
                 }
             } catch (RemoteException ex) {
@@ -399,7 +399,7 @@ public class GUI implements ifVista {
         manoSize = cartas.size();
         panelMano.removeAll();
         for (String carta : cartas) {
-            //System.out.println("cargando desde " + carta);
+            System.out.println("cargando desde " + carta);
             panelMano.add(getImageButton(carta));
         }
         panelMano.revalidate();
