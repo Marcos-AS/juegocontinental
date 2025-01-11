@@ -93,8 +93,11 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         boolean corte = false;
         int sizeMano = jugadores.get(numJugador).getMano().size();
         if (sizeMano <= 1) {
-            if (sizeMano == 1)
-                tirarAlPozo(numJugador,0);
+            if (sizeMano == 1) {
+                tirarAlPozo(numJugador, 0);
+            } else {
+                jugadores.get(numJugador).setTurnoActual(false);
+            }
             setPuedeBajar(numJugador, 0);
             corte = true;
         }

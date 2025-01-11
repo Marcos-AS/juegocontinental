@@ -165,13 +165,12 @@ public class Controlador implements IControladorRemoto {
         return partida.getJugadores().get(numJugadorPartida);
     }
 
-    public boolean switchMenuBajar(int eleccion) throws RemoteException {
+    public void switchMenuBajar(int eleccion) throws RemoteException {
         int numJugador = partida.getNumTurno();
-        boolean bajoJuegos = false;
         if (partida.isTurnoActual(numJugador)) {
             switch (eleccion) {
                 case ifVista.ELECCION_BAJARSE:
-                    bajoJuegos = bajarJuegos(numJugador);
+                    bajarJuegos(numJugador);
                     break;
                 case ifVista.ELECCION_TIRAR_AL_POZO:
                     tirarAlPozoTurno();
@@ -187,7 +186,6 @@ public class Controlador implements IControladorRemoto {
                     break;
             }
         }
-        return bajoJuegos;
     }
 
     public void desarrolloTurno() throws RemoteException {
@@ -226,7 +224,7 @@ public class Controlador implements IControladorRemoto {
         }
     }
 
-    public boolean bajarJuegos(int numJugador) throws RemoteException {
+    public void bajarJuegos(int numJugador) throws RemoteException {
         int cantVecesQueBajo = partida.getPuedeBajar(numJugador);
         if (cantVecesQueBajo == 0) {
             vista.mostrarInfo(ifVista.ADVERTENCIA_BAJARSE);
@@ -236,7 +234,7 @@ public class Controlador implements IControladorRemoto {
         } else {
             vista.mostrarInfo(ifVista.YA_NO_PUEDE_BAJAR);
         }
-        return bajarseYComprobarCortar(numJugador);
+        bajarseYComprobarCortar(numJugador);
     }
 
     public void ordenarCartas(int numJugador) throws RemoteException {
@@ -329,9 +327,8 @@ public class Controlador implements IControladorRemoto {
         }
     }
 
-    private boolean bajarseYComprobarCortar(int numJugador) throws RemoteException {
+    private void bajarseYComprobarCortar(int numJugador) throws RemoteException {
         boolean puedeCortar = false;
-        boolean bajoJuegos = false;
         while (!puedeCortar && vista.preguntarSiQuiereSeguirBajandoJuegos()) {
             int[] indicesCartas = vista.preguntarQueBajarParaJuego();
             while (hayRepetidos(indicesCartas)) {
@@ -340,7 +337,6 @@ public class Controlador implements IControladorRemoto {
             }
             if (partida.comprobarBajarse(numJugador, indicesCartas)
             != Comprobar.JUEGO_INVALIDO) {
-                bajoJuegos = true;
                 partida.incPuedeBajar(numJugador);
                 partida.notificarObservadores(NOTIFICACION_BAJO_JUEGO);
                 puedeCortar = Comprobar.comprobarPosibleCorte(getRonda(),
@@ -351,13 +347,13 @@ public class Controlador implements IControladorRemoto {
             }
         }
         if (puedeCortar) {
-            if(!partida.cortar(numJugador))
+            boolean corte = partida.cortar(numJugador);
+            if(!corte)
                 vista.mostrarInfo("Para cortar debe quedarte en la mano 1 o 0 cartas");
         } else {
             int[] faltante = partida.comprobarQueFaltaParaCortar(numJugador);
             vista.mostrarInfo("Para cortar faltan " + faltante[0] + " trios y " + faltante[1] + " escaleras");
         }
-        return bajoJuegos;
     }
 
     private static boolean hayRepetidos(int[] array) {
