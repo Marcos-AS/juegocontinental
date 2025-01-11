@@ -274,7 +274,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     public void finTurno() throws RemoteException {
         if (isFinRonda()) {
             finRonda(numTurno);
-            if (numRonda >= TOTAL_RONDAS) {
+            if (numRonda > TOTAL_RONDAS) {
                 finPartida();
             } else {
                 empezarRonda();

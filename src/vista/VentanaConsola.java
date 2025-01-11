@@ -29,7 +29,7 @@ public class VentanaConsola extends JFrame implements ifVista {
     private void setFrame() {
         JFrame frame = new JFrame("Mano " + nombreVista);
         frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
-        frame.setSize(500,800);
+        frame.setSize(600,800);
         panelPozo = new JPanel();
         panelMano = new JPanel();
         panelInfoRonda = new JPanel();
@@ -73,9 +73,10 @@ public class VentanaConsola extends JFrame implements ifVista {
                         } else if (inicioPartida == FALTAN_JUGADORES) {
                             mostrarInfo("Esperando que ingresen más jugadores...");
                         } else if (inicioPartida == INICIAR_PARTIDA) {
-                            partidaIniciada = true;
+                            //partidaIniciada = true;
                             ctrl.empezarRonda();
                             ctrl.cambioTurno();
+                            //partidaIniciada = false;
                         }
                     } else {
                         mostrarInfo("Primero tienes que crear una partida");
