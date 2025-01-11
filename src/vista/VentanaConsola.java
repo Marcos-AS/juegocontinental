@@ -73,10 +73,8 @@ public class VentanaConsola extends JFrame implements ifVista {
                         } else if (inicioPartida == FALTAN_JUGADORES) {
                             mostrarInfo("Esperando que ingresen más jugadores...");
                         } else if (inicioPartida == INICIAR_PARTIDA) {
-                            //partidaIniciada = true;
                             ctrl.empezarRonda();
                             ctrl.cambioTurno();
-                            //partidaIniciada = false;
                         }
                     } else {
                         mostrarInfo("Primero tienes que crear una partida");
@@ -91,12 +89,6 @@ public class VentanaConsola extends JFrame implements ifVista {
                     mostrarInfo(ifVista.REGLAS);
                     break;
                 }
-                //                case 5: {
-                //                    Object[] partidas = srl.readObjects();
-                //                    for (Object o : partidas) {
-                //                        System.out.println(o.toString());
-                //                    }
-                //                }
             }
         } while (eleccion != -1 && !partidaIniciada);
     }
@@ -106,7 +98,6 @@ public class VentanaConsola extends JFrame implements ifVista {
         String nombre = ctrl.getTurnoDe();
         if (nombre.equals(nombreVista)) {
             ctrl.desarrolloRobo();
-            //jugar();
             try {
                 ctrl.desarrolloTurno();
                 ctrl.cambioTurno();
