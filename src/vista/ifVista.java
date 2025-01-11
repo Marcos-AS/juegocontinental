@@ -14,10 +14,7 @@ public interface ifVista {
     int ELECCION_TIRAR_AL_POZO = 2;
     int ELECCION_ORDENAR_CARTAS = 3;
     int ELECCION_ACOMODAR_JUEGO_PROPIO = 4;
-    int ELECCION_VER_JUEGOS_BAJADOS = 5;
     int ELECCION_ACOMODAR_JUEGO_AJENO = 6;
-    int ELECCION_VER_JUEGOS_BAJADOS_MESA = 7;
-    int ELECCION_VER_POZO = 8;
     int ELECCION_ROBAR_DEL_MAZO = 1;
     int ELECCION_ROBAR_DEL_POZO = 2;
     int ELECCION_ROBAR_CON_CASTIGO = 2;
@@ -212,7 +209,7 @@ public interface ifVista {
     int menuBajar(String combo);
     int[] preguntarParaOrdenarCartas();
     int preguntarCartaParaAcomodar();
-    void mostrarJuegos(ArrayList<ArrayList<String>> juegos);
+    void mostrarJuegos(String nombreJugador, ArrayList<ArrayList<String>> juegos);
     String preguntarInput(String s);
     String preguntarInputMenu(String s);
     boolean preguntarSiQuiereSeguirBajandoJuegos();
@@ -226,4 +223,5 @@ public interface ifVista {
     void cambioTurno();
     void actualizarManoJugador(ArrayList<String> cartas);
     void actualizarPozo(String cartaATirar);
+    void actualizarJuegos();
 }

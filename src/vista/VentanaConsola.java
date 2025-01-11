@@ -297,10 +297,7 @@ public class VentanaConsola extends JFrame implements ifVista {
                 2 - Tirar al pozo
                 3 - Ordenar cartas
                 4 - Acomodar en un juego bajado propio
-                5 - Ver juegos bajados propios
-                6 - Acomodar en un juego bajado ajeno
-                7 - Ver juegos bajados de todos los jugadores
-                8 - Ver pozo""";
+                5 - Acomodar en un juego bajado ajeno""";
             eleccion = Integer.parseInt(preguntarInput(s));
         }
         return eleccion;
@@ -334,26 +331,32 @@ public class VentanaConsola extends JFrame implements ifVista {
 
     public void mostrarAcomodoCarta(String nombre) {
         mostrarInfo("Se acomodó la carta en el juego.");
-        mostrarInfo("Juegos de " + nombre + ": ");
     }
 
-    public void mostrarJuegos(ArrayList<ArrayList<String>> juegos) {
-        StringBuilder mostrar = new StringBuilder("<html>Juegos de " + nombreVista + "<br>");
+    public void mostrarJuegos(String nombreJugador, ArrayList<ArrayList<String>> juegos) {
+        StringBuilder mostrar = new StringBuilder("<html>");
         int numJuego = 1;
-//        if (juegos.isEmpty()) {
-//            mostrarInfo("No tiene juegos bajados.");
-//        }
-//        else {
-        for (ArrayList<String> juego : juegos) {
-            mostrar.append("Juego N° ").append(numJuego).append(": ").append(getCartasString(juego)).append("<br>");
-            numJuego++;
+        mostrar.append("Juegos de ").append(nombreJugador).append(": <br>");
+        if (juegos.isEmpty()) {
+            mostrar.append("No tiene juegos bajados.");
         }
+        else {
+            for (ArrayList<String> juego : juegos) {
+                mostrar.append("Juego N° ").append(numJuego).append(": ").append(getCartasString(juego)).append("<br>");
+                numJuego++;
+            }
+        }
+        mostrar.append("<br><br>");
         JLabel labelJuegos = new JLabel(String.valueOf(mostrar));
-        panelJuegos.removeAll();
         panelJuegos.add(labelJuegos);
         panelJuegos.revalidate();
         panelJuegos.repaint();
-//        }
+    }
+
+    public void actualizarJuegos() {
+        panelJuegos.removeAll();
+        panelJuegos.revalidate();
+        panelJuegos.repaint();
     }
 
     public boolean preguntarSiQuiereSeguirBajandoJuegos() {

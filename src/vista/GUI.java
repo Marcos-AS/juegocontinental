@@ -438,7 +438,7 @@ public class GUI implements ifVista {
                         " en un juego"));
     }
 
-    public void mostrarJuegos(ArrayList<ArrayList<String>> juegos) {
+    public void mostrarJuegos(String nombreJugador, ArrayList<ArrayList<String>> juegos) {
         JPanel panelJuegos = panelMap.get("Juegos");
         panelJuegos.removeAll();
         panelJuegos.revalidate();

@@ -105,9 +105,7 @@ public class Controlador implements IControladorRemoto {
 //                }
                 case NOTIFICACION_BAJO_JUEGO: {
                     String nombre = partida.getNombreJugador(partida.getNumTurno());
-                    if (!vista.getNombreVista().equals(nombre)) {
-                        vista.mostrarJuegos(enviarJuegosJugador(partida.getNumTurno()));
-                    }
+                    vista.mostrarJuegos(nombre,enviarJuegosJugador(partida.getNumTurno()));
                     break;
                 }
             }
@@ -183,15 +181,6 @@ public class Controlador implements IControladorRemoto {
                 case ifVista.ELECCION_ACOMODAR_JUEGO_AJENO:
                     acomodarAjeno(numJugador);
                     break;
-                case ifVista.ELECCION_VER_JUEGOS_BAJADOS:
-                    vista.mostrarJuegos(enviarJuegosJugador(numJugador));
-                    break;
-                case ifVista.ELECCION_VER_JUEGOS_BAJADOS_MESA:
-                    mostrarJuegosEnMesa(numJugador + 1);
-                    break;
-                case ifVista.ELECCION_VER_POZO:
-                    vista.mostrarInfo(ifVista.getPozoString(getPozo()));
-                    break;
             }
         }
         return bajoJuegos;
@@ -255,7 +244,6 @@ public class Controlador implements IControladorRemoto {
         ArrayList<ArrayList<String>> juegos = enviarJuegosJugador(numJugador);
         if (!juegos.isEmpty()) {
             int cartaAcomodar = vista.preguntarCartaParaAcomodar();
-            vista.mostrarJuegos(juegos);
             acomodarEnJuegoPropio(cartaAcomodar,numJugador,
                     Integer.parseInt(vista
                             .preguntarInput(ifVista.PREGUNTA_NUMERO_JUEGO))-1);
@@ -266,11 +254,9 @@ public class Controlador implements IControladorRemoto {
 
     public void acomodarAjeno(int numJugador) throws RemoteException {
         if (hayJuegosEnMesa(numJugador)) {
-            mostrarJuegosEnMesa(numJugador+1);
             int iCartaAcomodar =
                     vista.preguntarCartaParaAcomodar();
             int numJugadorAcomodar = vista.getNumJugadorAcomodar();
-            vista.mostrarJuegos(enviarJuegosJugador(numJugadorAcomodar));
             acomodarEnJuegoAjeno(iCartaAcomodar,
                     numJugador, numJugadorAcomodar, Integer
                             .parseInt(vista.preguntarInput(
@@ -299,7 +285,7 @@ public class Controlador implements IControladorRemoto {
             throws RemoteException {
         if(partida.comprobarAcomodarCarta(numJugador, iCarta, numJuego, getRonda())) {
             vista.mostrarAcomodoCarta(partida.getNombreJugador(numJugador));
-            vista.mostrarJuegos(enviarJuegosJugador(numJugador));
+            mostrarJuegosEnMesa(numJugador);
         } else {
             vista.mostrarInfo(ifVista.NO_PUEDE_ACOMODAR);
         }
@@ -322,12 +308,13 @@ public class Controlador implements IControladorRemoto {
 
     public void mostrarJuegosEnMesa(int numJugador) throws RemoteException {
         int cantJugadoresPartida = getCantJugActuales();
+        vista.actualizarJuegos();
         for (int j = 0; j < cantJugadoresPartida-1; j++) {
             if (numJugador>cantJugadoresPartida-1) {
                 numJugador = 0;
             }
-            vista.mostrarInfo("juegos de " + numJugador + ": ");
-            vista.mostrarJuegos(enviarJuegosJugador(numJugador));
+            vista.mostrarJuegos(partida.getNombreJugador(numJugador),
+                    enviarJuegosJugador(numJugador));
             numJugador++;
         }
     }
@@ -337,7 +324,7 @@ public class Controlador implements IControladorRemoto {
         if (partida.comprobarAcomodarCarta(numJugadorAcomodar,iCarta,numJuego,getRonda())) {
             partida.acomodarEnJuegoAjeno(numJugador,iCarta,numJuego);
             vista.mostrarAcomodoCarta(partida.getNombreJugador(numJugadorAcomodar));
-            vista.mostrarJuegos(enviarJuegosJugador(numJugadorAcomodar));
+            mostrarJuegosEnMesa(numJugador+1);
         } else {
             vista.mostrarInfo(ifVista.NO_PUEDE_ACOMODAR);
         }
