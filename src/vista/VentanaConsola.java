@@ -28,7 +28,7 @@ public class VentanaConsola extends JFrame implements ifVista {
 
     private void setFrame() {
         frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
-        frame.setSize(400,800);
+        frame.setSize(500,800);
         panelPozo = new JPanel();
         panelMano = new JPanel();
         panelInfoRonda = new JPanel();
@@ -376,22 +376,7 @@ public class VentanaConsola extends JFrame implements ifVista {
             } while (iCarta < 0 || iCarta >= manoSize);
             cartasABajar[i] = iCarta;
         }
-        if (hayRepetidos(cartasABajar)) {
-            mostrarInfo("Debe ingresar los índices de nuevo");
-            preguntarQueBajarParaJuego();
-        }
         return cartasABajar;
-    }
-
-    public static boolean hayRepetidos(int[] array) {
-        for (int i = 0; i < array.length; i++) {
-            for (int j = i + 1; j < array.length; j++) {
-                if (array[i] == array[j]) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     private int preguntarCantParaBajar() {

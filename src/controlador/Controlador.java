@@ -334,7 +334,12 @@ public class Controlador implements IControladorRemoto {
         boolean puedeCortar = false;
         boolean bajoJuegos = false;
         while (!puedeCortar && vista.preguntarSiQuiereSeguirBajandoJuegos()) {
-            if (partida.comprobarBajarse(numJugador, vista.preguntarQueBajarParaJuego())
+            int[] indicesCartas = vista.preguntarQueBajarParaJuego();
+            while (hayRepetidos(indicesCartas)) {
+                vista.mostrarInfo("Debe ingresar los índices de nuevo");
+                indicesCartas = vista.preguntarQueBajarParaJuego();
+            }
+            if (partida.comprobarBajarse(numJugador, indicesCartas)
             != Comprobar.JUEGO_INVALIDO) {
                 bajoJuegos = true;
                 partida.incPuedeBajar(numJugador);
@@ -354,6 +359,17 @@ public class Controlador implements IControladorRemoto {
             vista.mostrarInfo("Para cortar faltan " + faltante[0] + " trios y " + faltante[1] + " escaleras");
         }
         return bajoJuegos;
+    }
+
+    private static boolean hayRepetidos(int[] array) {
+        for (int i = 0; i < array.length; i++) {
+            for (int j = i + 1; j < array.length; j++) {
+                if (array[i] == array[j]) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void tirarAlPozoTurno()
