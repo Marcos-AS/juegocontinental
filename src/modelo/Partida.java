@@ -22,7 +22,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     private int numTurno;
     private ArrayList<Integer> jugadoresQuePuedenRobarConCastigo;
     private int numJugadorCorte;
-    private static final int TOTAL_RONDAS = 7;
+    private static final int TOTAL_RONDAS = 1;
     private int cantJugadoresDeseada;
     private boolean enCurso = false;
     private int numJugadorQueEmpezoPartida;
