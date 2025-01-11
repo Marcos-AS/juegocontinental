@@ -69,13 +69,9 @@ public class Controlador implements IControladorRemoto {
                     vista.mostrarInfo("Se ha iniciado una partida.");
                     break;
                 }
-//                case NOTIFICACION_COMIENZO_PARTIDA:
-//                    ArrayList<String> jugadores = new ArrayList<>();
-//                    for (Jugador j : partida.getJugadores()) {
-//                        jugadores.add(j.getNombre());
-//                    }
-//                    vista.mostrarComienzaPartida(jugadores);
-//                    break;
+                case NOTIFICACION_COMIENZO_PARTIDA:
+                    partida.empezarRonda();
+                    break;
                 case NOTIFICACION_AGREGAR_OBSERVADOR:
                     int observadorIndex = partida.getObservadorIndex(this);
                     int numJugador = partida.getJugador(vista.getNombreVista()).getNumeroJugador();
@@ -121,10 +117,6 @@ public class Controlador implements IControladorRemoto {
         }
     }
 
-    public void partida() throws RemoteException {
-        partida.inicioRonda();
-    }
-
     public String getTurnoDe() {
         try {
             return partida.getNombreJugador(partida.getNumTurno());
@@ -155,10 +147,6 @@ public class Controlador implements IControladorRemoto {
 
     public int getRonda() throws RemoteException {
         return partida.getNumRonda();
-    }
-
-    public ifCarta getPozo() throws RemoteException {
-        return partida.getPozo();
     }
 
     public ifJugador getJugadorPartida(int numJugadorPartida) throws RemoteException {
@@ -199,7 +187,7 @@ public class Controlador implements IControladorRemoto {
         partida.finTurno();
     }
 
-    public void finTurno() throws RemoteException {
+    public void cambioTurno() throws RemoteException {
         partida.notificarObservador(partida.getNumTurno(),NOTIFICACION_CAMBIO_TURNO);
     }
 

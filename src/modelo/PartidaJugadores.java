@@ -20,7 +20,8 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
         return j;
     }
 
-    public static void repartirCartas(ArrayList<Jugador> jugadoresActuales, int numRonda, ArrayList<Carta> mazo) throws RemoteException {
+    public static void repartirCartas(ArrayList<Jugador> jugadoresActuales,
+                  int numRonda, ArrayList<Carta> mazo) throws RemoteException {
         for (Jugador j : jugadoresActuales) {
             switch (numRonda) {
                 case 1:
@@ -87,7 +88,8 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
         }
     }
 
-    private static void asignarEscalera(Jugador jugador, ArrayList<Carta> mazo) throws RemoteException {
+    private static void asignarEscalera(Jugador jugador, ArrayList<Carta> mazo)
+            throws RemoteException {
         for (Palo palo : Palo.values()) {
             for (int i = 1; i <= 10; i++) {
                 ArrayList<Carta> escalera = new ArrayList<>();

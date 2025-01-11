@@ -41,12 +41,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         return Partida.instancia;
     }
 
-    public void inicioRonda() throws RemoteException {
-        if (!rondaEmpezada)
-            empezarRonda();
-        notificarObservadores(NOTIFICACION_CAMBIO_TURNO);
-    }
-
     public boolean isTurnoActual(int numJugador) throws RemoteException {
         return jugadores.get(numJugador).isTurnoActual();
     }
@@ -305,8 +299,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
             finRonda(numTurno);
             if (numRonda >= TOTAL_RONDAS) {
                 finPartida();
-            } else {
-                inicioRonda();
             }
         }
         return fin;

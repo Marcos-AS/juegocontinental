@@ -75,7 +75,7 @@ public class VentanaConsola extends JFrame implements ifVista {
                         } else if (inicioPartida == INICIAR_PARTIDA) {
                             ctrl.notificarComienzoPartida();
                             partidaIniciada = true;
-                            ctrl.partida();
+                            ctrl.cambioTurno();
                         }
                     } else {
                         mostrarInfo("Primero tienes que crear una partida");
@@ -112,7 +112,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         ctrl.desarrolloRobo();
         try {
             ctrl.desarrolloTurno();
-            ctrl.finTurno();
+            ctrl.cambioTurno();
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
