@@ -5,8 +5,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class VentanaConsola extends JFrame implements ifVista {
     private Controlador ctrl;
@@ -207,39 +205,6 @@ public class VentanaConsola extends JFrame implements ifVista {
         JOptionPane.showMessageDialog(null, getCartasString(cartas),
                 "Jugador: " + nombreVista, JOptionPane.INFORMATION_MESSAGE);
 
-    }
-
-    private String mostrarInputDialog(String mostrar, String titulo, int ancho, int largo) {
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JPanel panel = new JPanel(new BorderLayout());
-        JLabel label = new JLabel(mostrar);
-        label.setFont(new Font("Arial", Font.PLAIN, 18));
-        label.setHorizontalAlignment(SwingConstants.CENTER);
-
-        JTextField campoTexto = new JTextField();
-        campoTexto.setFont(new Font("Arial", Font.PLAIN, 16));
-//        campoTexto.setMaximumSize(new Dimension(200,30));
-        panel.setPreferredSize(new Dimension(ancho, largo));
-        panel.add(label, BorderLayout.CENTER);
-        panel.add(campoTexto, BorderLayout.SOUTH);
-        int resultado = JOptionPane.showConfirmDialog(
-                null,
-                panel,
-                titulo,
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE
-        );
-
-//        panel.addFocusListener(a);
-//                (new WindowAdapter() {
-//            public void windowGainedFocus(WindowEvent e) {
-//                campoTexto.requestFocusInWindow();
-//            }
-//        });
-
-        if (resultado==JOptionPane.OK_OPTION)
-            return campoTexto.getText();
-        return null;
     }
 
     public String preguntarInputMenu(String s) {
