@@ -23,7 +23,6 @@ public class GUI implements ifVista {
     private static final Color fondo = new Color(34, 139, 34);
     private CardLayout cardLayout;
     private JPanel cardPanel;
-    private JPanel panelInfoRonda;
     private CountDownLatch latch;
     private JButton bajarJuegoBoton;
     private JButton tirarAlPozoBoton;
@@ -78,9 +77,10 @@ public class GUI implements ifVista {
         panelPozoConBorde.setLayout(new FlowLayout());
         panelPozoConBorde.setBorder(BorderFactory.createLineBorder(Color.RED, 5)); // Borde rojo de 5 píxeles
         panelPozoConBorde.add(cartaPozo);
-
         panelMap.put("panelPozo", panelPozoConBorde);
 
+        JPanel panelInfoRonda = new JPanel();
+        panelMap.put("panelInfoRonda", panelInfoRonda);
 
         inicializarMenu();
         frame.add(cardPanel);
@@ -390,6 +390,16 @@ public class GUI implements ifVista {
         return 0;
     }
 
+    @Override
+    public void comienzoRonda(int ronda) throws RemoteException {
+        JLabel label = new JLabel(ifVista.mostrarCombinacionRequerida(ronda));
+        JPanel panelInfoRonda = panelMap.get("panelInfoRonda");
+        panelInfoRonda.removeAll();
+        panelInfoRonda.add(label);
+        panelInfoRonda.revalidate();
+        panelInfoRonda.repaint();
+    }
+
     public void actualizarManoJugador(ArrayList<String> cartas) {
         JPanel panelMano = panelMap.get("Mano");
         panelMano.setBorder(BorderFactory.createTitledBorder("Tu mano"));
@@ -598,10 +608,6 @@ public class GUI implements ifVista {
     @Override
     public void mostrarAcomodoCarta(String nombre) {
         JOptionPane.showMessageDialog(frame, nombre + " está acomodando una carta.", "Acomodar Carta", JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    @Override
-    public void comienzoRonda(int ronda) throws RemoteException {
     }
 
     @Override
