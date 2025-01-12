@@ -69,6 +69,9 @@ public class GUI implements ifVista {
         panelMap.put("Pozo", panelPozo);
 
         JButton cartaPozo = new JButton();
+
+        buttonMap.put("cartaPozo", cartaPozo);
+
         cartaPozo.setToolTipText("Robar carta del pozo");
         panelPozo.setLayout(new FlowLayout());
         panelPozo.setBorder(BorderFactory.createLineBorder(Color.RED, 5)); // Borde rojo de 5 píxeles
