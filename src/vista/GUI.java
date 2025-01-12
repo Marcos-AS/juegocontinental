@@ -70,6 +70,18 @@ public class GUI implements ifVista {
         cardPanel.add(mano, "Mano");
         panelMap.put("Mano", mano);
 
+        JButton cartaPozo = new JButton();
+        cartaPozo.setToolTipText("Robar carta del pozo");
+        buttonMap.put("cartaPozo", cartaPozo);
+
+        JPanel panelPozoConBorde = new JPanel();
+        panelPozoConBorde.setLayout(new FlowLayout());
+        panelPozoConBorde.setBorder(BorderFactory.createLineBorder(Color.RED, 5)); // Borde rojo de 5 píxeles
+        panelPozoConBorde.add(cartaPozo);
+
+        panelMap.put("panelPozo", panelPozoConBorde);
+
+
         inicializarMenu();
         frame.add(cardPanel);
         cardLayout.show(cardPanel,"Menu");
@@ -231,19 +243,7 @@ public class GUI implements ifVista {
         JPanel panelCartas = new JPanel(new FlowLayout(FlowLayout.CENTER, 50, 20));
         panelCartas.setBackground(fondo); // Fondo verde estilo mesa
 
-        // Carta del Pozo (última carta visible)
-        JButton cartaPozo = new JButton();
-        cartaPozo.setToolTipText("Robar carta del pozo");
-        buttonMap.put("cartaPozo", cartaPozo);
-
-        JPanel panelPozoConBorde = new JPanel();
-        panelPozoConBorde.setLayout(new FlowLayout());
-        panelPozoConBorde.setBorder(BorderFactory.createLineBorder(Color.RED, 5)); // Borde rojo de 5 píxeles
-        panelPozoConBorde.add(cartaPozo);
-
-        panelMap.put("panelPozo", panelPozoConBorde);
-
-        panelCartas.add(panelPozoConBorde);
+        panelCartas.add(panelMap.get("panelPozo"));
 
         // Carta del Mazo (dada vuelta)
         JButton cartaMazo = getImageButton("carta-dada-vuelta");
@@ -251,6 +251,7 @@ public class GUI implements ifVista {
         panelCartas.add(cartaMazo);
 
         // Agregar listeners a las cartas
+        JButton cartaPozo = buttonMap.get("cartaPozo");
         cartaPozo.addMouseListener(new CartaListener("pozo"));
         cartaMazo.addMouseListener(new CartaListener("mazo"));
 
