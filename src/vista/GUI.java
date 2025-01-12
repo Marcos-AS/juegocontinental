@@ -99,9 +99,12 @@ public class GUI implements ifVista {
         botonIniciar.addActionListener(e -> {
             try {
                 botonIniciar.setEnabled(false);
+                int cantJugadores = 0;
                 if (!ctrl.isPartidaEnCurso()) {
-                    int cantJugadores = Integer.parseInt(preguntarInput("Cuántos jugadores" +
-                            " deseas para la nueva partida?"));
+                    while (cantJugadores < 2) {
+                        cantJugadores = Integer.parseInt(preguntarInput("Cuántos jugadores" +
+                                " deseas para la nueva partida?"));
+                    }
                     ctrl.crearPartida(cantJugadores);
                 } else {
                     mostrarInfo("Ya hay una partida en curso");
