@@ -165,7 +165,7 @@ public class GUI implements ifVista {
         crearBotones(panel);
 
         panel.add(addCartasToPanel(), BorderLayout.CENTER);
-
+        panel.add(panelMap.get("Mano"), BorderLayout.SOUTH);
         cardLayout.show(cardPanel,"Mesa");
     }
 
@@ -412,7 +412,6 @@ public class GUI implements ifVista {
         }
         panelMano.revalidate();
         panelMano.repaint();
-        cardLayout.show(cardPanel, "Mano");
     }
 
     private void activarBotonesBajar() {
