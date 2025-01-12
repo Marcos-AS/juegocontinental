@@ -19,13 +19,10 @@ public class GUI implements ifVista {
     private Dimension screenSize;
     private final JFrame frame = new JFrame("El Continental");
     private Map<String, JPanel> panelMap;
+    private Map<String, JButton> buttonMap = new HashMap<>();
     private static final Color fondo = new Color(34, 139, 34);
     private CardLayout cardLayout;
     private JPanel cardPanel;
-    private JButton cartaPozo;
-    private JButton cartaMazo;
-    private JPanel panelMano;
-    private JPanel panelPozoConBorde;
     private JPanel panelInfoRonda;
     private CountDownLatch latch;
     private JButton bajarJuegoBoton;
@@ -52,7 +49,6 @@ public class GUI implements ifVista {
         cardLayout = new CardLayout();
         frame.setLayout(cardLayout);
         cardPanel = new JPanel(cardLayout);
-        frame.add(cardPanel);
 
         JPanel menu = new JPanel();
         cardPanel.add(menu, "Menu");
@@ -62,15 +58,20 @@ public class GUI implements ifVista {
         cardPanel.add(esperar,"Esperar");
         panelMap.put("Esperar", esperar);
 
-        JPanel jugar = new JPanel();
-        cardPanel.add(jugar,"Jugar");
-        panelMap.put("Jugar", jugar);
+        JPanel mesa = new JPanel();
+        cardPanel.add(mesa,"Mesa");
+        panelMap.put("Mesa", mesa);
 
         JPanel juegos = new JPanel();
         cardPanel.add(juegos,"Juegos");
         panelMap.put("Juegos", juegos);
 
+        JPanel mano = new JPanel(new FlowLayout());
+        cardPanel.add(mano, "Mano");
+        panelMap.put("Mano", mano);
+
         inicializarMenu();
+        frame.add(cardPanel);
         cardLayout.show(cardPanel,"Menu");
         frame.setVisible(true);
     }
@@ -144,7 +145,7 @@ public class GUI implements ifVista {
     }
 
     private void jugar() {
-        JPanel panel = panelMap.get("Jugar");
+        JPanel panel = panelMap.get("Mesa");
         panel.removeAll();
         panel.revalidate();
         panel.repaint();
@@ -152,9 +153,8 @@ public class GUI implements ifVista {
         crearBotones(panel);
 
         panel.add(addCartasToPanel(), BorderLayout.CENTER);
-        panel.add(addManoToPanel(), BorderLayout.SOUTH);
 
-        cardLayout.show(cardPanel,"Jugar");
+        cardLayout.show(cardPanel,"Mesa");
     }
 
     private void crearBotones(JPanel panel) {
@@ -232,18 +232,21 @@ public class GUI implements ifVista {
         panelCartas.setBackground(fondo); // Fondo verde estilo mesa
 
         // Carta del Pozo (última carta visible)
-        cartaPozo = new JButton();
+        JButton cartaPozo = new JButton();
         cartaPozo.setToolTipText("Robar carta del pozo");
+        buttonMap.put("cartaPozo", cartaPozo);
 
-        panelPozoConBorde = new JPanel();
+        JPanel panelPozoConBorde = new JPanel();
         panelPozoConBorde.setLayout(new FlowLayout());
         panelPozoConBorde.setBorder(BorderFactory.createLineBorder(Color.RED, 5)); // Borde rojo de 5 píxeles
         panelPozoConBorde.add(cartaPozo);
 
+        panelMap.put("panelPozo", panelPozoConBorde);
+
         panelCartas.add(panelPozoConBorde);
 
         // Carta del Mazo (dada vuelta)
-        cartaMazo = getImageButton("carta-dada-vuelta");
+        JButton cartaMazo = getImageButton("carta-dada-vuelta");
         cartaMazo.setToolTipText("Robar carta del mazo");
         panelCartas.add(cartaMazo);
 
@@ -274,8 +277,10 @@ public class GUI implements ifVista {
     private void robarCarta(String origen, JButton botonOrigen) {
         botonOrigen.setEnabled(false);
         if ("pozo".equals(origen)) {
+            JButton cartaPozo = buttonMap.get("cartaPozo");
             cartaPozo.setVisible(false);
-            panelPozoConBorde.setBorder(BorderFactory.createLineBorder(Color.GREEN, 5));
+            JPanel panelPozo = panelMap.get("panelPozo");
+            panelPozo.setBorder(BorderFactory.createLineBorder(Color.GREEN, 5));
             resultadoRobar = "2"; // Si robó del pozo
         } else if ("mazo".equals(origen)) {
             resultadoRobar = "1"; // Si robó del mazo
@@ -290,13 +295,6 @@ public class GUI implements ifVista {
         // Crear el ImageIcon con la imagen redimensionada
         ImageIcon iconRedimensionado = new ImageIcon(imagenRedimensionada);
         return new JButton(iconRedimensionado);
-    }
-
-    public JPanel addManoToPanel() {
-        panelMano = new JPanel(new FlowLayout());
-        panelMano.setBorder(BorderFactory.createTitledBorder("Tu mano"));
-        panelMano.setBackground(Color.LIGHT_GRAY);
-        return panelMano;
     }
 
     private void esperar(String nombre) {
@@ -392,17 +390,19 @@ public class GUI implements ifVista {
     }
 
     public void actualizarManoJugador(ArrayList<String> cartas) {
+        JPanel panelMano = panelMap.get("Mano");
+        panelMano.setBorder(BorderFactory.createTitledBorder("Tu mano"));
+        panelMano.setBackground(Color.LIGHT_GRAY);
         manoSize = cartas.size();
         panelMano.removeAll();
         for (String carta : cartas) {
-            System.out.println("cargando desde " + carta);
+            //System.out.println("cargando desde " + carta);
             panelMano.add(getImageButton(carta));
         }
         panelMano.revalidate();
         panelMano.repaint();
+        cardLayout.show(cardPanel, "Mano");
     }
-
-
 
     private void activarBotonesBajar() {
         bajarJuegoBoton.setEnabled(true);
@@ -422,10 +422,11 @@ public class GUI implements ifVista {
     }
 
     public void actualizarPozo(String cartaATirar) {
-        panelPozoConBorde.removeAll();
-        panelPozoConBorde.add(getImageButton(cartaATirar));
-        panelPozoConBorde.revalidate();
-        panelPozoConBorde.repaint();
+        JPanel panelPozo = panelMap.get("panelPozo");
+        panelPozo.removeAll();
+        panelPozo.add(getImageButton(cartaATirar));
+        panelPozo.revalidate();
+        panelPozo.repaint();
     }
 
     @Override
