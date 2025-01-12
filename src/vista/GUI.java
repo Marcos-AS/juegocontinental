@@ -241,7 +241,7 @@ public class GUI implements ifVista {
         JPanel panelCartas = new JPanel(new FlowLayout(FlowLayout.CENTER, 50, 20));
         panelCartas.setBackground(fondo); // Fondo verde estilo mesa
 
-        panelCartas.add(panelMap.get("panelPozo"));
+        panelCartas.add(panelMap.get("Pozo"));
 
         // Carta del Mazo (dada vuelta)
         JButton cartaMazo = getImageButton("carta-dada-vuelta");
@@ -292,7 +292,7 @@ public class GUI implements ifVista {
         if ("pozo".equals(origen)) {
             JButton cartaPozo = buttonMap.get("cartaPozo");
             cartaPozo.setVisible(false);
-            JPanel panelPozo = panelMap.get("panelPozo");
+            JPanel panelPozo = panelMap.get("Pozo");
             panelPozo.setBorder(BorderFactory.createLineBorder(Color.GREEN, 5));
             resultadoRobar = "2"; // Si robó del pozo
         } else if ("mazo".equals(origen)) {
@@ -430,7 +430,7 @@ public class GUI implements ifVista {
     }
 
     public void actualizarPozo(String cartaATirar) {
-        JPanel panelPozo = panelMap.get("panelPozo");
+        JPanel panelPozo = panelMap.get("Pozo");
         panelPozo.removeAll();
         panelPozo.add(getImageButton(cartaATirar));
         panelPozo.revalidate();
