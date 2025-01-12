@@ -405,7 +405,7 @@ public class GUI implements ifVista {
     @Override
     public void comienzoRonda(int ronda) throws RemoteException {
         JLabel label = new JLabel(ifVista.mostrarCombinacionRequerida(ronda));
-        JPanel panelInfoRonda = panelMap.get("panelInfoRonda");
+        JPanel panelInfoRonda = panelMap.get("infoRonda");
         panelInfoRonda.removeAll();
         panelInfoRonda.add(label);
         panelInfoRonda.revalidate();
