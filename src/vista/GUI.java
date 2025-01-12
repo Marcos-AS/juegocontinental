@@ -42,6 +42,7 @@ public class GUI implements ifVista {
         frame.setLayout(cardLayout);
         cardPanel = new JPanel(cardLayout);
         panelMap = new HashMap<>();
+        buttonMap = new HashMap<>();
 
         JPanel panelMenu = new JPanel();
         JPanel panelEsperar = new JPanel();
