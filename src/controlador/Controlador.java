@@ -1,6 +1,11 @@
 package controlador;
 
-import modelo.*;
+import modelo.ifPartida;
+import modelo.Eventos;
+import modelo.ifCarta;
+import modelo.ifJugador;
+import modelo.Carta;
+import modelo.Comprobar;
 import rmimvc.src.cliente.IControladorRemoto;
 import rmimvc.src.observer.IObservableRemoto;
 import vista.ifVista;
@@ -32,7 +37,7 @@ public class Controlador implements IControladorRemoto {
                     break;
                 }
                 case NOTIFICACION_ACTUALIZAR_POZO: {
-                    Carta pozo = partida.getPozo();
+                    ifCarta pozo = partida.getPozo();
                     String actualizar = "";
                     if (pozo != null) {
                         actualizar = ifVista.cartaToString(pozo);
@@ -135,7 +140,7 @@ public class Controlador implements IControladorRemoto {
     public ArrayList<String> getJugadores() {
         ArrayList<String> nombresJugadores = new ArrayList<>();
         try {
-            for (Jugador j : partida.getJugadores()) {
+            for (ifJugador j : partida.getJugadores()) {
                 nombresJugadores.add(j.getNombre());
             }
         } catch (RemoteException e) {
@@ -182,7 +187,7 @@ public class Controlador implements IControladorRemoto {
             int eleccion = vista.menuBajar();
             if (eleccion == ifVista.ELECCION_SALIR) break;
             switchMenuBajar(eleccion);
-            partida.actualizarMano(numJugador);
+//            partida.actualizarMano(numJugador);
         }
         partida.finTurno();
     }
@@ -190,6 +195,14 @@ public class Controlador implements IControladorRemoto {
     public void finTurno() {
         try {
             partida.finTurno();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean isTurnoActual() {
+        try {
+            return partida.isTurnoActual(partida.getNumTurno());
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -227,6 +240,7 @@ public class Controlador implements IControladorRemoto {
     public void ordenarCartas(int numJugador) throws RemoteException {
         int[] cartasOrdenacion = vista.preguntarParaOrdenarCartas();
         partida.moverCartaEnMano(numJugador, cartasOrdenacion[0], cartasOrdenacion[1]);
+        partida.actualizarMano(numJugador);
     }
 
     public void acomodarPropio(int numJugador) throws RemoteException {
@@ -275,6 +289,7 @@ public class Controlador implements IControladorRemoto {
         if(partida.comprobarAcomodarCarta(numJugador, iCarta, numJuego, getRonda())) {
             vista.mostrarAcomodoCarta(partida.getNombreJugador(numJugador));
             mostrarJuegosEnMesa();
+            partida.actualizarMano(numJugador);
         } else {
             vista.mostrarInfo(ifVista.NO_PUEDE_ACOMODAR);
         }
@@ -309,6 +324,7 @@ public class Controlador implements IControladorRemoto {
             partida.acomodarEnJuegoAjeno(numJugador,iCarta,numJuego);
             vista.mostrarAcomodoCarta(partida.getNombreJugador(numJugadorAcomodar));
             mostrarJuegosEnMesa();
+            partida.actualizarMano(numJugador);
         } else {
             vista.mostrarInfo(ifVista.NO_PUEDE_ACOMODAR);
         }
@@ -317,6 +333,7 @@ public class Controlador implements IControladorRemoto {
     private void bajarseYComprobarCortar(int numJugador) throws RemoteException {
         boolean puedeCortar = false;
         while (!puedeCortar && vista.preguntarSiQuiereSeguirBajandoJuegos()) {
+
             int[] indicesCartas = vista.preguntarQueBajarParaJuego();
             while (hayRepetidos(indicesCartas)) {
                 vista.mostrarInfo("Debe ingresar los índices de nuevo");
@@ -326,6 +343,7 @@ public class Controlador implements IControladorRemoto {
             != Comprobar.JUEGO_INVALIDO) {
                 partida.incPuedeBajar(numJugador);
                 partida.notificarObservadores(NOTIFICACION_BAJO_JUEGO);
+                partida.actualizarMano(numJugador);
                 puedeCortar = Comprobar.comprobarPosibleCorte(getRonda(),
                         partida.getTriosBajados(numJugador),
                         partida.getEscalerasBajadas(numJugador));
@@ -385,26 +403,25 @@ public class Controlador implements IControladorRemoto {
 
     public Eventos jugarPartidaRecienIniciada() throws RemoteException {
         int i = 0;
-        Eventos inicio = PARTIDA_AUN_NO_CREADA;
+        Eventos inicio;
         boolean encontrado = false;
-        if (Partida.getInstancia() != null) {
-            int cantJugadoresActuales = getCantJugActuales();
-            while (i < cantJugadoresActuales && !encontrado) {
-                if (getJugadorPartida(i).getNombre().equals(vista.getNombreVista())) {
-                    encontrado = true; //significa que el creó la partida, llamó a esta funcion
-                }
-                i++;
+        int cantJugadoresActuales = getCantJugActuales();
+        while (i < cantJugadoresActuales && !encontrado) {
+            if (getJugadorPartida(i).getNombre().equals(vista.getNombreVista())) {
+                encontrado = true; //significa que el creó la partida, llamó a esta funcion
             }
-            if (!encontrado) {
-            //significa que la vista llamó a esta funcion pero no creó la partida
-                partida.crearYAgregarJugador(vista.getNombreVista(), partida.getObservadorIndex(this));
-            }
-            if (getCantJugActuales() == partida.getCantJugadoresDeseada()) {
-                inicio = INICIAR_PARTIDA;
-            } else {
-                inicio = FALTAN_JUGADORES;
-            }
+            i++;
         }
+        if (!encontrado) {
+        //significa que la vista llamó a esta funcion pero no creó la partida
+            partida.crearYAgregarJugador(vista.getNombreVista(), partida.getObservadorIndex(this));
+        }
+        if (getCantJugActuales() == partida.getCantJugadoresDeseada()) {
+            inicio = INICIAR_PARTIDA;
+        } else {
+            inicio = FALTAN_JUGADORES;
+        }
+
         if (inicio==INICIAR_PARTIDA) {
             partida.notificarObservadores(NOTIFICACION_AGREGAR_OBSERVADOR);
             partida.ponerJugadoresEnOrden();

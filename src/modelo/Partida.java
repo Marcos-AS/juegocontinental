@@ -22,7 +22,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     private int numTurno;
     private ArrayList<Integer> jugadoresQuePuedenRobarConCastigo;
     private int numJugadorCorte;
-    private static final int TOTAL_RONDAS = 1;
+    private static final int TOTAL_RONDAS = 7;
     private int cantJugadoresDeseada;
     private boolean enCurso = false;
     private int numJugadorQueEmpezoPartida;
@@ -252,7 +252,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         notificarObservadores(NOTIFICACION_HUBO_ROBO_CASTIGO);
     }
 
-    private void actualizarManoJugadores() throws RemoteException {
+    public void actualizarManoJugadores() throws RemoteException {
         int i = numTurno;
         int n = 0;
         while (n < jugadores.size()) {
@@ -273,6 +273,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         pozo = (jugadores.get(numJugador).getMano().remove(cartaATirar));
         jugadores.get(numJugador).setTurnoActual(false);
         notificarObservadores(NOTIFICACION_ACTUALIZAR_POZO);
+        actualizarMano(numJugador);
     }
 
     public void finTurno() throws RemoteException {

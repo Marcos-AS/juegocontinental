@@ -22,51 +22,51 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
 
     public static void repartirCartas(ArrayList<Jugador> jugadoresActuales,
                   int numRonda, ArrayList<Carta> mazo) throws RemoteException {
-        for (Jugador j : jugadoresActuales) {
-            switch (numRonda) {
-                case 1:
-                    asignarTrio(j, mazo);
-                    asignarTrio(j, mazo);
-                    break;
-                case 2:
-                    asignarTrio(j, mazo);
-                    asignarEscalera(j, mazo);
-                    break;
-                case 3:
-                    asignarEscalera(j, mazo);
-                    asignarEscalera(j, mazo);
-                    break;
-                case 4:
-                    asignarTrio(j, mazo);
-                    asignarTrio(j, mazo);
-                    asignarTrio(j, mazo);
-                    break;
-                case 5:
-                    asignarTrio(j, mazo);
-                    asignarTrio(j, mazo);
-                    asignarEscalera(j, mazo);
-                    break;
-                case 6:
-                    asignarTrio(j, mazo);
-                    asignarEscalera(j, mazo);
-                    asignarEscalera(j, mazo);
-                    break;
-                case 7:
-                    asignarEscalera(j, mazo);
-                    asignarEscalera(j, mazo);
-                    asignarEscalera(j, mazo);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Ronda no válida: " + numRonda);
-            }
-        }
-
-//        int numCartasARepartir = ifPartida.cartasPorRonda(numRonda);
-//        for(Jugador j: jugadoresActuales) {
-//            while (j.getMano().size() < numCartasARepartir) {
-//                j.agregarCarta(Mazo.sacarPrimeraDelMazo(mazo));
+//        for (Jugador j : jugadoresActuales) {
+//            switch (numRonda) {
+//                case 1:
+//                    asignarTrio(j, mazo);
+//                    asignarTrio(j, mazo);
+//                    break;
+//                case 2:
+//                    asignarTrio(j, mazo);
+//                    asignarEscalera(j, mazo);
+//                    break;
+//                case 3:
+//                    asignarEscalera(j, mazo);
+//                    asignarEscalera(j, mazo);
+//                    break;
+//                case 4:
+//                    asignarTrio(j, mazo);
+//                    asignarTrio(j, mazo);
+//                    asignarTrio(j, mazo);
+//                    break;
+//                case 5:
+//                    asignarTrio(j, mazo);
+//                    asignarTrio(j, mazo);
+//                    asignarEscalera(j, mazo);
+//                    break;
+//                case 6:
+//                    asignarTrio(j, mazo);
+//                    asignarEscalera(j, mazo);
+//                    asignarEscalera(j, mazo);
+//                    break;
+//                case 7:
+//                    asignarEscalera(j, mazo);
+//                    asignarEscalera(j, mazo);
+//                    asignarEscalera(j, mazo);
+//                    break;
+//                default:
+//                    throw new IllegalArgumentException("Ronda no válida: " + numRonda);
 //            }
 //        }
+
+        int numCartasARepartir = ifPartida.cartasPorRonda(numRonda);
+        for(Jugador j: jugadoresActuales) {
+            while (j.getMano().size() < numCartasARepartir) {
+                j.agregarCarta(Mazo.sacarPrimeraDelMazo(mazo));
+            }
+        }
     }
 
     private static void asignarTrio(Jugador j, ArrayList<Carta> mazo) throws RemoteException {

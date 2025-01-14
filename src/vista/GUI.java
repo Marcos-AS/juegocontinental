@@ -2,7 +2,6 @@ package vista;
 
 import controlador.Controlador;
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -11,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.List;
 
 public class GUI implements ifVista {
     private Controlador ctrl;
@@ -18,6 +18,7 @@ public class GUI implements ifVista {
     private final JFrame frame = new JFrame("El Continental");
     private static final Color fondo = new Color(34, 139, 34);
     private int manoSize;
+    private ArrayList<String> mano;
     private CardLayout cardLayout;
     private JPanel cardPanel;
     private Map<String, JPanel> panelMap;
@@ -36,6 +37,7 @@ public class GUI implements ifVista {
         frame.setSize(800,600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setIconImage(new ImageIcon(ifVista.asociarRuta("cartas_inicio")).getImage());
+        frame.setBackground(fondo);
 
         cardLayout = new CardLayout();
         frame.setLayout(cardLayout);
@@ -50,6 +52,7 @@ public class GUI implements ifVista {
         JPanel panelMano = new JPanel(new FlowLayout());
         JPanel panelInfoRonda = new JPanel();
         JPanel panelRestricciones = new JPanel();
+        JPanel panelPuntos = new JPanel();
 
         panelMano.setBorder(BorderFactory.createTitledBorder("Tu mano"));
         panelMano.setBackground(Color.LIGHT_GRAY);
@@ -66,8 +69,8 @@ public class GUI implements ifVista {
         panelMesa.add(panelMano, BorderLayout.NORTH);
         panelMesa.add(panelJuegos, BorderLayout.SOUTH);
         panelMesa.add(panelInfoRonda, BorderLayout.PAGE_START);
+        panelMesa.add(panelPuntos, BorderLayout.EAST);
         panelMesa.add(panelRestricciones, BorderLayout.PAGE_END);
-        cardLayout.show(cardPanel,"Mesa");
 
         cardPanel.add(panelMenu, "Menu");
         cardPanel.add(panelEsperar, "Esperar");
@@ -80,6 +83,7 @@ public class GUI implements ifVista {
         panelMap.put("Mano", panelMano);
         panelMap.put("infoRonda", panelInfoRonda);
         panelMap.put("Restricciones", panelRestricciones);
+        panelMap.put("Puntos", panelPuntos);
 
         inicializarMenu();
         frame.add(cardPanel);
@@ -166,6 +170,7 @@ public class GUI implements ifVista {
         JButton tirarAlPozoBoton = new JButton("Tirar al pozo");
         JButton acomodarPropioBoton = new JButton("Acomodar en un juego propio");
         JButton acomodarAjenoBoton = new JButton("Acomodar en un juego ajeno");
+        JButton ordenarBoton = new JButton("Ordenar mano");
 
         bajarJuegoBoton.setEnabled(false);
         tirarAlPozoBoton.setEnabled(false);
@@ -175,6 +180,11 @@ public class GUI implements ifVista {
         bajarJuegoBoton.addActionListener(e -> {
             try {
                 ctrl.switchMenuBajar(ifVista.ELECCION_BAJARSE);
+                if (!ctrl.isTurnoActual()) {
+                    activarBotonesBajar(false);
+                    ctrl.finTurno();
+                    ctrl.cambioTurno();
+                }
             } catch (RemoteException ex) {
                 throw new RuntimeException(ex);
             }
@@ -207,16 +217,26 @@ public class GUI implements ifVista {
             }
         });
 
+        ordenarBoton.addActionListener(e -> {
+            try {
+                ctrl.switchMenuBajar(ifVista.ELECCION_ORDENAR_CARTAS);
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
         JPanel panelBotones = new JPanel();
         panelBotones.add(bajarJuegoBoton);
         panelBotones.add(tirarAlPozoBoton);
         panelBotones.add(acomodarPropioBoton);
         panelBotones.add(acomodarAjenoBoton);
+        panelBotones.add(ordenarBoton);
 
         buttonMap.put("bajarJuego", bajarJuegoBoton);
         buttonMap.put("tirarAlPozo", tirarAlPozoBoton);
         buttonMap.put("acomodarPropio", acomodarPropioBoton);
         buttonMap.put("acomodarAjeno", acomodarAjenoBoton);
+        buttonMap.put("ordenar", ordenarBoton);
 
         panelMesa.add(panelBotones, BorderLayout.SOUTH);
     }
@@ -243,8 +263,10 @@ public class GUI implements ifVista {
         panelMano.removeAll();
         panelMano.revalidate();
         panelMano.repaint();
+        mano = new ArrayList<>();
         for (String carta : cartas) {
             //System.out.println("cargando desde " + carta);
+            mano.add(carta);
             panelMano.add(getImageButton(carta));
         }
         cardLayout.show(cardPanel, "Mesa");
@@ -323,28 +345,6 @@ public class GUI implements ifVista {
         return new JButton(iconRedimensionado);
     }
 
-    private void esperar(String nombre) {
-
-    }
-
-    private void generarTabla(JPanel panel){
-        panel.setLayout(new BorderLayout());
-        panel.setBackground(fondo);
-        String[] nombreColumnas = {"Jugador","Puntos"};
-        DefaultTableModel modelo = new DefaultTableModel(nombreColumnas,0);
-        JTable tabla = new JTable(modelo);
-        int[] puntos = ctrl.getPuntos();
-        ArrayList<String> nombres = ctrl.getJugadores();
-        for (int i = 0; i < puntos.length; i++){
-            Object[] fila = {nombres.get(i),puntos[i]};
-            modelo.addRow(fila);
-        }
-        JScrollPane scroll = new JScrollPane(tabla);
-        scroll.getViewport().setBackground(fondo);
-        scroll.setBorder(null);
-        panel.add(scroll,BorderLayout.CENTER);
-    }
-
     //IMPLEMENTACIÓN DE IFVISTA ---------------------------------------------------
 
     @Override
@@ -363,17 +363,68 @@ public class GUI implements ifVista {
         buttonMap.get("tirarAlPozo").setEnabled(activar);
         buttonMap.get("acomodarPropio").setEnabled(activar);
         buttonMap.get("acomodarAjeno").setEnabled(activar);
+        buttonMap.get("ordenar").setEnabled(activar);
     }
 
 
 
+//    public int preguntarQueBajarParaPozo() {
+//        int eleccion = -1;
+//        do {
+//            eleccion = Integer.parseInt(
+//                    preguntarInputMenu("Indica el índice de carta para tirar al pozo: "))-1;
+//        } while (eleccion < 0 || eleccion >= manoSize);
+//        return eleccion;
+//    }
+
     public int preguntarQueBajarParaPozo() {
-        int eleccion = -1;
-        do {
-            eleccion = Integer.parseInt(
-                    preguntarInputMenu("Indica el índice de carta para tirar al pozo: "))-1;
-        } while (eleccion < 0 || eleccion >= manoSize);
-        return eleccion;
+        // Crear un diálogo para la selección de una carta
+        JDialog dialogo = new JDialog((JFrame) SwingUtilities.getWindowAncestor(cardPanel), "Seleccionar carta para el pozo", true);
+        dialogo.setLayout(new BorderLayout());
+        dialogo.setSize(400, 400);
+        dialogo.setLocationRelativeTo(null);
+
+        // Panel para mostrar las cartas
+        JPanel panelCartas = new JPanel(new FlowLayout());
+        dialogo.add(panelCartas, BorderLayout.CENTER);
+
+        // Botón para confirmar selección
+        JButton botonConfirmar = new JButton("Confirmar selección");
+        botonConfirmar.setEnabled(false);
+        dialogo.add(botonConfirmar, BorderLayout.SOUTH);
+
+        // Variable para rastrear la carta seleccionada
+        final int[] cartaSeleccionada = { -1 };
+
+        // Crear botones para cada carta en la mano
+        for (int i = 0; i < manoSize; i++) {
+            JButton botonCarta = getImageButton(mano.get(i));
+            botonCarta.setToolTipText("Carta " + (i + 1));
+            int index = i;
+            botonCarta.addActionListener(e -> {
+                // Desmarcar la selección previa si existe
+                if (cartaSeleccionada[0] != -1) {
+                    Component prevButton = panelCartas.getComponent(cartaSeleccionada[0]);
+                    if (prevButton instanceof JButton) {
+                        ((JButton) prevButton).setBorder(BorderFactory.createEmptyBorder());
+                    }
+                }
+
+                // Seleccionar la nueva carta
+                cartaSeleccionada[0] = index;
+                botonCarta.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
+                botonConfirmar.setEnabled(true);
+            });
+            panelCartas.add(botonCarta);
+        }
+
+        // Acción al confirmar
+        botonConfirmar.addActionListener(e -> dialogo.dispose());
+
+        dialogo.setVisible(true);
+
+        // Retorna la carta seleccionada (si no selecciona nada, retornará -1)
+        return cartaSeleccionada[0];
     }
 
     @Override
@@ -437,17 +488,54 @@ public class GUI implements ifVista {
     }
 
     public int[] preguntarQueBajarParaJuego() {
-        int[] cartasABajar = new int[preguntarCantParaBajar()];
-        int iCarta;
-        for (int i = 0; i < cartasABajar.length; i++) {
-            do {
-                iCarta = Integer.parseInt(preguntarInputMenu("Carta " + (i + 1) +
-                                ":\nIndica el índice de la carta que quieres bajar: "))-1;
-            } while (iCarta < 0 || iCarta >= manoSize);
-            cartasABajar[i] = iCarta;
+        // Crear un diálogo para la selección de cartas
+        JDialog dialogo = new JDialog((JFrame) SwingUtilities.getWindowAncestor(cardPanel), "Seleccionar cartas", true);
+        dialogo.setLayout(new BorderLayout());
+        dialogo.setSize(400, 400);
+        dialogo.setLocationRelativeTo(null);
+
+        // Panel para mostrar las cartas
+        JPanel panelCartas = new JPanel(new FlowLayout());
+        dialogo.add(panelCartas, BorderLayout.CENTER);
+
+        // Botón para confirmar selección
+        JButton botonConfirmar = new JButton("Confirmar selección");
+        botonConfirmar.setEnabled(false);
+        dialogo.add(botonConfirmar, BorderLayout.SOUTH);
+
+        // Array para rastrear selección de cartas
+        boolean[] seleccionadas = new boolean[manoSize];
+        List<Integer> seleccionIndices = new ArrayList<>();
+        int cantABajar = preguntarCantParaBajar();
+        // Crear botones para cada carta en la mano
+        for (int i = 0; i < manoSize; i++) {
+            JButton botonCarta = getImageButton(mano.get(i));
+            botonCarta.setToolTipText("Carta " + (i + 1));
+            int index = i;
+            botonCarta.addActionListener(e -> {
+                if (seleccionadas[index]) {
+                    seleccionadas[index] = false;
+                    seleccionIndices.remove((Integer) index);
+                    botonCarta.setBorder(BorderFactory.createEmptyBorder());
+                } else {
+                    seleccionadas[index] = true;
+                    seleccionIndices.add(index);
+                    botonCarta.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
+                }
+                botonConfirmar.setEnabled(seleccionIndices.size() == cantABajar);
+            });
+            panelCartas.add(botonCarta);
         }
-        return cartasABajar;
+
+        // Acción al confirmar
+        botonConfirmar.addActionListener(e -> dialogo.dispose());
+
+        dialogo.setVisible(true);
+
+        // Convertir la lista seleccionada a un array
+        return seleccionIndices.stream().mapToInt(Integer::intValue).toArray();
     }
+
 
     private int preguntarCantParaBajar() {
         int numCartas = 0;
@@ -459,12 +547,17 @@ public class GUI implements ifVista {
     }
 
     public void mostrarPuntosRonda(int[] puntos) throws RemoteException {
-        StringBuilder puntuacion = new StringBuilder("Puntuación de la ronda:\n");
+        JPanel panelPuntuacion = panelMap.get("Puntos");
+        StringBuilder puntuacion = new StringBuilder("<html>Puntuación<br>");
         for (int i = 0; i < puntos.length; i++) {
-            puntuacion.append(ctrl.getJugadorPartida(i).getNombre()).append(": ").append(puntos[i]).append("\n");
+            puntuacion.append(ctrl.getJugadorPartida(i).getNombre()).append(": ").append(puntos[i]).append("<br>");
         }
 
-        JOptionPane.showMessageDialog(frame, puntuacion.toString(), "Puntuación", JOptionPane.INFORMATION_MESSAGE);
+        JLabel labelPuntos = new JLabel(String.valueOf(puntuacion));
+        panelPuntuacion.removeAll();
+        panelPuntuacion.add(labelPuntos);
+        panelPuntuacion.revalidate();
+        panelPuntuacion.repaint();
     }
 
     public void mostrarRanking(Object[] ranking) {
@@ -537,7 +630,7 @@ public class GUI implements ifVista {
 
     @Override
     public void mostrarAcomodoCarta(String nombre) {
-        JOptionPane.showMessageDialog(frame, nombre + " está acomodando una carta.", "Acomodar Carta", JOptionPane.INFORMATION_MESSAGE);
+        mostrarInfo("Se acomodó la carta en el juego.");
     }
 
     @Override
