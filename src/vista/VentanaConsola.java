@@ -95,7 +95,7 @@ public class VentanaConsola extends JFrame implements ifVista {
     public void cambioTurno() {
         String nombre = ctrl.getTurnoDe();
         if (nombre.equals(nombreVista)) {
-            ctrl.desarrolloRobo();
+            ctrl.desarrolloRobo(preguntarInputRobar());
             try {
                 ctrl.desarrolloTurno();
                 ctrl.cambioTurno();

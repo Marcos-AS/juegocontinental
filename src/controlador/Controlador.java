@@ -191,32 +191,13 @@ public class Controlador implements IControladorRemoto {
         partida.notificarObservadores(NOTIFICACION_CAMBIO_TURNO);
     }
 
-    public void desarrolloRobo() {
+    public void desarrolloRobo(String eleccion) {
         try {
-            if (getRonda()==3)
-                System.out.println("entra en robo");
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
-        String eleccion = vista.preguntarInputRobar();
-        if (Objects.equals(eleccion, "1")) {
-            robarDelMazo();
-        } else if (Objects.equals(eleccion, "2")) {
-            robarDelPozo();
-        }
-    }
-
-    public void robarDelPozo() {
-        try {
-            partida.robarDelPozo();
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void robarDelMazo() {
-        try {
-            partida.robarDelMazo();
+            if (Objects.equals(eleccion, ifVista.ELECCION_ROBAR_DEL_MAZO)) {
+                partida.robarDelMazo();
+            } else if (Objects.equals(eleccion, ifVista.ELECCION_ROBAR_DEL_POZO)) {
+                partida.robarDelPozo();
+            }
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -373,9 +354,6 @@ public class Controlador implements IControladorRemoto {
     }
 
     public void roboCastigo() throws RemoteException {
-        //int numJugadorRobo = partida.getNumJugadorRoboCastigo();
-        //String nombre = partida.getNombreJugador(numJugadorRobo);
-        //vista.mostrarInfo(nombre + " puede robar con castigo.");
         String eleccion = vista.preguntarInputRobarCastigo();
         if (Integer.parseInt(eleccion) == ifVista.ELECCION_ROBAR_CON_CASTIGO
                 || ifVista.isRespAfirmativa(eleccion)) {

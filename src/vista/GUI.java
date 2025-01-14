@@ -11,16 +11,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 public class GUI implements ifVista {
     private Controlador ctrl;
     private String nombreVista;
     private final JFrame frame = new JFrame("El Continental");
     private static final Color fondo = new Color(34, 139, 34);
-    private CountDownLatch latch;
-    private String resultadoRobar = "0";
     private int manoSize;
     private CardLayout cardLayout;
     private JPanel cardPanel;
@@ -30,7 +26,8 @@ public class GUI implements ifVista {
 
     public void iniciar() {
         //nombreVista = preguntarInput("Indica tu nombre:");
-        nombreVista = UUID.randomUUID().toString().replace("-", "").substring(0, 10); //prueba
+        nombreVista = UUID.randomUUID().toString()
+                .replace("-", "").substring(0, 10); //prueba
         opcionesIniciales();
     }
 
@@ -52,15 +49,23 @@ public class GUI implements ifVista {
         JPanel panelJuegos = new JPanel();
         JPanel panelMano = new JPanel(new FlowLayout());
         JPanel panelInfoRonda = new JPanel();
-        JPanel panelPozo = new JPanel();
+        JPanel panelRestricciones = new JPanel();
 
-        JButton cartaPozo = new JButton();
-        cartaPozo.setToolTipText("Robar carta del pozo");
-        buttonMap.put("cartaPozo", cartaPozo);
+        panelMano.setBorder(BorderFactory.createTitledBorder("Tu mano"));
+        panelMano.setBackground(Color.LIGHT_GRAY);
 
-        panelPozo.setLayout(new FlowLayout());
-        panelPozo.setBorder(BorderFactory.createLineBorder(Color.RED, 5)); // Borde rojo de 5 píxeles
-        panelPozo.add(cartaPozo);
+        panelMesa.removeAll();
+        panelMesa.revalidate();
+        panelMesa.repaint();
+
+        crearBotonesMenuBajar(panelMesa);
+        JPanel panelIntermedio = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        panelIntermedio.add(addPozo());
+        panelIntermedio.add(addMazo());
+        panelMesa.add(panelIntermedio, BorderLayout.CENTER);
+        panelMesa.add(panelMano, BorderLayout.NORTH);
+        panelMesa.add(panelRestricciones, BorderLayout.PAGE_END);
+        cardLayout.show(cardPanel,"Mesa");
 
         cardPanel.add(panelMenu, "Menu");
         cardPanel.add(panelEsperar, "Esperar");
@@ -72,7 +77,7 @@ public class GUI implements ifVista {
         panelMap.put("Juegos", panelJuegos);
         panelMap.put("Mano", panelMano);
         panelMap.put("infoRonda", panelInfoRonda);
-        panelMap.put("Pozo", panelPozo);
+        panelMap.put("Restricciones", panelRestricciones);
 
         inicializarMenu();
         frame.add(cardPanel);
@@ -144,25 +149,14 @@ public class GUI implements ifVista {
     //  PARTIDA funciones agregadas--------------------------------------------------------
 
     public void cambioTurno() {
+
         String nombre = ctrl.getTurnoDe();
         if (nombre.equals(nombreVista)) {
             jugar();
-        } else {
-            esperar(nombre);
         }
     }
 
     private void jugar() {
-        JPanel panelMesa = panelMap.get("Mesa");
-        panelMesa.removeAll();
-        panelMesa.revalidate();
-        panelMesa.repaint();
-
-        crearBotonesMenuBajar(panelMesa);
-
-        panelMesa.add(addPozoYMazo(), BorderLayout.CENTER);
-        panelMesa.add(panelMap.get("Mano"), BorderLayout.NORTH);
-        cardLayout.show(cardPanel,"Mesa");
     }
 
     private void crearBotonesMenuBajar(JPanel panelMesa) {
@@ -222,46 +216,49 @@ public class GUI implements ifVista {
         panelMesa.add(panelBotones, BorderLayout.SOUTH);
     }
 
-    private JPanel addPozoYMazo() {
-        // Panel principal para el mazo y el pozo
-        JPanel panelCartas = new JPanel(new FlowLayout(FlowLayout.CENTER, 50, 20));
-        panelCartas.setBackground(fondo);
+    private JButton addPozo() {
+        JButton cartaPozo = getImageButton("pozo-vacio");
+        cartaPozo.setToolTipText("Robar carta del pozo");
+        buttonMap.put("cartaPozo", cartaPozo);
+        cartaPozo.addMouseListener(new CartaListener("pozo"));
+        return cartaPozo;
+    }
 
-
+    private JButton addMazo() {
         JButton cartaMazo = getImageButton("carta-dada-vuelta");
         cartaMazo.setToolTipText("Robar carta del mazo");
-        panelCartas.add(cartaMazo);
-        System.out.println("Pozo: " + panelMap.get("Pozo"));
-        panelCartas.add(panelMap.get("Pozo"));
-
-        // Agregar listeners a las cartas
-        JButton cartaPozo = buttonMap.get("cartaPozo");
-        cartaPozo.addMouseListener(new CartaListener("pozo"));
         cartaMazo.addMouseListener(new CartaListener("mazo"));
-
-        return panelCartas;
+        return cartaMazo;
     }
 
     public void actualizarManoJugador(ArrayList<String> cartas) {
         JPanel panelMano = panelMap.get("Mano");
-        panelMano.setBorder(BorderFactory.createTitledBorder("Tu mano"));
-        panelMano.setBackground(Color.LIGHT_GRAY);
         manoSize = cartas.size();
         panelMano.removeAll();
+        panelMano.revalidate();
+        panelMano.repaint();
         for (String carta : cartas) {
             //System.out.println("cargando desde " + carta);
             panelMano.add(getImageButton(carta));
         }
-        panelMano.revalidate();
-        panelMano.repaint();
+        cardLayout.show(cardPanel, "Mesa");
     }
 
     public void actualizarPozo(String cartaATirar) {
-        JPanel panelPozo = panelMap.get("Pozo");
-        panelPozo.removeAll();
-        panelPozo.add(getImageButton(cartaATirar));
-        panelPozo.revalidate();
-        panelPozo.repaint();
+        JButton cartaPozo = buttonMap.get("cartaPozo");
+        if (cartaATirar.isEmpty()) {
+            setImage(cartaPozo, "pozo-vacio");
+            cartaPozo.setToolTipText("El pozo está vacío");
+        } else {
+            setImage(cartaPozo, cartaATirar);
+        }
+        cartaPozo.revalidate();
+        cartaPozo.repaint();
+    }
+
+    private void setImage(JButton cartaPozo, String rutaImagen) {
+        ImageIcon imagen = new ImageIcon(ifVista.asociarRuta(rutaImagen));
+        cartaPozo.setIcon(new ImageIcon(imagen.getImage().getScaledInstance(80, 120, Image.SCALE_SMOOTH)));
     }
 
     @Override
@@ -290,23 +287,19 @@ public class GUI implements ifVista {
         public void mouseClicked(MouseEvent e) {
             JButton boton = (JButton) e.getSource();
             robarCarta(origen, boton);
-            if (latch!=null) {
-                latch.countDown();
-            }
         }
     }
 
     private void robarCarta(String origen, JButton botonOrigen) {
+        String eleccion = "";
         botonOrigen.setEnabled(false);
         if ("pozo".equals(origen)) {
-            JButton cartaPozo = buttonMap.get("cartaPozo");
-            cartaPozo.setVisible(false);
-            JPanel panelPozo = panelMap.get("Pozo");
-            panelPozo.setBorder(BorderFactory.createLineBorder(Color.GREEN, 5));
-            resultadoRobar = "2"; // Si robó del pozo
+            eleccion = ELECCION_ROBAR_DEL_POZO;
         } else if ("mazo".equals(origen)) {
-            resultadoRobar = "1"; // Si robó del mazo
+            eleccion = ELECCION_ROBAR_DEL_MAZO;
         }
+        ctrl.desarrolloRobo(eleccion);
+        activarBotonesBajar();
     }
 
     public JButton getImageButton(String carta) {
@@ -320,52 +313,7 @@ public class GUI implements ifVista {
     }
 
     private void esperar(String nombre) {
-        JPanel panel = panelMap.get("Esperar");
-        panel.removeAll();
-        panel.revalidate();
-        panel.repaint();
 
-        JPanel izquierdo = new JPanel(new GridBagLayout());
-        GridBagConstraints gridBagConstraints = new GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = GridBagConstraints.RELATIVE;
-        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        izquierdo.setBackground(fondo);
-
-        JPanel derecho = new JPanel(new BorderLayout());
-        derecho.setBackground(fondo);
-        generarTabla(derecho);
-
-        JLabel turno = new JLabel("Es el turno de: "+nombre+".", JLabel.CENTER);
-        turno.setFont(new Font("Arial", Font.BOLD, 16));
-
-        JLabel espere = new JLabel("Por favor espere...",JLabel.CENTER);
-        espere.setFont(new Font("Arial", Font.BOLD, 16));
-
-        izquierdo.add(turno, gridBagConstraints);
-        izquierdo.add(espere, gridBagConstraints);
-
-        GridBagConstraints gridBagConstraintsIz = new GridBagConstraints();
-        gridBagConstraintsIz.gridx = 0;
-        gridBagConstraintsIz.gridy = 0;
-        gridBagConstraintsIz.weightx = 1.0 / 3.0;
-        gridBagConstraintsIz.weighty = 1.0;
-        gridBagConstraintsIz.fill = GridBagConstraints.BOTH;
-
-        GridBagConstraints gridBagConstraintsDe = new GridBagConstraints();
-        gridBagConstraintsDe.gridx = 1;
-        gridBagConstraintsDe.gridy = 0;
-        gridBagConstraintsDe.weightx = 2.0 / 3.0;
-        gridBagConstraintsDe.weighty = 1.0;
-        gridBagConstraintsDe.fill = GridBagConstraints.BOTH;
-
-        panel.setLayout(new GridBagLayout());
-        panel.add(izquierdo, gridBagConstraintsIz);
-        panel.add(derecho, gridBagConstraintsDe);
-
-        cardLayout.show(cardPanel,"Esperar");
     }
 
     private void generarTabla(JPanel panel){
@@ -390,19 +338,7 @@ public class GUI implements ifVista {
 
     @Override
     public String preguntarInputRobar() {
-        int tiempoLimite = 15;
-        latch = new CountDownLatch(1);
-        try {
-            boolean clicDetectado = latch.await(tiempoLimite, TimeUnit.SECONDS);
-            if (clicDetectado) {
-                return resultadoRobar;
-            } else {
-                return "1";
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return "1";
-        }
+        return "1";
     }
 
     @Override
@@ -430,7 +366,14 @@ public class GUI implements ifVista {
 
     @Override
     public void actualizarRestricciones(boolean restriccion) {
-
+        JPanel panelRestricciones = panelMap.get("Restricciones");
+        panelRestricciones.removeAll();
+        if (restriccion) {
+            Label label = new Label("Ya no puede robar con castigo y no puede volver a bajar en esta mano");
+            panelRestricciones.add(label);
+        }
+        panelRestricciones.revalidate();
+        panelRestricciones.repaint();
     }
 
     public int preguntarCartaParaAcomodar() {
