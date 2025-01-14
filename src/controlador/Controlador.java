@@ -187,6 +187,14 @@ public class Controlador implements IControladorRemoto {
         partida.finTurno();
     }
 
+    public void finTurno() {
+        try {
+            partida.finTurno();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void cambioTurno() throws RemoteException {
         partida.notificarObservadores(NOTIFICACION_CAMBIO_TURNO);
     }
