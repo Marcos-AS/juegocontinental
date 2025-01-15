@@ -102,6 +102,10 @@ public class Controlador implements IControladorRemoto {
                     mostrarJuegosEnMesa();
                     break;
                 }
+                case NOTIFICACION_NUMERO_JUGADOR: {
+                    vista.setNumeroJugadorTitulo();
+                    break;
+                }
             }
         }
         else if (o instanceof NotificacionActualizarMano notif) {
@@ -361,8 +365,7 @@ public class Controlador implements IControladorRemoto {
         if (Integer.parseInt(eleccion) == ifVista.ELECCION_ROBAR_CON_CASTIGO
                 || ifVista.isRespAfirmativa(eleccion)) {
             partida.robarConCastigo();
-        } else {
-            partida.removeJugadorRoboCastigo();
+            partida.setJugadoresQuePuedenRobarConCastigo();
         }
     }
 

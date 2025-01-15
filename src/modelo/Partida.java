@@ -261,6 +261,11 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
                 NOTIFICACION_NO_PUEDE_ROBO_CASTIGO);
         notificarObservadores(jugadoresQuePuedenRobarConCastigo,
                 NOTIFICACION_ROBO_CASTIGO);
+        setJugadoresQuePuedenRobarConCastigo();
+    }
+
+    public void setJugadoresQuePuedenRobarConCastigo() throws RemoteException {
+        jugadoresQuePuedenRobarConCastigo = new ArrayList<>();
     }
 
     public void robarConCastigo()
@@ -324,6 +329,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         actualizarManoJugadores();
         notificarObservadores(NOTIFICACION_ACTUALIZAR_POZO);
         notificarObservadores(NOTIFICACION_ACTUALIZAR_JUEGOS);
+        notificarObservadores(NOTIFICACION_NUMERO_JUGADOR);
     }
 
     private void finRonda(int numJugador) throws RemoteException {
@@ -417,10 +423,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     @Override
     public int getNumJugadorRoboCastigo()  throws RemoteException {
         return jugadoresQuePuedenRobarConCastigo.get(0);
-    }
-
-    public void removeJugadorRoboCastigo() throws RemoteException {
-        jugadoresQuePuedenRobarConCastigo.remove(0);
     }
 
     @Override

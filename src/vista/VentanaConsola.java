@@ -153,6 +153,11 @@ public class VentanaConsola extends JFrame implements ifVista {
             panelRestricciones.repaint();
     }
 
+    @Override
+    public void setNumeroJugadorTitulo() {
+
+    }
+
     public void mostrarInfo(String s) {
         JOptionPane.showMessageDialog(null, s,
                 "Jugador: " + nombreVista, JOptionPane.INFORMATION_MESSAGE);

@@ -117,7 +117,7 @@ public class GUI implements ifVista {
 //                                " deseas para la nueva partida?"));
 //                    }
 //                    ctrl.crearPartida(cantJugadores);
-                    ctrl.crearPartida(2); //prueba
+                    ctrl.crearPartida(3); //prueba
                 } else {
                     mostrarInfo("Ya hay una partida en curso");
                 }
@@ -675,5 +675,9 @@ public class GUI implements ifVista {
         );
 
         return opcion == JOptionPane.YES_OPTION;
+    }
+
+    public void setNumeroJugadorTitulo() {
+        frame.setTitle("El Continental - Jugador N°" + ctrl.getNumJugador(nombreVista) + ": " + nombreVista);
     }
 }

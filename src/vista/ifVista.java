@@ -233,4 +233,5 @@ public interface ifVista {
     void actualizarPozo(String cartaATirar);
     void actualizarJuegos();
     void actualizarRestricciones(boolean restriccion);
+    void setNumeroJugadorTitulo();
 }

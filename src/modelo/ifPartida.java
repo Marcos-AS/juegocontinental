@@ -55,7 +55,6 @@ public interface ifPartida extends IObservableRemoto, Serializable {
     void setNumTurno(int numTurno) throws RemoteException;
 
     int getNumJugadorRoboCastigo() throws RemoteException;
-    void removeJugadorRoboCastigo() throws RemoteException;
 
     int getNumJugadorCorte() throws RemoteException;
 
@@ -116,4 +115,5 @@ public interface ifPartida extends IObservableRemoto, Serializable {
     int getNumJugador(String nombreJugador) throws RemoteException;
     void acomodarEnJuegoPropio(int numJugador,
                                int iCarta, int numJuego) throws RemoteException;
+    void setJugadoresQuePuedenRobarConCastigo() throws RemoteException;
 }
