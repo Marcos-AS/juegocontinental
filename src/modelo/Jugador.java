@@ -93,16 +93,6 @@ public class Jugador extends ObservableRemoto implements Serializable, ifJugador
         Mano.moverCartaEnMano(mano, indCarta, destino);
     }
 
-    public boolean comprobarAcomodarCarta(int numCarta, int numJuego, int ronda) throws RemoteException {
-        Carta c = mano.get(numCarta);
-        boolean acomodo = JuegoBajado.acomodarCarta(juegos, c, numJuego, ronda);
-        if (acomodo) {
-            juegos.get(numJuego).add(c);
-            mano.remove(c);
-        }
-        return acomodo;
-    }
-
     public void setPuedeBajar(int puedeBajar) throws RemoteException {
         this.puedeBajar = puedeBajar;
     }

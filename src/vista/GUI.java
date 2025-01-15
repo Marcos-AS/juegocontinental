@@ -159,6 +159,7 @@ public class GUI implements ifVista {
         if (nombre.equals(nombreVista)) {
             buttonMap.get("cartaPozo").setEnabled(true);
             buttonMap.get("cartaMazo").setEnabled(true);
+            buttonMap.get("ordenar").setEnabled(true);
         } else {
             buttonMap.get("cartaPozo").setEnabled(false);
             buttonMap.get("cartaMazo").setEnabled(false);
@@ -176,6 +177,7 @@ public class GUI implements ifVista {
         tirarAlPozoBoton.setEnabled(false);
         acomodarPropioBoton.setEnabled(false);
         acomodarAjenoBoton.setEnabled(false);
+        ordenarBoton.setEnabled(false);
 
         bajarJuegoBoton.addActionListener(e -> {
             try {
@@ -264,11 +266,15 @@ public class GUI implements ifVista {
         panelMano.revalidate();
         panelMano.repaint();
         mano = new ArrayList<>();
-        for (String carta : cartas) {
+        for (int i = 0; i < manoSize; i++) {
             //System.out.println("cargando desde " + carta);
+            String carta = cartas.get(i);
             mano.add(carta);
-            panelMano.add(getImageButton(carta));
+            JButton buttonCarta = getImageButton(carta);
+            buttonCarta.setBorder(BorderFactory.createTitledBorder(String.valueOf(i+1)));
+            panelMano.add(buttonCarta);
         }
+
         cardLayout.show(cardPanel, "Mesa");
     }
 
@@ -328,8 +334,10 @@ public class GUI implements ifVista {
         botonOrigen.setEnabled(false);
         if ("pozo".equals(origen)) {
             eleccion = ELECCION_ROBAR_DEL_POZO;
+            buttonMap.get("cartaMazo").setEnabled(false);
         } else if ("mazo".equals(origen)) {
             eleccion = ELECCION_ROBAR_DEL_MAZO;
+            buttonMap.get("cartaPozo").setEnabled(false);
         }
         ctrl.desarrolloRobo(eleccion);
         activarBotonesBajar(true);
@@ -366,22 +374,23 @@ public class GUI implements ifVista {
         buttonMap.get("ordenar").setEnabled(activar);
     }
 
+    @Override
+    public void actualizarRestricciones(boolean restriccion) {
+        JPanel panelRestricciones = panelMap.get("Restricciones");
+        panelRestricciones.removeAll();
+        if (restriccion) {
+            Label label = new Label("Ya no puede robar con castigo y no puede volver a bajar en esta mano");
+            panelRestricciones.add(label);
+        }
+        panelRestricciones.revalidate();
+        panelRestricciones.repaint();
+    }
 
-
-//    public int preguntarQueBajarParaPozo() {
-//        int eleccion = -1;
-//        do {
-//            eleccion = Integer.parseInt(
-//                    preguntarInputMenu("Indica el índice de carta para tirar al pozo: "))-1;
-//        } while (eleccion < 0 || eleccion >= manoSize);
-//        return eleccion;
-//    }
-
-    public int preguntarQueBajarParaPozo() {
+    private int seleccionarUnaCarta(String tituloDialogo) {
         // Crear un diálogo para la selección de una carta
-        JDialog dialogo = new JDialog((JFrame) SwingUtilities.getWindowAncestor(cardPanel), "Seleccionar carta para el pozo", true);
+        JDialog dialogo = new JDialog((JFrame) SwingUtilities.getWindowAncestor(cardPanel), tituloDialogo, true);
         dialogo.setLayout(new BorderLayout());
-        dialogo.setSize(400, 400);
+        dialogo.setSize(400, 600);
         dialogo.setLocationRelativeTo(null);
 
         // Panel para mostrar las cartas
@@ -401,6 +410,7 @@ public class GUI implements ifVista {
             JButton botonCarta = getImageButton(mano.get(i));
             botonCarta.setToolTipText("Carta " + (i + 1));
             int index = i;
+
             botonCarta.addActionListener(e -> {
                 // Desmarcar la selección previa si existe
                 if (cartaSeleccionada[0] != -1) {
@@ -415,6 +425,7 @@ public class GUI implements ifVista {
                 botonCarta.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
                 botonConfirmar.setEnabled(true);
             });
+
             panelCartas.add(botonCarta);
         }
 
@@ -427,33 +438,25 @@ public class GUI implements ifVista {
         return cartaSeleccionada[0];
     }
 
-    @Override
-    public void actualizarRestricciones(boolean restriccion) {
-        JPanel panelRestricciones = panelMap.get("Restricciones");
-        panelRestricciones.removeAll();
-        if (restriccion) {
-            Label label = new Label("Ya no puede robar con castigo y no puede volver a bajar en esta mano");
-            panelRestricciones.add(label);
-        }
-        panelRestricciones.revalidate();
-        panelRestricciones.repaint();
+    public int preguntarCartaParaAcomodar() {
+        return seleccionarUnaCarta("Seleccionar carta para acomodar");
     }
 
-    public int preguntarCartaParaAcomodar() {
-        return Integer.parseInt(
-                preguntarInputMenu("Indica el número de carta que quieres acomodar" +
-                        " en un juego"))-1;
+    public int preguntarQueBajarParaPozo() {
+        return seleccionarUnaCarta("Seleccionar carta para el pozo");
     }
 
     public void mostrarJuegos(String nombreJugador, ArrayList<ArrayList<String>> juegos) {
         JPanel panelJuegos = panelMap.get("Juegos");
         JPanel panelJuegosJugador = new JPanel();
-        panelJuegosJugador.setBorder(BorderFactory.createTitledBorder("Juegos de " + nombreJugador));
+        panelJuegosJugador.setBorder(BorderFactory.createTitledBorder("Juegos de " + nombreJugador + " jugador N° " + ctrl.getNumJugador(nombreJugador)));
         // Iterar sobre los juegos y crear subpaneles para cada uno
-        for (ArrayList<String> juego : juegos) {
+        for (int i = 0; i < juegos.size(); i++) {
+            ArrayList<String> juego = juegos.get(i);
             JPanel panelJuego = new JPanel();
             panelJuego.setLayout(new BoxLayout(panelJuego, BoxLayout.X_AXIS)); // Espaciado entre cartas
             panelJuego.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2)); // Borde para cada juego
+            panelJuego.setBorder(BorderFactory.createTitledBorder("Juego N° " + String.valueOf(i+1)));
             panelJuego.setBackground(new Color(200, 200, 255)); // Fondo azul claro para diferenciar
 
             for (String carta : juego) {
@@ -491,7 +494,7 @@ public class GUI implements ifVista {
         // Crear un diálogo para la selección de cartas
         JDialog dialogo = new JDialog((JFrame) SwingUtilities.getWindowAncestor(cardPanel), "Seleccionar cartas", true);
         dialogo.setLayout(new BorderLayout());
-        dialogo.setSize(400, 400);
+        dialogo.setSize(400, 600);
         dialogo.setLocationRelativeTo(null);
 
         // Panel para mostrar las cartas
@@ -583,8 +586,8 @@ public class GUI implements ifVista {
 
     @Override
     public int getNumJugadorAcomodar() {
-        String respuesta = preguntarInput("¿Qué número de jugador eres para acomodar?");
-        return Integer.parseInt(respuesta);
+        return Integer.parseInt(preguntarInput("Ingresa el número de jugador en cuyos" +
+                " juegos bajados quieres acomodar: "))-1;
     }
 
     @Override
@@ -653,7 +656,17 @@ public class GUI implements ifVista {
 
     @Override
     public boolean preguntarSiQuiereSeguirBajandoJuegos() {
-        String resp = preguntarInputMenu("Deseas bajar un juego? (Si/No)");
-        return ifVista.isRespAfirmativa(resp);
+        int opcion = JOptionPane.showOptionDialog(
+                null,
+                "¿Deseas bajar un juego?", // Mensaje
+                "Bajar juego", // Título del cuadro
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null, // Ícono personalizado (null usa el predeterminado)
+                new Object[] { "Sí", "No" }, // Etiquetas de los botones
+                "Sí" // Botón predeterminado
+        );
+
+        return opcion == JOptionPane.YES_OPTION;
     }
 }

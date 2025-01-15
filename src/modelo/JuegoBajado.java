@@ -11,7 +11,8 @@ public class JuegoBajado extends ObservableRemoto {
         ArrayList<Carta> juegoElegido = new ArrayList<>(juegos.get(numJuego));
         //necesito saber si el juego bajado es un trio o una escalera
         if (Comprobar.comprobarJuego(juegoElegido, ronda) == Comprobar.TRIO) {
-            acomodo = Comprobar.comprobarAcomodarEnTrio(juegoElegido, carta.getNumero()) == Comprobar.TRIO;
+            acomodo = Comprobar.comprobarAcomodarEnTrio(juegoElegido, carta.getNumero())
+                    == Comprobar.TRIO;
         } else {
             juegoElegido.add(carta);
             acomodo = Comprobar.comprobarAcomodarEnEscalera(juegoElegido) == Comprobar.ESCALERA;

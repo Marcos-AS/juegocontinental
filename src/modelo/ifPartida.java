@@ -3,13 +3,9 @@ package modelo;
 import rmimvc.src.observer.IObservableRemoto;
 import rmimvc.src.observer.IObservadorRemoto;
 import serializacion.Serializador;
-
 import java.io.Serializable;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.UUID;
 
 public interface ifPartida extends IObservableRemoto, Serializable {
     int CANT_CARTAS_INICIAL = 6;
@@ -19,7 +15,9 @@ public interface ifPartida extends IObservableRemoto, Serializable {
     }
 
     ArrayList<ArrayList<Carta>> getJuegos(int numJugador) throws RemoteException;
-    boolean comprobarAcomodarCarta(int numJugador, int numCarta, int numJuego, int ronda)
+    boolean comprobarAcomodarCartaAjeno(int numJugador, int numJugadorAcomodar,
+                        int numCarta, int numJuego) throws RemoteException;
+    boolean comprobarAcomodarCartaPropio(int numJugador, int numCarta, int numJuego)
             throws RemoteException;
     void setNumeroJugador(int numJugador, int nuevoNumero) throws RemoteException;
     boolean isRoboDelMazo(int numJugador) throws RemoteException;
@@ -77,7 +75,8 @@ public interface ifPartida extends IObservableRemoto, Serializable {
     void crearPartida(String vista, int observadorIndex,
                       int cantJugadoresDeseada) throws RemoteException;
     ifCarta getCarta(int numJugador, int iCarta) throws RemoteException;
-    void acomodarEnJuegoAjeno(int numJugador, int iCarta, int numJuego) throws RemoteException;
+    void acomodarEnJuegoAjeno(int numJugador,int numJugadorAcomodar, int iCarta, int numJuego)
+            throws RemoteException;
     void setEnCurso() throws RemoteException;
     boolean puedeRobarConCastigo() throws RemoteException;
     void setNumJugadorQueEmpezoPartida(int numJugadorQueEmpezoPartida)
@@ -115,4 +114,7 @@ public interface ifPartida extends IObservableRemoto, Serializable {
     int getPuedeBajar(int numJugadorRoboCastigo) throws RemoteException;
     void incPuedeBajar(int numJugador) throws RemoteException;
     void guardarPartida() throws RemoteException;
+    int getNumJugador(String nombreJugador) throws RemoteException;
+    void acomodarEnJuegoPropio(int numJugador,
+                               int iCarta, int numJuego) throws RemoteException;
 }

@@ -5,12 +5,10 @@ import java.util.ArrayList;
 
 public interface ifJugador {
     String getNombre() throws RemoteException;
-    int getManoSize() throws RemoteException;
     void setNumeroJugador(int numeroJugador) throws RemoteException;
     void setRoboDelMazo(boolean roboDelMazo) throws RemoteException;
 
     void moverCartaEnMano(int indCarta, int destino) throws RemoteException;
-    boolean comprobarAcomodarCarta(int iCarta, int numJuego, int ronda) throws RemoteException;
     ArrayList<Carta> seleccionarCartasABajar(int[] cartasABajar) throws RemoteException;
     void bajarJuego(int[] cartasABajar, int tipoJuego) throws RemoteException;
     void setPuedeBajar(int puedeBajar) throws RemoteException;
