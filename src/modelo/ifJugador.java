@@ -7,7 +7,6 @@ public interface ifJugador {
     String getNombre() throws RemoteException;
     void setNumeroJugador(int numeroJugador) throws RemoteException;
     void setRoboDelMazo(boolean roboDelMazo) throws RemoteException;
-
     void moverCartaEnMano(int indCarta, int destino) throws RemoteException;
     ArrayList<Carta> seleccionarCartasABajar(int[] cartasABajar) throws RemoteException;
     void bajarJuego(int[] cartasABajar, int tipoJuego) throws RemoteException;

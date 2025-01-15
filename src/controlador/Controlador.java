@@ -230,7 +230,14 @@ public class Controlador implements IControladorRemoto {
         if (!juegos.isEmpty()) {
             int cartaAcomodar = vista.preguntarCartaParaAcomodar();
             int numJuego = Integer.parseInt(vista.preguntarInput(ifVista.PREGUNTA_NUMERO_JUEGO))-1;
-            acomodarEnJuegoPropio(cartaAcomodar,numJugador,numJuego);
+            if(partida.comprobarAcomodarCartaPropio(numJugador, cartaAcomodar, numJuego)) {
+                partida.acomodarEnJuegoPropio(numJugador,cartaAcomodar,numJuego);
+                vista.mostrarAcomodoCarta(partida.getNombreJugador(numJugador));
+                partida.notificarObservadores(NOTIFICACION_BAJO_JUEGO);
+                partida.actualizarMano(numJugador);
+            } else {
+                vista.mostrarInfo(ifVista.NO_PUEDE_ACOMODAR);
+            }
         } else {
             vista.mostrarInfo(ifVista.NO_PUEDE_ACOMODAR);
         }
@@ -241,9 +248,24 @@ public class Controlador implements IControladorRemoto {
             int iCartaAcomodar = vista.preguntarCartaParaAcomodar();
             int numJugadorAcomodar = vista.getNumJugadorAcomodar();
             int numJuego = Integer.parseInt(vista.preguntarInput(ifVista.PREGUNTA_NUMERO_JUEGO))-1;
-            acomodarEnJuegoAjeno(iCartaAcomodar, numJugador, numJugadorAcomodar, numJuego);
+            if (partida.comprobarAcomodarCartaAjeno(numJugador,numJugadorAcomodar,iCartaAcomodar,numJuego)) {
+                partida.acomodarEnJuegoAjeno(numJugador,numJugadorAcomodar,iCartaAcomodar,numJuego);
+                vista.mostrarAcomodoCarta(partida.getNombreJugador(numJugadorAcomodar));
+                partida.notificarObservadores(NOTIFICACION_BAJO_JUEGO);
+                partida.actualizarMano(numJugador);
+            } else {
+                vista.mostrarInfo(ifVista.NO_PUEDE_ACOMODAR);
+            }
         } else {
             vista.mostrarInfo(ifVista.NO_PUEDE_ACOMODAR);
+        }
+    }
+
+    public void mostrarJuegosEnMesa() throws RemoteException {
+        vista.actualizarJuegos();
+        for (int j = 0; j < getCantJugActuales(); j++) {
+            vista.mostrarJuegos(partida.getNombreJugador(j),
+                    enviarJuegosJugador(j));
         }
     }
 
@@ -270,18 +292,6 @@ public class Controlador implements IControladorRemoto {
         return juegosString;
     }
 
-    public void acomodarEnJuegoPropio(int iCarta, int numJugador, int numJuego)
-            throws RemoteException {
-        if(partida.comprobarAcomodarCartaPropio(numJugador, iCarta, numJuego)) {
-            partida.acomodarEnJuegoPropio(numJugador,iCarta,numJuego);
-            vista.mostrarAcomodoCarta(partida.getNombreJugador(numJugador));
-            mostrarJuegosEnMesa();
-            partida.actualizarMano(numJugador);
-        } else {
-            vista.mostrarInfo(ifVista.NO_PUEDE_ACOMODAR);
-        }
-    }
-
     private boolean hayJuegosEnMesa(int numJugador) throws RemoteException {
         int i = 0;
         boolean hay;
@@ -295,26 +305,6 @@ public class Controlador implements IControladorRemoto {
             i++;
         } while (!hay && i < cantJugadoresPartida-1);
         return hay;
-    }
-
-    public void mostrarJuegosEnMesa() throws RemoteException {
-        vista.actualizarJuegos();
-        for (int j = 0; j < getCantJugActuales(); j++) {
-            vista.mostrarJuegos(partida.getNombreJugador(j),
-                    enviarJuegosJugador(j));
-        }
-    }
-
-    public void acomodarEnJuegoAjeno(int iCarta,
-             int numJugador, int numJugadorAcomodar, int numJuego) throws RemoteException {
-        if (partida.comprobarAcomodarCartaAjeno(numJugador,numJugadorAcomodar,iCarta,numJuego)) {
-            partida.acomodarEnJuegoAjeno(numJugador,numJugadorAcomodar,iCarta,numJuego);
-            vista.mostrarAcomodoCarta(partida.getNombreJugador(numJugadorAcomodar));
-            mostrarJuegosEnMesa();
-            partida.actualizarMano(numJugador);
-        } else {
-            vista.mostrarInfo(ifVista.NO_PUEDE_ACOMODAR);
-        }
     }
 
     private void bajarseYComprobarCortar(int numJugador) throws RemoteException {

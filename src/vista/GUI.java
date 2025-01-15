@@ -34,7 +34,7 @@ public class GUI implements ifVista {
 
     @Override
     public void opcionesIniciales() {
-        frame.setSize(800,600);
+        frame.setSize(800,800);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setIconImage(new ImageIcon(ifVista.asociarRuta("cartas_inicio")).getImage());
         frame.setBackground(fondo);
@@ -345,10 +345,19 @@ public class GUI implements ifVista {
 
     public JButton getImageButton(String carta) {
         ImageIcon imagen = new ImageIcon(ifVista.asociarRuta(carta));
-        Image imagenRedimensionada =
-                imagen.getImage().getScaledInstance(80, 120, Image.SCALE_SMOOTH);
+
+        MediaTracker tracker = new MediaTracker(new JLabel());
+        tracker.addImage(imagen.getImage(), 0);
+
+        try {
+            tracker.waitForAll(); // Esperar hasta que la imagen se cargue
+        } catch (InterruptedException e) {
+            System.err.println("Error al cargar la imagen para " + carta);
+        }
 
         // Crear el ImageIcon con la imagen redimensionada
+        Image imagenRedimensionada =
+                imagen.getImage().getScaledInstance(80, 120, Image.SCALE_SMOOTH);
         ImageIcon iconRedimensionado = new ImageIcon(imagenRedimensionada);
         return new JButton(iconRedimensionado);
     }
@@ -456,7 +465,7 @@ public class GUI implements ifVista {
             JPanel panelJuego = new JPanel();
             panelJuego.setLayout(new BoxLayout(panelJuego, BoxLayout.X_AXIS)); // Espaciado entre cartas
             panelJuego.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2)); // Borde para cada juego
-            panelJuego.setBorder(BorderFactory.createTitledBorder("Juego N° " + String.valueOf(i+1)));
+            panelJuego.setBorder(BorderFactory.createTitledBorder("Juego N° " + (i + 1)));
             panelJuego.setBackground(new Color(200, 200, 255)); // Fondo azul claro para diferenciar
 
             for (String carta : juego) {
@@ -638,9 +647,7 @@ public class GUI implements ifVista {
 
     @Override
     public void mostrarInfo(String s) {
-        SwingUtilities.invokeLater(() -> {
-            JOptionPane.showMessageDialog(frame, s, "Jugador: " + nombreVista, JOptionPane.INFORMATION_MESSAGE);
-        });
+        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(frame, s, "Jugador: " + nombreVista, JOptionPane.INFORMATION_MESSAGE));
     }
 
     @Override

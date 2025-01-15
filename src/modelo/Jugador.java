@@ -65,10 +65,6 @@ public class Jugador extends ObservableRemoto implements Serializable, ifJugador
         return mano;
     }
 
-    public int getManoSize() throws RemoteException {
-        return mano.size();
-    }
-
     public ArrayList<ArrayList<Carta>> getJuegos() {
         return juegos;
     }
