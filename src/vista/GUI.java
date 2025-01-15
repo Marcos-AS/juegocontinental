@@ -132,7 +132,7 @@ public class GUI implements ifVista {
                 int inicioPartida = ctrl.jugarPartidaRecienIniciada().ordinal();
                 if (inicioPartida == FALTAN_JUGADORES) {
                     mostrarInfo("Esperando que ingresen más jugadores...");
-                } else if (inicioPartida == INICIAR_PARTIDA) {
+                } else if (inicioPartida == INICIAR_PARTIDA) { //1 solo cli ejecuta esto
                     ctrl.empezarRonda();
                     ctrl.cambioTurno();
                 }
@@ -633,12 +633,20 @@ public class GUI implements ifVista {
     }
 
     @Override
-    public String preguntarInputRobarCastigo() {
-        String resp;
-        do
-            resp = JOptionPane.showInputDialog(null, ifVista.PREGUNTA_ROBAR_CASTIGO,nombreVista,JOptionPane.QUESTION_MESSAGE);
-        while (!validarEntrada(resp));
-        return resp;    }
+    public boolean preguntarInputRobarCastigo() {
+        int opcion = JOptionPane.showOptionDialog(
+                null,
+                "Quieres robar con castigo? (robar del pozo y robar del mazo)", // Mensaje
+                "Robo castigo - " + nombreVista, // Título del cuadro
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null, // Ícono personalizado (null usa el predeterminado)
+                new Object[] { "Sí", "No" }, // Etiquetas de los botones
+                "Sí" // Botón predeterminado
+        );
+
+        return opcion == JOptionPane.YES_OPTION;
+    }
 
     @Override
     public void mostrarAcomodoCarta(String nombre) {

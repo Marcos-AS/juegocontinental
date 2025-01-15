@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class VentanaConsola extends JFrame implements ifVista {
     private Controlador ctrl;
@@ -19,7 +20,9 @@ public class VentanaConsola extends JFrame implements ifVista {
 
 
     public void iniciar() throws RemoteException {
-        nombreVista = preguntarInput("Indica tu nombre:");
+        //nombreVista = preguntarInput("Indica tu nombre:");
+        nombreVista = UUID.randomUUID().toString()
+                .replace("-", "").substring(0, 10); //prueba
         setFrame();
         opcionesIniciales();
     }
@@ -52,9 +55,10 @@ public class VentanaConsola extends JFrame implements ifVista {
             switch (eleccion) {
                 case ifVista.ELECCION_CREAR_PARTIDA: {
                     if (!ctrl.isPartidaEnCurso()) {
-                        int cantJugadores = Integer.parseInt(preguntarInput("Cuántos jugadores" +
-                                " deseas para la nueva partida?"));
-                        ctrl.crearPartida(cantJugadores);
+//                        int cantJugadores = Integer.parseInt(preguntarInput("Cuántos jugadores" +
+//                                " deseas para la nueva partida?"));
+//                        ctrl.crearPartida(cantJugadores);
+                        ctrl.crearPartida(2); //prueba
                         partidaCreada = true;
                     } else {
                         mostrarInfo("Ya hay una partida en curso");
@@ -63,7 +67,11 @@ public class VentanaConsola extends JFrame implements ifVista {
                 }
                 case ifVista.ELECCION_JUGAR_PARTIDA: {
                     if (partidaCreada || ctrl.isPartidaEnCurso()) {
-                        if (nombreVista == null) nombreVista = preguntarInput("Indica tu nombre: ");
+                        //if (nombreVista == null) nombreVista = preguntarInput("Indica tu nombre: ");
+                        if (nombreVista == null) {
+                            nombreVista = UUID.randomUUID().toString()
+                                    .replace("-", "").substring(0, 10); //prueba
+                        }
                         int inicioPartida = ctrl.jugarPartidaRecienIniciada().ordinal();
                         if (inicioPartida == PARTIDA_AUN_NO_CREADA) {
                             mostrarInfo("La partida aun no ha sido creada." +
@@ -228,12 +236,12 @@ public class VentanaConsola extends JFrame implements ifVista {
         return resp;
     }
 
-    public String preguntarInputRobarCastigo() {
+    public boolean preguntarInputRobarCastigo() {
         String resp;
         do
             resp = JOptionPane.showInputDialog(null, ifVista.PREGUNTA_ROBAR_CASTIGO,nombreVista,JOptionPane.QUESTION_MESSAGE);
         while (!validarEntrada(resp));
-        return resp;
+        return ifVista.isRespAfirmativa(resp);
     }
 
     public void mostrarComienzaPartida(ArrayList<String> jugadores) {

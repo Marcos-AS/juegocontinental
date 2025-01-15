@@ -225,7 +225,7 @@ public interface ifVista {
     int preguntarQueBajarParaPozo();
     void mostrarPuntosRonda(int[] puntos) throws RemoteException;
     void iniciar() throws RemoteException;
-    String preguntarInputRobarCastigo() throws RemoteException;
+    boolean preguntarInputRobarCastigo() throws RemoteException;
     String preguntarInputRobar();
     void opcionesIniciales() throws RemoteException;
     void cambioTurno();

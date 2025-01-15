@@ -68,11 +68,11 @@ public interface ifPartida extends IObservableRemoto, Serializable {
 
     void incTurno() throws RemoteException;
 
-    void crearYAgregarJugador(String nombre, int numObservador) throws RemoteException;
+    void crearYAgregarJugador(String nombre, int numObservador)
+            throws RemoteException;
     int comprobarBajarse(int numJugador, int[] cartasABajar) throws RemoteException;
     boolean cortar(int numJugador) throws RemoteException;
-    void crearPartida(String vista, int observadorIndex,
-                      int cantJugadoresDeseada) throws RemoteException;
+    void crearPartida(int observadorIndex,int cantJugadoresDeseada) throws RemoteException;
     void acomodarEnJuegoAjeno(int numJugador,int numJugadorAcomodar, int iCarta, int numJuego)
             throws RemoteException;
     void setEnCurso() throws RemoteException;
@@ -116,4 +116,5 @@ public interface ifPartida extends IObservableRemoto, Serializable {
     void acomodarEnJuegoPropio(int numJugador,
                                int iCarta, int numJuego) throws RemoteException;
     void setJugadoresQuePuedenRobarConCastigo() throws RemoteException;
+    ArrayList<Integer> getJugadoresQuePuedenRobarConCastigo() throws RemoteException;
 }

@@ -44,6 +44,10 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
 
     }
 
+    public ArrayList<Integer> getJugadoresQuePuedenRobarConCastigo() throws RemoteException{
+        return jugadoresQuePuedenRobarConCastigo;
+    }
+
     public boolean isTurnoActual(int numJugador) throws RemoteException {
         return jugadores.get(numJugador).isTurnoActual();
     }
@@ -123,12 +127,9 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         return i;
     }
 
-    public void crearPartida(String vista, int observadorIndex, int cantJugadoresDeseada) throws RemoteException {
-        crearYAgregarJugador(vista, observadorIndex);
-        //partida.notificarObservadores(NOTIFICACION_NUEVO_JUGADOR);
+    public void crearPartida(int observadorIndex, int cantJugadoresDeseada) throws RemoteException {
         setCantJugadoresDeseada(cantJugadoresDeseada);
         setEnCurso();
-        //partida.notificarObservadores(NOTIFICACION_NUEVA_PARTIDA);
         setNumTurno(observadorIndex);
         setNumJugadorQueEmpezoPartida(observadorIndex);
         numJugadorQueEmpiezaRonda = observadorIndex;

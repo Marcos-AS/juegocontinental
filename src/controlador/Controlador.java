@@ -361,12 +361,13 @@ public class Controlador implements IControladorRemoto {
     }
 
     public void roboCastigo() throws RemoteException {
-        String eleccion = vista.preguntarInputRobarCastigo();
-        if (Integer.parseInt(eleccion) == ifVista.ELECCION_ROBAR_CON_CASTIGO
-                || ifVista.isRespAfirmativa(eleccion)) {
-            partida.robarConCastigo();
-            partida.setJugadoresQuePuedenRobarConCastigo();
+        if (!partida.getJugadoresQuePuedenRobarConCastigo().isEmpty()) {
+            if (vista.preguntarInputRobarCastigo()) {
+                partida.robarConCastigo();
+                partida.setJugadoresQuePuedenRobarConCastigo();
+            }
         }
+
     }
 
     public void crearPartida(int cantJugadoresDeseada) throws RemoteException {
@@ -374,7 +375,8 @@ public class Controlador implements IControladorRemoto {
             //porque al terminar la partida se remueven los observadores
             partida.agregarObservador(this);
         int observadorIndex = partida.getObservadorIndex(this);
-        partida.crearPartida(vista.getNombreVista(), observadorIndex, cantJugadoresDeseada);
+        partida.crearYAgregarJugador(vista.getNombreVista(), observadorIndex);
+        partida.crearPartida(observadorIndex, cantJugadoresDeseada);
     }
 
     public Object[] getRanking() throws RemoteException {
@@ -387,7 +389,9 @@ public class Controlador implements IControladorRemoto {
         boolean encontrado = false;
         int cantJugadoresActuales = getCantJugActuales();
         while (i < cantJugadoresActuales && !encontrado) {
-            if (getJugadorPartida(i).getNombre().equals(vista.getNombreVista())) {
+            String nombreJugador = getJugadorPartida(i).getNombre();
+            String nombreVista = vista.getNombreVista();
+            if (nombreJugador.equals(nombreVista)) {
                 encontrado = true; //significa que el creó la partida, llamó a esta funcion
             }
             i++;
