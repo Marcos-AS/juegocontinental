@@ -400,7 +400,9 @@ public class Controlador implements IControladorRemoto {
         //significa que la vista llamó a esta funcion pero no creó la partida
             partida.crearYAgregarJugador(vista.getNombreVista(), partida.getObservadorIndex(this));
         }
-        if (getCantJugActuales() == partida.getCantJugadoresDeseada()) {
+        int cantActual = getCantJugActuales();
+        int cantDeseada = partida.getCantJugadoresDeseada();
+        if (cantActual == cantDeseada) {
             inicio = INICIAR_PARTIDA;
         } else {
             inicio = FALTAN_JUGADORES;

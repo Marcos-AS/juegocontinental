@@ -117,7 +117,7 @@ public class GUI implements ifVista {
 //                                " deseas para la nueva partida?"));
 //                    }
 //                    ctrl.crearPartida(cantJugadores);
-                    ctrl.crearPartida(3); //prueba
+                    ctrl.crearPartida(2); //prueba
                 } else {
                     mostrarInfo("Ya hay una partida en curso");
                 }
