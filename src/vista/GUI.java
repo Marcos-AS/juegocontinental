@@ -24,7 +24,7 @@ public class GUI implements ifVista {
     private Map<String, JPanel> panelMap;
     private Map<String, JButton> buttonMap;
 
-
+    @Override
     public void iniciar() {
         //nombreVista = preguntarInput("Indica tu nombre:");
         nombreVista = UUID.randomUUID().toString()
@@ -133,7 +133,6 @@ public class GUI implements ifVista {
                 if (inicioPartida == FALTAN_JUGADORES) {
                     mostrarInfo("Esperando que ingresen más jugadores...");
                 } else if (inicioPartida == INICIAR_PARTIDA) { //1 solo cli ejecuta esto
-                    cardLayout.show(cardPanel, "Mesa");
                     ctrl.empezarRonda();
                     ctrl.cambioTurno();
                 }
@@ -155,6 +154,7 @@ public class GUI implements ifVista {
 
     //  PARTIDA funciones agregadas--------------------------------------------------------
 
+    @Override
     public void cambioTurno() {
         String nombre = ctrl.getTurnoDe();
         if (nombre.equals(nombreVista)) {
@@ -260,23 +260,27 @@ public class GUI implements ifVista {
         return cartaMazo;
     }
 
+    @Override
     public void actualizarManoJugador(ArrayList<String> cartas) {
-        JPanel panelMano = panelMap.get("Mano");
-        manoSize = cartas.size();
-        panelMano.removeAll();
-        panelMano.revalidate();
-        panelMano.repaint();
-        mano = new ArrayList<>();
-        for (int i = 0; i < manoSize; i++) {
-            //System.out.println("cargando desde " + carta);
-            String carta = cartas.get(i);
-            mano.add(carta);
-            JButton buttonCarta = getImageButton(carta);
-            buttonCarta.setBorder(BorderFactory.createTitledBorder(String.valueOf(i+1)));
-            panelMano.add(buttonCarta);
-        }
+        System.out.println("funcionando manoo GUI");
+        SwingUtilities.invokeLater(() -> {
+            JPanel panelMano = panelMap.get("Mano");
+            manoSize = cartas.size();
+            panelMano.removeAll();
+            panelMano.revalidate();
+            panelMano.repaint();
+            mano = new ArrayList<>();
+            for (int i = 0; i < manoSize; i++) {
+                //System.out.println("cargando desde " + carta);
+                String carta = cartas.get(i);
+                mano.add(carta);
+                JButton buttonCarta = getImageButton(carta);
+                buttonCarta.setBorder(BorderFactory.createTitledBorder(String.valueOf(i+1)));
+                panelMano.add(buttonCarta);
+            }
 
-        cardLayout.show(cardPanel, "Mesa");
+            cardLayout.show(cardPanel, "Mesa");
+        });
     }
 
     public void actualizarPozo(String cartaATirar) {
@@ -298,6 +302,7 @@ public class GUI implements ifVista {
 
     @Override
     public void comienzoRonda(int ronda) {
+        System.out.println("funcionando ronda GUI");
         JLabel label = new JLabel(ifVista.mostrarCombinacionRequerida(ronda));
         JPanel panelInfoRonda = panelMap.get("infoRonda");
         panelInfoRonda.removeAll();
@@ -344,7 +349,7 @@ public class GUI implements ifVista {
         activarBotonesBajar(true);
     }
 
-    public JButton getImageButton(String carta) {
+    private JButton getImageButton(String carta) {
         ImageIcon imagen = new ImageIcon(ifVista.asociarRuta(carta));
 
         MediaTracker tracker = new MediaTracker(new JLabel());
@@ -448,14 +453,17 @@ public class GUI implements ifVista {
         return cartaSeleccionada[0];
     }
 
+    @Override
     public int preguntarCartaParaAcomodar() {
         return seleccionarUnaCarta("Seleccionar carta para acomodar");
     }
 
+    @Override
     public int preguntarQueBajarParaPozo() {
         return seleccionarUnaCarta("Seleccionar carta para el pozo");
     }
 
+    @Override
     public void mostrarJuegos(String nombreJugador, ArrayList<ArrayList<String>> juegos) {
         JPanel panelJuegos = panelMap.get("Juegos");
         JPanel panelJuegosJugador = new JPanel();
@@ -480,10 +488,12 @@ public class GUI implements ifVista {
         panelJuegos.repaint();
     }
 
+    @Override
     public void setControlador(Controlador ctrl) {
         this.ctrl = ctrl;
     }
 
+    @Override
     public String preguntarInput(String mensaje) {
         String resp;
         do {
@@ -500,6 +510,7 @@ public class GUI implements ifVista {
         return true;
     }
 
+    @Override
     public int[] preguntarQueBajarParaJuego() {
         // Crear un diálogo para la selección de cartas
         JDialog dialogo = new JDialog((JFrame) SwingUtilities.getWindowAncestor(cardPanel), "Seleccionar cartas", true);
@@ -559,6 +570,7 @@ public class GUI implements ifVista {
         return numCartas;
     }
 
+    @Override
     public void mostrarPuntosRonda(int[] puntos) throws RemoteException {
         JPanel panelPuntuacion = panelMap.get("Puntos");
         StringBuilder puntuacion = new StringBuilder("<html>Puntuación<br>");
@@ -686,6 +698,7 @@ public class GUI implements ifVista {
         return opcion == JOptionPane.YES_OPTION;
     }
 
+    @Override
     public void setNumeroJugadorTitulo() {
         frame.setTitle("El Continental - Jugador N°" + ctrl.getNumJugador(nombreVista) + ": " + nombreVista);
     }
