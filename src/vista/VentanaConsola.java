@@ -10,6 +10,7 @@ import java.util.UUID;
 public class VentanaConsola extends JFrame implements ifVista {
     private Controlador ctrl;
     private String nombreVista;
+    private JFrame frame;
     private JPanel panelMano;
     private JPanel panelPozo;
     private JPanel panelInfoRonda;
@@ -28,7 +29,7 @@ public class VentanaConsola extends JFrame implements ifVista {
     }
 
     private void setFrame() {
-        JFrame frame = new JFrame("Mano " + nombreVista);
+        frame = new JFrame("Mano " + nombreVista);
         frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
         frame.setSize(600,800);
         panelPozo = new JPanel();
@@ -163,7 +164,7 @@ public class VentanaConsola extends JFrame implements ifVista {
 
     @Override
     public void setNumeroJugadorTitulo() {
-
+        frame.setTitle("El Continental - Jugador N°" + ctrl.getNumJugador(nombreVista) + ": " + nombreVista);
     }
 
     public void mostrarInfo(String s) {
