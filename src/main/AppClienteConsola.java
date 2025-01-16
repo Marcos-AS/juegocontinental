@@ -18,8 +18,8 @@ public class AppClienteConsola {
         vista.setControlador(ctrl);
         //System.out.println(Inet4Address.getLocalHost().getHostAddress());
         //Cliente cliente = new Cliente(ip, Integer.parseInt(port), ipServer, Integer.parseInt(portServer));
-        Cliente cliente = new Cliente("127.0.0.1", new Random().nextInt((9999-9900)+1)+9900, "192.168.0.247", 8888);
-        //Cliente cliente = new Cliente("192.168.0.40", 9999, "192.168.0.247", 8888);
+        //Cliente cliente = new Cliente("127.0.0.1", new Random().nextInt((9999-9900)+1)+9900, "192.168.0.247", 8888);
+        Cliente cliente = new Cliente("192.168.0.5", 9999, "192.168.0.247", 8888);
         try {
             //se agrega el ctrl como observador y se setea el modelo como atributo del ctrl
             cliente.iniciar(ctrl);
