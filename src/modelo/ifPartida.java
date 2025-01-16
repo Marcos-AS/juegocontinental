@@ -20,7 +20,6 @@ public interface ifPartida extends IObservableRemoto, Serializable {
     boolean comprobarAcomodarCartaPropio(int numJugador, int numCarta, int numJuego)
             throws RemoteException;
     void setNumeroJugador(int numJugador, int nuevoNumero) throws RemoteException;
-    boolean isRoboDelMazo(int numJugador) throws RemoteException;
     void finTurno() throws RemoteException;
     boolean isTurnoActual(int numJugador) throws RemoteException;
     int getTriosBajados(int numJugador) throws RemoteException;
@@ -50,7 +49,6 @@ public interface ifPartida extends IObservableRemoto, Serializable {
     void incrementarNumJugadorQueEmpiezaRonda() throws RemoteException;
 
     int getNumTurno() throws RemoteException;
-    boolean isPozoEmpty() throws RemoteException;
 
     void setNumTurno(int numTurno) throws RemoteException;
 
@@ -76,18 +74,14 @@ public interface ifPartida extends IObservableRemoto, Serializable {
     void acomodarEnJuegoAjeno(int numJugador,int numJugadorAcomodar, int iCarta, int numJuego)
             throws RemoteException;
     void setEnCurso() throws RemoteException;
-    boolean puedeRobarConCastigo() throws RemoteException;
     void setNumJugadorQueEmpezoPartida(int numJugadorQueEmpezoPartida)
             throws RemoteException;
-
-    int getNumJugadorQueEmpezoPartida() throws RemoteException;
 
     int getCantJugadoresDeseada() throws RemoteException;
 
     void ponerJugadoresEnOrden() throws RemoteException;
 
     void setCantJugadoresDeseada(int cantJugadoresDeseada) throws RemoteException;
-    int getCantJugadores() throws RemoteException;
     boolean isEnCurso() throws RemoteException;
     void robarDelMazo() throws RemoteException;
 

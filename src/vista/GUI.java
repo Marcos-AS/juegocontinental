@@ -133,6 +133,7 @@ public class GUI implements ifVista {
                 if (inicioPartida == FALTAN_JUGADORES) {
                     mostrarInfo("Esperando que ingresen más jugadores...");
                 } else if (inicioPartida == INICIAR_PARTIDA) { //1 solo cli ejecuta esto
+                    cardLayout.show(cardPanel, "Mesa");
                     ctrl.empezarRonda();
                     ctrl.cambioTurno();
                 }

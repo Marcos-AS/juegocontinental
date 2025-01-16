@@ -56,20 +56,12 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         return enCurso;
     }
 
-    public ifCarta getCarta(int numJugador, int iCarta) throws RemoteException {
-        return jugadores.get(numJugador).getMano().get(iCarta);
-    }
-
     public ArrayList<ArrayList<Carta>> getJuegos(int numJugador) throws RemoteException {
         return jugadores.get(numJugador).getJuegos();
     }
 
     public void setNumeroJugador(int numJugador, int nuevoNumero) throws RemoteException {
         jugadores.get(numJugador).setNumeroJugador(nuevoNumero);
-    }
-
-    public boolean isRoboDelMazo(int numJugador) throws RemoteException {
-        return jugadores.get(numJugador).isRoboDelMazo();
     }
 
     public boolean comprobarAcomodarCartaAjeno(int numJugador, int numJugadorAcomodar,
@@ -394,10 +386,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         return jugadores.get(numJugador).getEscalerasBajadas();
     }
 
-    public boolean puedeRobarConCastigo() throws RemoteException {
-        return jugadores.get(jugadoresQuePuedenRobarConCastigo.get(0)).getPuedeBajar()==0;
-    }
-
     @Override
     public String getNombreJugador(int numJugador) throws RemoteException {
         return jugadores.get(numJugador).getNombre();
@@ -460,10 +448,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         }
     }
 
-    public boolean isPozoEmpty() throws RemoteException {
-        return pozo == null;
-    }
-
     @Override
     public void crearYAgregarJugador(String nombre, int numObservador) throws RemoteException {
         Jugador nuevoJugador = new Jugador(nombre);
@@ -484,11 +468,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     }
 
     @Override
-    public int getNumJugadorQueEmpezoPartida() throws RemoteException {
-        return numJugadorQueEmpezoPartida;
-    }
-
-    @Override
     public int getCantJugadoresDeseada() throws RemoteException {
         return cantJugadoresDeseada;
     }
@@ -503,8 +482,4 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         this.cantJugadoresDeseada = cantJugadoresDeseada;
     }
 
-    @Override
-    public int getCantJugadores() throws RemoteException {
-        return jugadores.size();
-    }
 }
