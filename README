@@ -40,7 +40,8 @@ ROBAR
 En todos los turnos el jugador debe robar una carta y debe tirar una. Si no roba del pozo, los siguientes jugadores pueden decidir robar del pozo pero si la agarran también tienen que robar otra del mazo (robo con "castigo"), esto se hace en el orden girando hacia la derecha. Puede pasar que ningún jugador quiera robar del pozo. En cualquier caso cada jugador debe robar una carta en su turno (del mazo o del pozo).
 
 BAJAR LOS JUEGOS Y CORTAR
-para cortar se debe tener completa la combinación requerida para la ronda. se puede cortar con la carta que te sobra, o no cortar si no te sobran cartas. en esos casos el jugador gana la ronda. 
+para cortar se debe tener completa la combinación requerida para la ronda. se puede cortar con la carta que te sobra, o no cortar si no te sobran cartas. en esos casos el jugador gana la ronda. No se puede cortar si al jugador le sobra más de una carta.
+Si le sobra más de una carta, debe acomodar en los juegos bajados las que le sobraron y ahí podrá cortar.
 También el jugador puede bajar sus juegos una vez durante la ronda aunque si lo hace tiene restricciones en adelante: 
 - no puede robar con "castigo"
 - no puede bajar de nuevo

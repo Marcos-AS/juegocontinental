@@ -111,4 +111,6 @@ public interface ifPartida extends IObservableRemoto, Serializable {
                                int iCarta, int numJuego) throws RemoteException;
     void setJugadoresQuePuedenRobarConCastigo() throws RemoteException;
     ArrayList<Integer> getJugadoresQuePuedenRobarConCastigo() throws RemoteException;
+
+    Eventos comprobarPosibleCorte(int numJugador) throws RemoteException;
 }

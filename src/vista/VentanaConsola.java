@@ -106,7 +106,10 @@ public class VentanaConsola extends JFrame implements ifVista {
         if (nombre.equals(nombreVista)) {
             ctrl.desarrolloRobo(preguntarInputRobar());
             try {
-                ctrl.desarrolloTurno();
+                while (ctrl.isTurnoActual()) {
+                    ctrl.switchMenuBajar(menuBajar());
+                }
+                ctrl.finTurno();
                 ctrl.cambioTurno();
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
@@ -274,7 +277,6 @@ public class VentanaConsola extends JFrame implements ifVista {
         int eleccion = 0;
         while (eleccion < ELECCION_BAJARSE || eleccion > ELECCION_ACOMODAR_JUEGO_AJENO) {
             eleccion = Integer.parseInt(preguntarInput(MENU_BAJAR));
-            if (eleccion == ELECCION_SALIR) break;
         }
         return eleccion;
     }

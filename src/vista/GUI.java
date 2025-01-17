@@ -562,12 +562,36 @@ public class GUI implements ifVista {
 
 
     private int preguntarCantParaBajar() {
-        int numCartas = 0;
-        while (numCartas > 4 || numCartas < 3) {
-            numCartas = Integer.parseInt(
-                    preguntarInputMenu("Cuantas cartas quieres bajar para el juego? (3 o 4)"));
-        }
-        return numCartas;
+        JDialog dialogo = new JDialog((JFrame) SwingUtilities.getWindowAncestor(cardPanel), "Seleccionar cantidad de cartas", true);
+        dialogo.setLayout(new FlowLayout());
+        dialogo.setSize(300, 150);
+        dialogo.setLocationRelativeTo(null);
+
+        JPanel panelBotones = new JPanel();
+        dialogo.add(new JLabel("¿Cuántas cartas quieres bajar para el juego?"), BorderLayout.NORTH);
+
+        final int[] cantidadSeleccionada = {0};
+
+        JButton botonTres = new JButton("3 cartas");
+        JButton botonCuatro = new JButton("4 cartas");
+
+        botonTres.addActionListener(e -> {
+            cantidadSeleccionada[0] = 3;
+            dialogo.dispose(); // Cerrar el cuadro de diálogo
+        });
+
+        botonCuatro.addActionListener(e -> {
+            cantidadSeleccionada[0] = 4;
+            dialogo.dispose(); // Cerrar el cuadro de diálogo
+        });
+
+        panelBotones.add(botonTres);
+        panelBotones.add(botonCuatro);
+        dialogo.add(panelBotones, BorderLayout.CENTER);
+
+        dialogo.setVisible(true);
+
+        return cantidadSeleccionada[0];
     }
 
     @Override
@@ -627,21 +651,8 @@ public class GUI implements ifVista {
     @Override
     public int[] preguntarParaOrdenarCartas() {
         int[] elecciones = new int[2];
-        int cartaSeleccion = -1;
-        int cantCartas = manoSize;
-        while (cartaSeleccion < 0 || cartaSeleccion > cantCartas - 1) {
-            cartaSeleccion = Integer.parseInt(
-                    preguntarInputMenu("Elije el número de carta que quieres mover: "))-1;
-        }
-        elecciones[0] = cartaSeleccion;
-
-        cartaSeleccion = -1;
-        while (cartaSeleccion < 0 || cartaSeleccion > cantCartas - 1) {
-            cartaSeleccion = Integer.parseInt(
-                    preguntarInputMenu("Elije el número de destino al que quieres" +
-                            " mover la carta: "))-1;
-        }
-        elecciones[1] = cartaSeleccion;
+        elecciones[0] = seleccionarUnaCarta("Elije la carta que quieres mover");
+        elecciones[1] = seleccionarUnaCarta("Elije la carta al lado de la cual quieres mover esa carta");
         return elecciones;
     }
 

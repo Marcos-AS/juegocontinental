@@ -27,8 +27,7 @@ public interface ifVista {
     int INICIAR_PARTIDA = 1;
     int PARTIDA_AUN_NO_CREADA = 2;
     String NO_PUEDE_ACOMODAR = "No puede acomodar porque no tienes o no hay juegos bajados o porque la carta que deseas acomodar no hace juego con el juego elegido.";
-    String ADVERTENCIA_BAJARSE = "Recuerda que sólo puedes bajar tus juegos dos veces durante la ronda,\n una en cualquier turno y otra si se procede a cortar.";
-    String YA_NO_PUEDE_BAJAR = "No puedes volver a bajar juegos en esta ronda (tampoco robar con castigo).";
+    String YA_NO_PUEDE_BAJAR = "No puedes volver a bajar juegos en esta ronda.";
     String MOSTRAR_JUEGO_INVALIDO = "No puedes bajar porque la combinacion elegida no forma un juego valido para la ronda\n";
     String PREGUNTA_NUMERO_JUEGO = "En qué número de juego quieres acomodar tu carta?";
     String PREGUNTA_ROBAR_CASTIGO = "Quieres robar con castigo? (robar del pozo y robar del mazo)\n1 - No\n2 - Si";
@@ -100,6 +99,7 @@ public interface ifVista {
         ------------------------------------------------------------------------------------------------------------------------------------------------------------
         Para cortar, el jugador debe tener completa la combinación requerida para la ronda.
         Se puede cortar con la carta que sobra, o elegir no cortar si no hay cartas sobrantes. En estos casos, el jugador gana la ronda.
+        No se puede cortar si al jugador le sobra más de una carta.  Si le sobra más de una carta, debe acomodar en los juegos bajados las que le sobraron y ahí podrá cortar.
         Además, el jugador puede bajar sus juegos una vez durante la ronda, con las siguientes restricciones:
         - No puede robar con "castigo".
         - No puede bajar de nuevo.

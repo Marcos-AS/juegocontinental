@@ -48,6 +48,21 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         return jugadoresQuePuedenRobarConCastigo;
     }
 
+    @Override
+    public Eventos comprobarPosibleCorte(int numJugador) throws RemoteException{
+        Eventos puedeCortar = NO_PUEDE_CORTAR;
+        int cartasEnMano = jugadores.get(numJugador).getMano().size();
+        if(Comprobar.comprobarPosibleCorte(numRonda,getTriosBajados(numJugador),
+                getEscalerasBajadas(numJugador))) {
+            if (cartasEnMano == 1 || cartasEnMano == 0) {
+                puedeCortar = PUEDE_CORTAR;
+            } else {
+                puedeCortar = SOBRAN_CARTAS;
+            }
+        }
+        return puedeCortar;
+    }
+
     public boolean isTurnoActual(int numJugador) throws RemoteException {
         return jugadores.get(numJugador).isTurnoActual();
     }
@@ -264,9 +279,9 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     public void robarConCastigo()
             throws RemoteException {
         int num = getNumJugadorRoboCastigo();
-        PartidaJugadores.robarDelMazo(jugadores,num,mazo);
         jugadores.get(num).getMano().add(pozo);
         pozo = null;
+        PartidaJugadores.robarDelMazo(jugadores,num,mazo);
         actualizarMano(num);
         notificarObservadores(NOTIFICACION_ACTUALIZAR_POZO);
         notificarObservadores(NOTIFICACION_HUBO_ROBO_CASTIGO);
