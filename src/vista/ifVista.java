@@ -2,8 +2,6 @@ package vista;
 
 import controlador.Controlador;
 import modelo.ifCarta;
-import modelo.ifJugador;
-
 import javax.swing.*;
 import java.awt.*;
 import java.rmi.RemoteException;
@@ -17,7 +15,6 @@ public interface ifVista {
     int ELECCION_ACOMODAR_JUEGO_AJENO = 5;
     String ELECCION_ROBAR_DEL_MAZO = "1";
     String ELECCION_ROBAR_DEL_POZO = "2";
-    int ELECCION_ROBAR_CON_CASTIGO = 2;
     int ELECCION_CREAR_PARTIDA = 1;
     int ELECCION_JUGAR_PARTIDA = 2;
     int ELECCION_RANKING = 3;
@@ -163,7 +160,7 @@ public interface ifVista {
         return manoString;
     }
 
-    static int menuInicial(boolean enCurso, String nombreVista) throws RemoteException {
+    static int menuInicial(boolean enCurso, String nombreVista) {
         int eleccion = 0;
         do {
             try {
@@ -175,7 +172,7 @@ public interface ifVista {
         return eleccion;
     }
 
-    static String preguntarInputInicial(boolean enCurso, String nombreVista) throws RemoteException {
+    static String preguntarInputInicial(boolean enCurso, String nombreVista) {
         UIManager.put("OptionPane.messageFont", new Font("Arial", Font.PLAIN, 18));
         UIManager.put("TextField.font", new Font("Arial", Font.PLAIN, 16));
         String mostrar;
@@ -191,16 +188,6 @@ public interface ifVista {
         return "src/vista/cartas/" + carta + ".png";
     }
 
-    static String getPozoString(ifCarta c) {
-        String s;
-        if (c == null) {
-            s = "Pozo vacío";
-        } else {
-            s = ifVista.cartaToString(c);
-        }
-        return s;
-    }
-
     static boolean isRespAfirmativa(String eleccion) {
         String e = eleccion.toLowerCase();
         return e.equals("si") || eleccion.equals("s");
@@ -209,8 +196,6 @@ public interface ifVista {
     void mostrarAcomodoCarta(String nombre);
     void comienzoRonda(int ronda) throws RemoteException;
     void mostrarInfo(String s);
-    void mostrarCartas(ArrayList<String> cartas);
-    void mostrarComienzaPartida(ArrayList<String> jugadores);
     int getNumJugadorAcomodar();
     String getNombreVista();
     String getCartasString(ArrayList<String> cartas);

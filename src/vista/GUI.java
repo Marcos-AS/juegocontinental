@@ -23,6 +23,7 @@ public class GUI implements ifVista {
     private JPanel cardPanel;
     private Map<String, JPanel> panelMap;
     private Map<String, JButton> buttonMap;
+    private boolean guardarYSalir = false;
 
     @Override
     public void iniciar() {
@@ -103,8 +104,9 @@ public class GUI implements ifVista {
         label.setFont(new Font("Arial", Font.BOLD, 20));
 
         JButton botonIniciar = new JButton("Iniciar Partida");
-
         JButton botonJugar = new JButton("Jugar");
+        JButton botonCargar = new JButton("Cargar partida");
+
         botonJugar.setEnabled(false);
 
         botonIniciar.addActionListener(e -> {
@@ -141,10 +143,21 @@ public class GUI implements ifVista {
             }
         });
 
+        botonCargar.addActionListener(e -> {
+            if (ctrl.cargarPartida()) {
+                try {
+                    ctrl.cambioTurno();
+                } catch (RemoteException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
         try {
             panelMenu.add(label);
             panelMenu.add(botonIniciar, FlowLayout.LEFT);
             panelMenu.add(botonJugar, FlowLayout.RIGHT);
+            panelMenu.add(botonCargar, FlowLayout.RIGHT);
             panelMenu.add(new BarraMenu().agregarMenuBarra(ctrl.getRanking()),
                     FlowLayout.LEADING);
         } catch (RemoteException e) {
@@ -156,14 +169,16 @@ public class GUI implements ifVista {
 
     @Override
     public void cambioTurno() {
-        String nombre = ctrl.getTurnoDe();
-        if (nombre.equals(nombreVista)) {
-            buttonMap.get("cartaPozo").setEnabled(true);
-            buttonMap.get("cartaMazo").setEnabled(true);
-            buttonMap.get("ordenar").setEnabled(true);
-        } else {
-            buttonMap.get("cartaPozo").setEnabled(false);
-            buttonMap.get("cartaMazo").setEnabled(false);
+        if (!guardarYSalir) {
+            String nombre = ctrl.getTurnoDe();
+            if (nombre.equals(nombreVista)) {
+                buttonMap.get("cartaPozo").setEnabled(true);
+                buttonMap.get("cartaMazo").setEnabled(true);
+                buttonMap.get("ordenar").setEnabled(true);
+            } else {
+                buttonMap.get("cartaPozo").setEnabled(false);
+                buttonMap.get("cartaMazo").setEnabled(false);
+            }
         }
     }
 
@@ -173,12 +188,14 @@ public class GUI implements ifVista {
         JButton acomodarPropioBoton = new JButton("Acomodar en un juego propio");
         JButton acomodarAjenoBoton = new JButton("Acomodar en un juego ajeno");
         JButton ordenarBoton = new JButton("Ordenar mano");
+        JButton guardarYSalir = new JButton("Guardar y salir");
 
         bajarJuegoBoton.setEnabled(false);
         tirarAlPozoBoton.setEnabled(false);
         acomodarPropioBoton.setEnabled(false);
         acomodarAjenoBoton.setEnabled(false);
         ordenarBoton.setEnabled(false);
+        guardarYSalir.setEnabled(false);
 
         bajarJuegoBoton.addActionListener(e -> {
             try {
@@ -228,6 +245,11 @@ public class GUI implements ifVista {
             }
         });
 
+        guardarYSalir.addActionListener(e -> {
+            ctrl.guardarPartida();
+            setGuardarYSalir(true);
+        });
+
         JPanel panelBotones = new JPanel();
         panelBotones.add(bajarJuegoBoton);
         panelBotones.add(tirarAlPozoBoton);
@@ -240,6 +262,7 @@ public class GUI implements ifVista {
         buttonMap.put("acomodarPropio", acomodarPropioBoton);
         buttonMap.put("acomodarAjeno", acomodarAjenoBoton);
         buttonMap.put("ordenar", ordenarBoton);
+        buttonMap.put("guardar", guardarYSalir);
 
         panelMesa.add(panelBotones, BorderLayout.SOUTH);
     }
@@ -309,6 +332,8 @@ public class GUI implements ifVista {
         panelInfoRonda.add(label);
         panelInfoRonda.revalidate();
         panelInfoRonda.repaint();
+        JButton guardarYSalir = buttonMap.get("guardar");
+        guardarYSalir.setEnabled(true);
     }
 
     @Override
@@ -319,6 +344,10 @@ public class GUI implements ifVista {
         panelJuegos.setBackground(Color.LIGHT_GRAY);
         panelJuegos.revalidate();
         panelJuegos.repaint();
+    }
+
+    private void setGuardarYSalir(boolean guardarYSalir) {
+        this.guardarYSalir = guardarYSalir;
     }
 
     private class CartaListener extends MouseAdapter {
@@ -620,17 +649,6 @@ public class GUI implements ifVista {
     }
 
     @Override
-    public void mostrarComienzaPartida(ArrayList<String> jugadores) {
-        StringBuilder mensaje = new StringBuilder("Comienza la partida con los siguientes jugadores:\n");
-        for (String jugador : jugadores) {
-            mensaje.append("- ").append(jugador).append("\n");
-        }
-        SwingUtilities.invokeLater(() ->
-            JOptionPane.showMessageDialog(frame, mensaje.toString(),
-                    "Inicio de Partida", JOptionPane.INFORMATION_MESSAGE));
-    }
-
-    @Override
     public int getNumJugadorAcomodar() {
         return Integer.parseInt(preguntarInput("Ingresa el número de jugador en cuyos" +
                 " juegos bajados quieres acomodar: "))-1;
@@ -645,8 +663,6 @@ public class GUI implements ifVista {
     public String getCartasString(ArrayList<String> cartas) {
         return String.join(", ", cartas);
     }
-
-
 
     @Override
     public int[] preguntarParaOrdenarCartas() {
@@ -680,11 +696,6 @@ public class GUI implements ifVista {
     @Override
     public void mostrarInfo(String s) {
         SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(frame, s, "Jugador: " + nombreVista, JOptionPane.INFORMATION_MESSAGE));
-    }
-
-    @Override
-    public void mostrarCartas(ArrayList<String> cartas) {
-
     }
 
 

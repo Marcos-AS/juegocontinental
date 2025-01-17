@@ -3,6 +3,8 @@ package modelo;
 import rmimvc.src.observer.IObservadorRemoto;
 import rmimvc.src.observer.ObservableRemoto;
 import serializacion.Serializador;
+
+import java.io.File;
 import java.io.Serial;
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -13,6 +15,7 @@ import static modelo.Eventos.*;
 public class Partida extends ObservableRemoto implements ifPartida, Serializable {
     private ArrayList<Jugador> jugadores = new ArrayList<>();
     private final Serializador srlRanking = new Serializador("src/serializacion/ranking.dat");
+    private final Serializador srlPartidas = new Serializador("src/serializacion/partidas.dat");
     protected static final int BARAJAS_HASTA_4_JUGADORES = 2;
     protected static final int BARAJAS_MAS_4_JUGADORES = 3;
     private int numRonda = 1;
@@ -41,7 +44,45 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     }
 
     public void guardarPartida() throws RemoteException {
+        srlPartidas.writeOneObject(this);
+        System.out.println("guardada partida");
+    }
 
+    public boolean cargarPartida() throws RemoteException{
+        Object partidaCargada = srlPartidas.readFirstObject();
+        if (partidaCargada != null) {
+            instancia = (Partida) partidaCargada;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void serializarGanador() throws RemoteException {
+        Object guardar = getGanador().nombre + " --- puntos: " + getGanador().getPuntosAlFinalizar();
+        if (srlRanking.readFirstObject()==null) {
+            srlRanking.writeOneObject(guardar);
+        } else {
+            Object[] jugadores = srlRanking.readObjects();
+            ArrayList<String> listaJugadores = new ArrayList<>();
+
+            for (Object jugador : jugadores) {
+                listaJugadores.add(jugador.toString());
+            }
+            listaJugadores.add(guardar.toString());
+
+            listaJugadores.sort((j1, j2) -> {
+                int puntos1 = Integer.parseInt(j1.split(" --- puntos: ")[1]);
+                int puntos2 = Integer.parseInt(j2.split(" --- puntos: ")[1]);
+                return Integer.compare(puntos2, puntos1); // Orden descendente
+            });
+
+            int i = 0;
+            srlRanking.writeOneObject(listaJugadores.get(i));
+            for (i = 1; i < listaJugadores.size(); i++) {
+                srlRanking.addOneObject(listaJugadores.get(i)); //revisar tema cabecera
+            }
+        }
     }
 
     public ArrayList<Integer> getJugadoresQuePuedenRobarConCastigo() throws RemoteException{
@@ -151,34 +192,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     @Override
     public int getObservadorIndex(IObservadorRemoto o) throws RemoteException {
         return getObservadores().indexOf(o);
-    }
-
-    @Override
-    public void serializarGanador() throws RemoteException {
-        Object guardar = getGanador().nombre + " --- puntos: " + getGanador().getPuntosAlFinalizar();
-        if (srlRanking.readFirstObject()==null) {
-            srlRanking.writeOneObject(guardar);
-        } else {
-            Object[] jugadores = srlRanking.readObjects();
-            ArrayList<String> listaJugadores = new ArrayList<>();
-
-            for (Object jugador : jugadores) {
-                listaJugadores.add(jugador.toString());
-            }
-            listaJugadores.add(guardar.toString());
-
-            listaJugadores.sort((j1, j2) -> {
-                int puntos1 = Integer.parseInt(j1.split(" --- puntos: ")[1]);
-                int puntos2 = Integer.parseInt(j2.split(" --- puntos: ")[1]);
-                return Integer.compare(puntos2, puntos1); // Orden descendente
-            });
-
-            int i = 0;
-            srlRanking.writeOneObject(listaJugadores.get(i));
-            for (i = 1; i < listaJugadores.size(); i++) {
-                srlRanking.addOneObject(listaJugadores.get(i)); //revisar tema cabecera
-            }
-        }
     }
 
     @Override
@@ -333,11 +346,11 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         repartirCartas();
         iniciarPozo();
         numTurno = numJugadorQueEmpiezaRonda;
-        notificarObservadores(NOTIFICACION_COMIENZO_RONDA);
         actualizarManoJugadores();
         notificarObservadores(NOTIFICACION_ACTUALIZAR_POZO);
         notificarObservadores(NOTIFICACION_ACTUALIZAR_JUEGOS);
         notificarObservadores(NOTIFICACION_NUMERO_JUGADOR);
+        notificarObservadores(NOTIFICACION_COMIENZO_RONDA);
     }
 
     private void finRonda(int numJugador) throws RemoteException {
@@ -349,8 +362,8 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         }
         PartidaJugadores.resetearJuegosJugadores(jugadores);
         Mano.resetearMano(jugadores);
-        notificarObservadores(NOTIFICACION_CORTE_RONDA);
         notificarObservadores(NOTIFICACION_PUNTOS);
+        notificarObservadores(NOTIFICACION_CORTE_RONDA);
     }
 
     private void finPartida() throws RemoteException {

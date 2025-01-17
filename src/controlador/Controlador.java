@@ -394,4 +394,20 @@ public class Controlador implements IControladorRemoto {
     public boolean isPartidaEnCurso() throws RemoteException {
         return partida.isEnCurso();
     }
+
+    public void guardarPartida() {
+        try {
+            partida.guardarPartida();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean cargarPartida() {
+        try {
+            return partida.cargarPartida();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

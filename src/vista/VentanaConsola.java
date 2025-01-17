@@ -170,6 +170,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         frame.setTitle("El Continental - Jugador N°" + ctrl.getNumJugador(nombreVista) + ": " + nombreVista);
     }
 
+
     public void mostrarInfo(String s) {
         JOptionPane.showMessageDialog(null, s,
                 "Jugador: " + nombreVista, JOptionPane.INFORMATION_MESSAGE);
