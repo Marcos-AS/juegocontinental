@@ -123,14 +123,9 @@ public class VentanaConsola extends JFrame implements ifVista {
     private void switchInicial() {
         int eleccion = 0;
         String input = "";
-        boolean esperandoJugadores = false;
+        boolean iniciada = false;
         do {
-            if (esperandoJugadores) {
-                mostrarInfo(input);
-                break;
-            } else {
-                eleccion = preguntarInputInicial(input);
-            }
+            eleccion = preguntarInputInicial(input);
             input = "";
             try {
                 switch (eleccion) {
@@ -139,10 +134,10 @@ public class VentanaConsola extends JFrame implements ifVista {
                             if (nombreVista == null) {
                                 setNombreVista();
                             }
-                            int cantJugadores = Integer.parseInt(preguntarInput("Cuántos jugadores" +
-                                    " deseas para la nueva partida?"));
-                            ctrl.crearPartida(cantJugadores);
-                            //ctrl.crearPartida(2); //prueba
+//                            int cantJugadores = Integer.parseInt(preguntarInput("Cuántos jugadores" +
+//                                    " deseas para la nueva partida?"));
+//                            ctrl.crearPartida(cantJugadores);
+                            ctrl.crearPartida(2); //prueba
                         } else {
                             partidaIniciada++;
                             opcionesIniciales();
@@ -157,7 +152,7 @@ public class VentanaConsola extends JFrame implements ifVista {
                             int inicioPartida = ctrl.jugarPartidaRecienIniciada().ordinal();
                             if (inicioPartida == FALTAN_JUGADORES) {
                                 input = "Esperando que ingresen más jugadores...";
-                                esperandoJugadores = true;
+                                iniciada = true;
                             } else if (inicioPartida == INICIAR_PARTIDA) {
                                 ctrl.empezarRonda();
                                 ctrl.cambioTurno();
@@ -185,13 +180,14 @@ public class VentanaConsola extends JFrame implements ifVista {
             } catch (RemoteException ex) {
                 throw new RuntimeException(ex);
             }
-        } while (eleccion != ELECCION_SALIR);
+        } while (!iniciada);
+        mostrarInfo(input);
     }
 
-    private void setNombreVista() {
-        nombreVista = preguntarInput("Indica tu nombre: ");
-//        nombreVista = UUID.randomUUID().toString()
-//                .replace("-", "").substring(0, 10);
+        private void setNombreVista() {
+//        nombreVista = preguntarInput("Indica tu nombre: ");
+        nombreVista = UUID.randomUUID().toString()
+                .replace("-", "").substring(0, 10);
         frame.setTitle("Mesa - " + nombreVista);
     }
 
