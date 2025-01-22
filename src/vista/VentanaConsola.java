@@ -161,8 +161,7 @@ public class VentanaConsola extends JFrame implements ifVista {
                             } else if (inicioPartida == INICIAR_PARTIDA) {
                                 ctrl.empezarRonda();
                                 ctrl.cambioTurno();
-                                //cuando termina la partida
-                                //ctrl.finPartida();
+                                break;
                             }
                         } else {
                             input = "Primero tienes que crear una partida";

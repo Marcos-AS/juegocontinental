@@ -450,12 +450,4 @@ public class Controlador implements IControladorRemoto {
             throw new RuntimeException(e);
         }
     }
-
-//    public void finPartida() {
-//        try {
-//            partida.notificarObservadores(NOTIFICACION_FIN_PARTIDA);
-//        } catch (RemoteException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
 }
