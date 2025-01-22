@@ -6,6 +6,7 @@ import serializacion.Serializador;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public interface ifPartida extends IObservableRemoto, Serializable {
     int CANT_CARTAS_INICIAL = 6;
@@ -70,7 +71,8 @@ public interface ifPartida extends IObservableRemoto, Serializable {
             throws RemoteException;
     int comprobarBajarse(int numJugador, int[] cartasABajar) throws RemoteException;
     boolean cortar(int numJugador) throws RemoteException;
-    void crearPartida(int observadorIndex,int cantJugadoresDeseada) throws RemoteException;
+    void crearPartida(int observadorIndex,int cantJugadoresDeseada)
+            throws RemoteException;
     void acomodarEnJuegoAjeno(int numJugador,int numJugadorAcomodar, int iCarta, int numJuego)
             throws RemoteException;
     void setEnCurso() throws RemoteException;
@@ -114,4 +116,10 @@ public interface ifPartida extends IObservableRemoto, Serializable {
 
     Eventos comprobarPosibleCorte(int numJugador) throws RemoteException;
     boolean cargarPartida() throws RemoteException;
+
+    ArrayList<String> getNombreJugadores() throws RemoteException;
+
+    void agregarNombreElegido(String nombre) throws RemoteException;
+
+    ArrayList<String> getNombresElegidos() throws RemoteException;
 }

@@ -13,11 +13,14 @@ import java.util.*;
 import static modelo.Eventos.*;
 
 public class Partida extends ObservableRemoto implements ifPartida, Serializable {
-    private ArrayList<Jugador> jugadores = new ArrayList<>();
-    private final Serializador srlRanking = new Serializador("src/serializacion/ranking.dat");
-    private final Serializador srlPartidas = new Serializador("src/serializacion/partidas.dat");
     protected static final int BARAJAS_HASTA_4_JUGADORES = 2;
     protected static final int BARAJAS_MAS_4_JUGADORES = 3;
+    private static final int TOTAL_RONDAS = 1;
+    @Serial
+    private static final long serialVersionUID = 1L;
+    private final Serializador srlRanking = new Serializador("src/serializacion/ranking.dat");
+    private final Serializador srlPartidas = new Serializador("src/serializacion/partidas.dat");
+    private ArrayList<Jugador> jugadores = new ArrayList<>();
     private int numRonda = 1;
     private Carta pozo;
     private ArrayList<Carta> mazo;
@@ -25,12 +28,9 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     private int numTurno;
     private ArrayList<Integer> jugadoresQuePuedenRobarConCastigo;
     private int numJugadorCorte;
-    private static final int TOTAL_RONDAS = 7;
     private int cantJugadoresDeseada;
     private boolean enCurso = false;
     private int numJugadorQueEmpezoPartida;
-    @Serial
-    private static final long serialVersionUID = 1L;
     //singleton
     private static Partida instancia;
     private Partida() {
@@ -43,6 +43,10 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         return Partida.instancia;
     }
 
+    private static void setInstancia(Partida instancia) {
+        Partida.instancia = instancia;
+    }
+
     public void guardarPartida() throws RemoteException {
         srlPartidas.writeOneObject(this);
         System.out.println("guardada partida");
@@ -51,10 +55,41 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     public boolean cargarPartida() throws RemoteException{
         Object partidaCargada = srlPartidas.readFirstObject();
         if (partidaCargada != null) {
-            instancia = (Partida) partidaCargada;
+            setInstancia((Partida) partidaCargada);
+            sincronizarCon((Partida) partidaCargada);
             return true;
         }
         return false;
+    }
+
+    private void sincronizarCon(Partida partidaCargada) {
+        jugadores = partidaCargada.jugadores;
+        numRonda = partidaCargada.numRonda;
+        pozo = partidaCargada.pozo;
+        mazo = partidaCargada.mazo;
+        numJugadorQueEmpiezaRonda = partidaCargada.numJugadorQueEmpiezaRonda;
+        numTurno = partidaCargada.numTurno;
+        jugadoresQuePuedenRobarConCastigo = partidaCargada.jugadoresQuePuedenRobarConCastigo;
+        numJugadorCorte = partidaCargada.numJugadorCorte;
+        cantJugadoresDeseada = partidaCargada.cantJugadoresDeseada;
+        enCurso = partidaCargada.enCurso;
+        numJugadorQueEmpezoPartida = partidaCargada.numJugadorQueEmpezoPartida;
+    }
+
+
+    @Override
+    public ArrayList<String> getNombreJugadores() throws RemoteException{
+        return PartidaJugadores.getNombreJugadores(jugadores);
+    }
+
+    @Override
+    public void agregarNombreElegido(String nombre) throws RemoteException {
+        PartidaJugadores.agregarNombreElegido(nombre);
+    }
+
+    @Override
+    public ArrayList<String> getNombresElegidos() throws RemoteException {
+        return PartidaJugadores.getNombresElegidos();
     }
 
     @Override
@@ -175,7 +210,8 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         return i;
     }
 
-    public void crearPartida(int observadorIndex, int cantJugadoresDeseada) throws RemoteException {
+    public void crearPartida(int observadorIndex, int cantJugadoresDeseada)
+            throws RemoteException {
         setCantJugadoresDeseada(cantJugadoresDeseada);
         setEnCurso();
         setNumTurno(observadorIndex);
@@ -480,8 +516,8 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     public void crearYAgregarJugador(String nombre, int numObservador) throws RemoteException {
         Jugador nuevoJugador = new Jugador(nombre);
         nuevoJugador.setNumeroJugador(numObservador);
+        nuevoJugador.sumarPartida(this);
         jugadores.add(nuevoJugador);
-        jugadores.get(jugadores.size()-1).sumarPartida(this);
     }
 
     @Override

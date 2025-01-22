@@ -9,12 +9,29 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
     static int PUNTOS_FIGURA = 10;
     static int PUNTOS_AS = 20;
     static int PUNTOS_COMODIN = 50;
+    private static ArrayList<String> nombresElegidos = new ArrayList<>();
+
+    public static ArrayList<String> getNombresElegidos() {
+        return nombresElegidos;
+    }
+
+    public static ArrayList<String> getNombreJugadores(ArrayList<Jugador> jugadores) throws RemoteException{
+        ArrayList<String> nombreJugadores = new ArrayList<>();
+        for (Jugador j : jugadores) {
+            nombreJugadores.add(j.getNombre());
+        }
+        return nombreJugadores;
+    }
+
+    public static void agregarNombreElegido(String nombre) {
+        nombresElegidos.add(nombre);
+    }
 
     public static Jugador getJugador(ArrayList<Jugador> jugadores, String nombreJugador) throws RemoteException {
         Jugador j = null;
-        for (Jugador Jugador : jugadores) {
-            if (Jugador.getNombre().equals(nombreJugador)) {
-                j = Jugador;
+        for (Jugador jug : jugadores) {
+            if (jug.getNombre().equals(nombreJugador)) {
+                j = jug;
             }
         }
         return j;

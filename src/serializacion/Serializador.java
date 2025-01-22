@@ -50,7 +50,7 @@ public class Serializador implements Serializable {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("No hay partidas para cargar.");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }

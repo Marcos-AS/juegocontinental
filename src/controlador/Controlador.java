@@ -106,6 +106,22 @@ public class Controlador implements IControladorRemoto {
                     vista.setNumeroJugadorTitulo();
                     break;
                 }
+                case NOTIFICACION_SALIR: {
+                    vista.salirAlMenu();
+                    break;
+                }
+                case NOTIFICACION_PARTIDA_CARGADA: {
+                    vista.partidaCargada();
+                    break;
+                }
+                case NOTIFICACION_ELEGIR_JUGADOR: {
+                    ArrayList<String> nombresDisponibles = partida.getNombreJugadores();
+                    nombresDisponibles.removeAll(partida.getNombresElegidos());
+                    vista.elegirJugador(nombresDisponibles);
+//                    int obsIndex = partida.getObservadorIndex(this);
+//                    partida.setNumeroJugador(partida.getNumJugador(vista.getNombreVista()),obsIndex);
+                    break;
+                }
             }
         }
         else if (o instanceof NotificacionActualizarMano notif) {
@@ -405,7 +421,27 @@ public class Controlador implements IControladorRemoto {
 
     public boolean cargarPartida() {
         try {
-            return partida.cargarPartida();
+            if(partida.cargarPartida()) {
+                partida.notificarObservadores(NOTIFICACION_ELEGIR_JUGADOR);
+                partida.notificarObservadores(NOTIFICACION_PARTIDA_CARGADA);
+            }
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+        return true;
+    }
+
+    public void salirAlMenu() {
+        try {
+            partida.notificarObservadores(NOTIFICACION_SALIR);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void agregarNombreElegido(String nombre) {
+        try {
+            partida.agregarNombreElegido(nombre);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

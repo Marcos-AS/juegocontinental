@@ -27,14 +27,10 @@ public class GUI implements ifVista {
 
     @Override
     public void iniciar() {
-        //nombreVista = preguntarInput("Indica tu nombre:");
-        nombreVista = UUID.randomUUID().toString()
-                .replace("-", "").substring(0, 10); //prueba
-        opcionesIniciales();
+        setFrame();
     }
 
-    @Override
-    public void opcionesIniciales() {
+    private void setFrame() {
         frame.setSize(800,800);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setIconImage(new ImageIcon(ifVista.asociarRuta("cartas_inicio")).getImage());
@@ -58,6 +54,7 @@ public class GUI implements ifVista {
         panelMano.setBorder(BorderFactory.createTitledBorder("Tu mano"));
         panelMano.setBackground(Color.LIGHT_GRAY);
 
+        //CREA PANEL MESA
         panelMesa.removeAll();
         panelMesa.revalidate();
         panelMesa.repaint();
@@ -119,6 +116,10 @@ public class GUI implements ifVista {
 //                                " deseas para la nueva partida?"));
 //                    }
 //                    ctrl.crearPartida(cantJugadores);
+                    if (nombreVista == null) {
+                        System.out.println("nombre vista null");
+                        setNombreVista();
+                    }
                     ctrl.crearPartida(2); //prueba
                 } else {
                     mostrarInfo("Ya hay una partida en curso");
@@ -131,6 +132,8 @@ public class GUI implements ifVista {
 
         botonJugar.addActionListener(e -> {
             try {
+                if (nombreVista == null)
+                    setNombreVista();
                 int inicioPartida = ctrl.jugarPartidaRecienIniciada().ordinal();
                 if (inicioPartida == FALTAN_JUGADORES) {
                     mostrarInfo("Esperando que ingresen más jugadores...");
@@ -162,23 +165,6 @@ public class GUI implements ifVista {
                     FlowLayout.LEADING);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    //  PARTIDA funciones agregadas--------------------------------------------------------
-
-    @Override
-    public void cambioTurno() {
-        if (!guardarYSalir) {
-            String nombre = ctrl.getTurnoDe();
-            if (nombre.equals(nombreVista)) {
-                buttonMap.get("cartaPozo").setEnabled(true);
-                buttonMap.get("cartaMazo").setEnabled(true);
-                buttonMap.get("ordenar").setEnabled(true);
-            } else {
-                buttonMap.get("cartaPozo").setEnabled(false);
-                buttonMap.get("cartaMazo").setEnabled(false);
-            }
         }
     }
 
@@ -248,6 +234,7 @@ public class GUI implements ifVista {
         guardarYSalir.addActionListener(e -> {
             ctrl.guardarPartida();
             setGuardarYSalir(true);
+            ctrl.salirAlMenu();
         });
 
         JPanel panelBotones = new JPanel();
@@ -256,6 +243,7 @@ public class GUI implements ifVista {
         panelBotones.add(acomodarPropioBoton);
         panelBotones.add(acomodarAjenoBoton);
         panelBotones.add(ordenarBoton);
+        panelBotones.add(guardarYSalir);
 
         buttonMap.put("bajarJuego", bajarJuegoBoton);
         buttonMap.put("tirarAlPozo", tirarAlPozoBoton);
@@ -283,6 +271,52 @@ public class GUI implements ifVista {
         return cartaMazo;
     }
 
+    private class CartaListener extends MouseAdapter {
+        private String origen;
+
+        public CartaListener(String origen) {
+            this.origen = origen; // "pozo" o "mazo"
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            JButton boton = (JButton) e.getSource();
+            buttonMap.get("guardar").setEnabled(false);
+            robarCarta(origen, boton);
+        }
+    }
+
+    private void robarCarta(String origen, JButton botonOrigen) {
+        String eleccion = "";
+        botonOrigen.setEnabled(false);
+        if ("pozo".equals(origen)) {
+            eleccion = ELECCION_ROBAR_DEL_POZO;
+            buttonMap.get("cartaMazo").setEnabled(false);
+        } else if ("mazo".equals(origen)) {
+            eleccion = ELECCION_ROBAR_DEL_MAZO;
+            buttonMap.get("cartaPozo").setEnabled(false);
+        }
+        ctrl.desarrolloRobo(eleccion);
+        activarBotonesBajar(true);
+    }
+
+    //IMPLEMENTACIÓN DE IFVISTA ---------------------------------------------------
+
+    @Override
+    public void cambioTurno() {
+        if (!guardarYSalir) {
+            String nombre = ctrl.getTurnoDe();
+            if (nombre.equals(nombreVista)) {
+                buttonMap.get("cartaPozo").setEnabled(true);
+                buttonMap.get("cartaMazo").setEnabled(true);
+                buttonMap.get("ordenar").setEnabled(true);
+            } else {
+                buttonMap.get("cartaPozo").setEnabled(false);
+                buttonMap.get("cartaMazo").setEnabled(false);
+            }
+        }
+    }
+
     @Override
     public void actualizarManoJugador(ArrayList<String> cartas) {
         System.out.println("funcionando manoo GUI");
@@ -306,6 +340,7 @@ public class GUI implements ifVista {
         });
     }
 
+    @Override
     public void actualizarPozo(String cartaATirar) {
         JButton cartaPozo = buttonMap.get("cartaPozo");
         if (cartaATirar.isEmpty()) {
@@ -313,6 +348,7 @@ public class GUI implements ifVista {
             cartaPozo.setToolTipText("El pozo está vacío");
         } else {
             setImage(cartaPozo, cartaATirar);
+            cartaPozo.setToolTipText("Robar carta del pozo");
         }
         cartaPozo.revalidate();
         cartaPozo.repaint();
@@ -350,34 +386,6 @@ public class GUI implements ifVista {
         this.guardarYSalir = guardarYSalir;
     }
 
-    private class CartaListener extends MouseAdapter {
-        private String origen;
-
-        public CartaListener(String origen) {
-            this.origen = origen; // "pozo" o "mazo"
-        }
-
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            JButton boton = (JButton) e.getSource();
-            robarCarta(origen, boton);
-        }
-    }
-
-    private void robarCarta(String origen, JButton botonOrigen) {
-        String eleccion = "";
-        botonOrigen.setEnabled(false);
-        if ("pozo".equals(origen)) {
-            eleccion = ELECCION_ROBAR_DEL_POZO;
-            buttonMap.get("cartaMazo").setEnabled(false);
-        } else if ("mazo".equals(origen)) {
-            eleccion = ELECCION_ROBAR_DEL_MAZO;
-            buttonMap.get("cartaPozo").setEnabled(false);
-        }
-        ctrl.desarrolloRobo(eleccion);
-        activarBotonesBajar(true);
-    }
-
     private JButton getImageButton(String carta) {
         ImageIcon imagen = new ImageIcon(ifVista.asociarRuta(carta));
 
@@ -396,8 +404,6 @@ public class GUI implements ifVista {
         ImageIcon iconRedimensionado = new ImageIcon(imagenRedimensionada);
         return new JButton(iconRedimensionado);
     }
-
-    //IMPLEMENTACIÓN DE IFVISTA ---------------------------------------------------
 
     @Override
     public String preguntarInputRobar() {
@@ -589,6 +595,31 @@ public class GUI implements ifVista {
         return seleccionIndices.stream().mapToInt(Integer::intValue).toArray();
     }
 
+    @Override
+    public void elegirJugador(ArrayList<String> nombreJugadores) {
+        JDialog dialogoSeleccion = new JDialog((JFrame) SwingUtilities.getWindowAncestor(cardPanel), "Seleccionar Jugador", true);
+        dialogoSeleccion.setLayout(new BorderLayout());
+        dialogoSeleccion.setSize(300, 200);
+        dialogoSeleccion.setLocationRelativeTo(null);
+
+        JPanel panelJugadores = new JPanel();
+        panelJugadores.setLayout(new BoxLayout(panelJugadores, BoxLayout.Y_AXIS));
+
+        // Crear un botón por cada nombre de jugador
+        for (String nombre : nombreJugadores) {
+            JButton botonJugador = new JButton(nombre);
+
+            botonJugador.addActionListener(e -> {
+                nombreVista = nombre;
+                ctrl.agregarNombreElegido(nombre);
+                dialogoSeleccion.dispose();
+            });
+
+            panelJugadores.add(botonJugador);
+            System.out.println("boton agregado");
+        }
+        dialogoSeleccion.setVisible(true);
+    }
 
     private int preguntarCantParaBajar() {
         JDialog dialogo = new JDialog((JFrame) SwingUtilities.getWindowAncestor(cardPanel), "Seleccionar cantidad de cartas", true);
@@ -659,6 +690,11 @@ public class GUI implements ifVista {
         return nombreVista;
     }
 
+    private void setNombreVista() {
+        this.nombreVista = UUID.randomUUID().toString()
+                .replace("-", "").substring(0, 10);//prueba
+    }
+
     @Override
     public String getCartasString(ArrayList<String> cartas) {
         return String.join(", ", cartas);
@@ -695,7 +731,13 @@ public class GUI implements ifVista {
 
     @Override
     public void mostrarInfo(String s) {
-        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(frame, s, "Jugador: " + nombreVista, JOptionPane.INFORMATION_MESSAGE));
+        String titulo;
+        if (nombreVista!=null) {
+            titulo = "Jugador: " + nombreVista;
+        } else {
+            titulo = "";
+        }
+        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(frame, s, titulo, JOptionPane.INFORMATION_MESSAGE));
     }
 
 
@@ -723,5 +765,15 @@ public class GUI implements ifVista {
     @Override
     public void setNumeroJugadorTitulo() {
         frame.setTitle("El Continental - Jugador N°" + ctrl.getNumJugador(nombreVista) + ": " + nombreVista);
+    }
+
+    @Override
+    public void salirAlMenu() {
+        cardLayout.show(cardPanel, "Menu");
+    }
+
+    @Override
+    public void partidaCargada() {
+        cardLayout.show(cardPanel, "Mesa");
     }
 }

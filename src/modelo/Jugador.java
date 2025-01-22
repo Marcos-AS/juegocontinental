@@ -8,13 +8,13 @@ import java.util.ArrayList;
 
 public class Jugador extends ObservableRemoto implements Serializable, ifJugador {
     protected String nombre;
+    public int numeroJugador;
     private int puntosAlFinalizar;
     private final ArrayList<Partida> partidas = new ArrayList<>();
     public boolean turnoActual = false;
-    public int numeroJugador;
     private ArrayList<Carta> mano = new ArrayList<>();
-    public boolean roboDelMazo = false;
     public ArrayList<ArrayList<Carta>> juegos = new ArrayList<>();
+    public boolean roboDelMazo = false;
     public int puedeBajar = 0;
     public int triosBajados;
     public int escalerasBajadas;

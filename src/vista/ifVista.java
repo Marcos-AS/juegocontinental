@@ -160,30 +160,6 @@ public interface ifVista {
         return manoString;
     }
 
-    static int menuInicial(boolean enCurso, String nombreVista) {
-        int eleccion = 0;
-        do {
-            try {
-                eleccion = Integer.parseInt(preguntarInputInicial(enCurso, nombreVista));
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
-        } while (eleccion < 1 || eleccion > 4);
-        return eleccion;
-    }
-
-    static String preguntarInputInicial(boolean enCurso, String nombreVista) {
-        UIManager.put("OptionPane.messageFont", new Font("Arial", Font.PLAIN, 18));
-        UIManager.put("TextField.font", new Font("Arial", Font.PLAIN, 16));
-        String mostrar;
-        if (enCurso) {
-            mostrar = MENU_INICIAR + "\nYA HAY UNA PARTIDA INICIADA";
-        } else {
-            mostrar = MENU_INICIAR;
-        }
-        return JOptionPane.showInputDialog(null, mostrar,"Menú inicial - " + nombreVista,JOptionPane.QUESTION_MESSAGE);
-    }
-
     static String asociarRuta(String carta) {
         return "src/vista/cartas/" + carta + ".png";
     }
@@ -212,11 +188,16 @@ public interface ifVista {
     void iniciar() throws RemoteException;
     boolean preguntarInputRobarCastigo() throws RemoteException;
     String preguntarInputRobar();
-    void opcionesIniciales() throws RemoteException;
     void cambioTurno();
     void actualizarManoJugador(ArrayList<String> cartas);
     void actualizarPozo(String cartaATirar);
     void actualizarJuegos();
     void actualizarRestricciones(boolean restriccion);
     void setNumeroJugadorTitulo();
+
+    void salirAlMenu();
+
+    void partidaCargada();
+
+    void elegirJugador(ArrayList<String> nombreJugadores);
 }

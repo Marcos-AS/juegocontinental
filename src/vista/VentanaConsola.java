@@ -10,7 +10,7 @@ import java.util.UUID;
 public class VentanaConsola extends JFrame implements ifVista {
     private Controlador ctrl;
     private String nombreVista;
-    private JFrame frame;
+    private JFrame frameMesa;
     private JPanel panelMano;
     private JPanel panelPozo;
     private JPanel panelInfoRonda;
@@ -21,44 +21,45 @@ public class VentanaConsola extends JFrame implements ifVista {
 
 
     public void iniciar() throws RemoteException {
-        //nombreVista = preguntarInput("Indica tu nombre:");
-        nombreVista = UUID.randomUUID().toString()
-                .replace("-", "").substring(0, 10); //prueba
-        setFrame();
+        setFrameMesa();
         opcionesIniciales();
     }
 
-    private void setFrame() {
-        frame = new JFrame("Mano " + nombreVista);
-        frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
-        frame.setSize(600,800);
+    private void setFrameMesa() {
+        frameMesa = new JFrame("Mesa");
+        frameMesa.setLayout(new BoxLayout(frameMesa.getContentPane(), BoxLayout.Y_AXIS));
+        frameMesa.setSize(600,800);
         panelPozo = new JPanel();
         panelMano = new JPanel();
         panelInfoRonda = new JPanel();
         panelPuntuacion = new JPanel();
         panelJuegos = new JPanel();
+        panelJuegos.setLayout(new BoxLayout(panelJuegos, BoxLayout.Y_AXIS));
         panelRestricciones = new JPanel();
-        frame.add(panelPuntuacion);
-        frame.add(panelInfoRonda);
-        frame.add(panelPozo);
-        frame.add(panelMano);
-        frame.add(panelJuegos);
-        frame.add(panelRestricciones);
-        frame.setVisible(true);
+        frameMesa.add(panelPuntuacion);
+        frameMesa.add(panelInfoRonda);
+        frameMesa.add(panelPozo);
+        frameMesa.add(panelMano);
+        frameMesa.add(panelJuegos);
+        frameMesa.add(panelRestricciones);
+        frameMesa.setVisible(true);
     }
 
-    public void opcionesIniciales() throws RemoteException {
+    private void opcionesIniciales() throws RemoteException {
         int eleccion;
         boolean partidaCreada = false;
         boolean partidaIniciada = false;
         do {
-            eleccion = ifVista.menuInicial(ctrl.isPartidaEnCurso(), nombreVista);
+            eleccion = menuInicial();
             switch (eleccion) {
-                case ifVista.ELECCION_CREAR_PARTIDA: {
+                case ELECCION_CREAR_PARTIDA: {
                     if (!ctrl.isPartidaEnCurso()) {
 //                        int cantJugadores = Integer.parseInt(preguntarInput("Cuántos jugadores" +
 //                                " deseas para la nueva partida?"));
 //                        ctrl.crearPartida(cantJugadores);
+                        if (nombreVista == null) {
+                            setNombreVista();
+                        }
                         ctrl.crearPartida(2); //prueba
                         partidaCreada = true;
                     } else {
@@ -66,12 +67,11 @@ public class VentanaConsola extends JFrame implements ifVista {
                     }
                     break;
                 }
-                case ifVista.ELECCION_JUGAR_PARTIDA: {
+                case ELECCION_JUGAR_PARTIDA: {
                     if (partidaCreada || ctrl.isPartidaEnCurso()) {
                         //if (nombreVista == null) nombreVista = preguntarInput("Indica tu nombre: ");
                         if (nombreVista == null) {
-                            nombreVista = UUID.randomUUID().toString()
-                                    .replace("-", "").substring(0, 10); //prueba
+                             setNombreVista();//prueba
                         }
                         int inicioPartida = ctrl.jugarPartidaRecienIniciada().ordinal();
                         if (inicioPartida == PARTIDA_AUN_NO_CREADA) {
@@ -88,16 +88,56 @@ public class VentanaConsola extends JFrame implements ifVista {
                     }
                     break;
                 }
-                case ifVista.ELECCION_RANKING: {
+                case ELECCION_RANKING: {
                     mostrarRanking(ctrl.getRanking());
                     break;
                 }
-                case ifVista.ELECCION_REGLAS: {
+                case ELECCION_REGLAS: {
                     mostrarInfo(ifVista.REGLAS);
                     break;
                 }
             }
-        } while (eleccion != -1 && !partidaIniciada);
+        } while (eleccion != ifVista.ELECCION_SALIR && !partidaIniciada);
+        if (eleccion==ifVista.ELECCION_SALIR) {
+            frameMesa.dispose();
+            System.exit(0);
+        }
+    }
+
+    private void setNombreVista() {
+        nombreVista = UUID.randomUUID().toString()
+                .replace("-", "").substring(0, 10);
+        frameMesa.setTitle("Mesa - " + nombreVista);
+    }
+
+    private int menuInicial() {
+        int eleccion = 0;
+        do {
+            try {
+                eleccion = Integer.parseInt(preguntarInputInicial(ctrl.isPartidaEnCurso(), nombreVista));
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        } while (eleccion < ELECCION_SALIR || eleccion > ELECCION_REGLAS || eleccion == 0);
+        return eleccion;
+    }
+
+    static String preguntarInputInicial(boolean enCurso, String nombreVista) {
+        UIManager.put("OptionPane.messageFont", new Font("Arial", Font.PLAIN, 18));
+        UIManager.put("TextField.font", new Font("Arial", Font.PLAIN, 16));
+        String mostrar;
+        String titulo = "Menú inicial";
+        if (enCurso) {
+            mostrar = MENU_INICIAR + "\nYA HAY UNA PARTIDA INICIADA";
+        } else {
+            mostrar = MENU_INICIAR;
+        }
+        if (nombreVista != null) {
+            titulo += " - " + nombreVista;
+        }
+        return JOptionPane.showInputDialog(null, mostrar,titulo,JOptionPane.QUESTION_MESSAGE);
     }
 
     @Override
@@ -110,7 +150,8 @@ public class VentanaConsola extends JFrame implements ifVista {
                     ctrl.switchMenuBajar(menuBajar());
                 }
                 ctrl.finTurno();
-                ctrl.cambioTurno();
+                if (ctrl.isPartidaEnCurso())
+                    ctrl.cambioTurno();
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
@@ -167,7 +208,22 @@ public class VentanaConsola extends JFrame implements ifVista {
 
     @Override
     public void setNumeroJugadorTitulo() {
-        frame.setTitle("El Continental - Jugador N°" + ctrl.getNumJugador(nombreVista) + ": " + nombreVista);
+        frameMesa.setTitle("Mesa - Jugador N°" + ctrl.getNumJugador(nombreVista) + ": " + nombreVista);
+    }
+
+    @Override
+    public void salirAlMenu() {
+
+    }
+
+    @Override
+    public void partidaCargada() {
+
+    }
+
+    @Override
+    public void elegirJugador(ArrayList<String> nombreJugadores) {
+
     }
 
 
