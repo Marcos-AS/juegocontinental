@@ -136,13 +136,13 @@ public class VentanaConsola extends JFrame implements ifVista {
                 switch (eleccion) {
                     case ELECCION_CREAR_PARTIDA: {
                         if (!ctrl.isPartidaEnCurso()) {
-                            //                        int cantJugadores = Integer.parseInt(preguntarInput("Cuántos jugadores" +
-                            //                                " deseas para la nueva partida?"));
-                            //                        ctrl.crearPartida(cantJugadores);
                             if (nombreVista == null) {
                                 setNombreVista();
                             }
-                            ctrl.crearPartida(2); //prueba
+                            int cantJugadores = Integer.parseInt(preguntarInput("Cuántos jugadores" +
+                                    " deseas para la nueva partida?"));
+                            ctrl.crearPartida(cantJugadores);
+                            //ctrl.crearPartida(2); //prueba
                         } else {
                             partidaIniciada++;
                             opcionesIniciales();
@@ -151,7 +151,6 @@ public class VentanaConsola extends JFrame implements ifVista {
                     }
                     case ELECCION_JUGAR_PARTIDA: {
                         if (ctrl.isPartidaEnCurso()) {
-                            //if (nombreVista == null) nombreVista = preguntarInput("Indica tu nombre: ");
                             if (nombreVista == null) {
                                 setNombreVista();//prueba
                             }
@@ -191,8 +190,9 @@ public class VentanaConsola extends JFrame implements ifVista {
     }
 
     private void setNombreVista() {
-        nombreVista = UUID.randomUUID().toString()
-                .replace("-", "").substring(0, 10);
+        nombreVista = preguntarInput("Indica tu nombre: ");
+//        nombreVista = UUID.randomUUID().toString()
+//                .replace("-", "").substring(0, 10);
         frame.setTitle("Mesa - " + nombreVista);
     }
 
