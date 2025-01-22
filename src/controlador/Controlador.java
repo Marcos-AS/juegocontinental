@@ -67,8 +67,8 @@ public class Controlador implements IControladorRemoto {
                 case NOTIFICACION_COMIENZO_RONDA:
                     vista.comienzoRonda(partida.getNumRonda());
                     break;
-                case NOTIFICACION_NUEVA_PARTIDA_PROPIO: {
-                    vista.mostrarInfo("Se ha iniciado una partida.");
+                case NOTIFICACION_NUEVA_PARTIDA: {
+                    vista.nuevaPartida();
                     break;
                 }
                 case NOTIFICACION_AGREGAR_OBSERVADOR:
@@ -120,6 +120,10 @@ public class Controlador implements IControladorRemoto {
                     vista.elegirJugador(nombresDisponibles);
 //                    int obsIndex = partida.getObservadorIndex(this);
 //                    partida.setNumeroJugador(partida.getNumJugador(vista.getNombreVista()),obsIndex);
+                    break;
+                }
+                case NOTIFICACION_FIN_PARTIDA: {
+                    vista.finPartida();
                     break;
                 }
             }
@@ -446,4 +450,12 @@ public class Controlador implements IControladorRemoto {
             throw new RuntimeException(e);
         }
     }
+
+//    public void finPartida() {
+//        try {
+//            partida.notificarObservadores(NOTIFICACION_FIN_PARTIDA);
+//        } catch (RemoteException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 }

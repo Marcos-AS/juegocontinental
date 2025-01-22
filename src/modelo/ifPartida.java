@@ -42,11 +42,6 @@ public interface ifPartida extends IObservableRemoto, Serializable {
 
     Jugador getJugador(String nombreJugador) throws RemoteException;
 
-    void crearMazo() throws RemoteException;
-
-    void repartirCartas() throws RemoteException;
-
-    void iniciarPozo() throws RemoteException;
     void incrementarNumJugadorQueEmpiezaRonda() throws RemoteException;
 
     int getNumTurno() throws RemoteException;

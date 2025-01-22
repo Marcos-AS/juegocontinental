@@ -217,7 +217,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         setNumTurno(observadorIndex);
         setNumJugadorQueEmpezoPartida(observadorIndex);
         numJugadorQueEmpiezaRonda = observadorIndex;
-        notificarObservador(observadorIndex, NOTIFICACION_NUEVA_PARTIDA_PROPIO);
+        notificarObservadores(NOTIFICACION_NUEVA_PARTIDA);
     }
 
     private ArrayList<ifCarta> getMano(int numJugador) throws RemoteException {
@@ -262,23 +262,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     @Override
     public Jugador getJugador(String nombreJugador)  throws RemoteException{
         return PartidaJugadores.getJugador(jugadores, nombreJugador);
-    }
-
-    @Override
-    public void crearMazo() throws RemoteException {
-        mazo = Mazo.mezclarCartas(Mazo.iniciarMazo(Mazo.determinarNumBarajas(jugadores)));
-    }
-
-
-    @Override
-    public void repartirCartas() throws RemoteException {
-        PartidaJugadores.repartirCartas(jugadores, numRonda, mazo);
-    }
-
-
-    @Override
-    public void iniciarPozo()  throws RemoteException{
-        pozo = Mazo.sacarPrimeraDelMazo(mazo);
     }
 
     public void robarDelMazo() throws RemoteException {
@@ -331,6 +314,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         jugadores.get(num).getMano().add(pozo);
         pozo = null;
         PartidaJugadores.robarDelMazo(jugadores,num,mazo);
+        System.out.println("robo castigo");
         actualizarMano(num);
         notificarObservadores(NOTIFICACION_ACTUALIZAR_POZO);
         notificarObservadores(NOTIFICACION_HUBO_ROBO_CASTIGO);
@@ -378,9 +362,9 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     }
 
     public void empezarRonda() throws RemoteException {
-        crearMazo();
-        repartirCartas();
-        iniciarPozo();
+        mazo = Mazo.mezclarCartas(Mazo.iniciarMazo(Mazo.determinarNumBarajas(jugadores)));
+        PartidaJugadores.repartirCartas(jugadores, numRonda, mazo);
+        pozo = Mazo.sacarPrimeraDelMazo(mazo);
         numTurno = numJugadorQueEmpiezaRonda;
         actualizarManoJugadores();
         notificarObservadores(NOTIFICACION_ACTUALIZAR_POZO);
@@ -407,8 +391,9 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         determinarGanador();
         serializarGanador();
         notificarObservadores(NOTIFICACION_GANADOR);
+        notificarObservadores(NOTIFICACION_FIN_PARTIDA);
         //lo siguiente es para poder seguir jugando otras partidas
-        removerObservadores();
+        //removerObservadores();
     }
 
     public void incPuedeBajar(int numJugador) throws RemoteException {

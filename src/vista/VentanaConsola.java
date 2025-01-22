@@ -5,139 +5,185 @@ import javax.swing.*;
 import java.awt.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class VentanaConsola extends JFrame implements ifVista {
     private Controlador ctrl;
     private String nombreVista;
-    private JFrame frameMesa;
-    private JPanel panelMano;
-    private JPanel panelPozo;
-    private JPanel panelInfoRonda;
-    private JPanel panelPuntuacion;
-    private JPanel panelJuegos;
-    private JPanel panelRestricciones;
+    private JFrame frame = new JFrame("El Continental");
+    private Map<String, JPanel> panelMap;
     private int manoSize;
+    private CardLayout cardLayout;
+    private JPanel cardPanel;
+    private int partidaIniciada = 0;
 
 
     public void iniciar() throws RemoteException {
-        setFrameMesa();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(600,800);
+        cardLayout = new CardLayout();
+        frame.setLayout(cardLayout);
+        cardPanel = new JPanel(cardLayout);
+        panelMap = new HashMap<>();
+
+        JPanel panelMenu = new JPanel();
+        JPanel panelPozo = new JPanel();
+        JPanel panelMano = new JPanel();
+        JPanel panelInfoRonda = new JPanel();
+        JPanel panelPuntuacion = new JPanel();
+        JPanel panelJuegos = new JPanel();
+        panelJuegos.setLayout(new BoxLayout(panelJuegos, BoxLayout.Y_AXIS));
+        JPanel panelRestricciones = new JPanel();
+
+        JPanel panelMesa = new JPanel();
+        panelMesa.setLayout(new BoxLayout(panelMesa, BoxLayout.Y_AXIS));
+        panelMesa.add(panelPuntuacion);
+        panelMesa.add(panelInfoRonda);
+        panelMesa.add(panelPozo);
+        panelMesa.add(panelMano);
+        panelMesa.add(panelJuegos);
+        panelMesa.add(panelRestricciones);
+
+        cardPanel.add(panelMesa, "Mesa");
+        cardPanel.add(panelMenu, "Menu");
+
+        panelMap.put("Menu", panelMenu);
+        panelMap.put("Mesa", panelMesa);
+        panelMap.put("Pozo", panelPozo);
+        panelMap.put("Mano", panelMano);
+        panelMap.put("infoRonda", panelInfoRonda);
+        panelMap.put("Puntuacion", panelPuntuacion);
+        panelMap.put("Juegos", panelJuegos);
+        panelMap.put("Restricciones", panelRestricciones);
+
+        if (ctrl.isPartidaEnCurso()) partidaIniciada++;
+        opcionesIniciales();
+        frame.add(cardPanel);
+        cardLayout.show(cardPanel, "Menu");
+        frame.setVisible(true);
+
+        switchInicial();
+    }
+
+    private void opcionesIniciales() {
+        JPanel panelMenu = panelMap.get("Menu");
+        panelMenu.removeAll();
+        panelMenu.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        String mostrar = MENU_INICIAR;
+        if (partidaIniciada == 0) {
+            mostrar += "Aún no hay una partida creada. Seleccione la opción 'Crear partida'";
+        }
+        if (partidaIniciada == 1) {
+            mostrar += "\nYA HAY UNA PARTIDA INICIADA";
+        } else if (partidaIniciada > 1) {
+            mostrar += "\nYA HAY UNA PARTIDA INICIADA Y NO PUEDE CREARSE UNA NUEVA";
+        }
+        JLabel labelMenu = new JLabel(mostrar);
+        panelMenu.add(labelMenu);
+        panelMenu.revalidate();
+        panelMenu.repaint();
+    };
+
+    @Override
+    public void nuevaPartida() {
+        partidaIniciada++;
         opcionesIniciales();
     }
 
-    private void setFrameMesa() {
-        frameMesa = new JFrame("Mesa");
-        frameMesa.setLayout(new BoxLayout(frameMesa.getContentPane(), BoxLayout.Y_AXIS));
-        frameMesa.setSize(600,800);
-        panelPozo = new JPanel();
-        panelMano = new JPanel();
-        panelInfoRonda = new JPanel();
-        panelPuntuacion = new JPanel();
-        panelJuegos = new JPanel();
-        panelJuegos.setLayout(new BoxLayout(panelJuegos, BoxLayout.Y_AXIS));
-        panelRestricciones = new JPanel();
-        frameMesa.add(panelPuntuacion);
-        frameMesa.add(panelInfoRonda);
-        frameMesa.add(panelPozo);
-        frameMesa.add(panelMano);
-        frameMesa.add(panelJuegos);
-        frameMesa.add(panelRestricciones);
-        frameMesa.setVisible(true);
+    @Override
+    public void finPartida() {
+        partidaIniciada = 0;
+        cardLayout.show(cardPanel, "Menu");
+        switchInicial();
     }
 
-    private void opcionesIniciales() throws RemoteException {
-        int eleccion;
-        boolean partidaCreada = false;
-        boolean partidaIniciada = false;
-        do {
-            eleccion = menuInicial();
-            switch (eleccion) {
-                case ELECCION_CREAR_PARTIDA: {
-                    if (!ctrl.isPartidaEnCurso()) {
-//                        int cantJugadores = Integer.parseInt(preguntarInput("Cuántos jugadores" +
-//                                " deseas para la nueva partida?"));
-//                        ctrl.crearPartida(cantJugadores);
-                        if (nombreVista == null) {
-                            setNombreVista();
-                        }
-                        ctrl.crearPartida(2); //prueba
-                        partidaCreada = true;
-                    } else {
-                        mostrarInfo("Ya hay una partida en curso");
-                    }
-                    break;
-                }
-                case ELECCION_JUGAR_PARTIDA: {
-                    if (partidaCreada || ctrl.isPartidaEnCurso()) {
-                        //if (nombreVista == null) nombreVista = preguntarInput("Indica tu nombre: ");
-                        if (nombreVista == null) {
-                             setNombreVista();//prueba
-                        }
-                        int inicioPartida = ctrl.jugarPartidaRecienIniciada().ordinal();
-                        if (inicioPartida == PARTIDA_AUN_NO_CREADA) {
-                            mostrarInfo("La partida aun no ha sido creada." +
-                                    " Seleccione la opción 'Crear partida' ");
-                        } else if (inicioPartida == FALTAN_JUGADORES) {
-                            mostrarInfo("Esperando que ingresen más jugadores...");
-                        } else if (inicioPartida == INICIAR_PARTIDA) {
-                            ctrl.empezarRonda();
-                            ctrl.cambioTurno();
-                        }
-                    } else {
-                        mostrarInfo("Primero tienes que crear una partida");
-                    }
-                    break;
-                }
-                case ELECCION_RANKING: {
-                    mostrarRanking(ctrl.getRanking());
-                    break;
-                }
-                case ELECCION_REGLAS: {
-                    mostrarInfo(ifVista.REGLAS);
-                    break;
-                }
-            }
-        } while (eleccion != ifVista.ELECCION_SALIR && !partidaIniciada);
-        if (eleccion==ifVista.ELECCION_SALIR) {
-            frameMesa.dispose();
-            System.exit(0);
+    private int preguntarInputInicial(String input) {
+        UIManager.put("OptionPane.messageFont", new Font("Arial", Font.PLAIN, 18));
+        UIManager.put("TextField.font", new Font("Arial", Font.PLAIN, 16));
+        String mostrar = input + "\nIngrese el número de opción que desee: ";
+        String titulo = "Menú inicial";
+        if (nombreVista != null) {
+            titulo += " - " + nombreVista;
         }
+        return Integer.parseInt(JOptionPane.showInputDialog(null, mostrar,titulo,JOptionPane.QUESTION_MESSAGE));
+    }
+
+    private void switchInicial() {
+        int eleccion = 0;
+        String input = "";
+        boolean esperandoJugadores = false;
+        do {
+            if (esperandoJugadores) {
+                mostrarInfo(input);
+                break;
+            } else {
+                eleccion = preguntarInputInicial(input);
+            }
+            input = "";
+            try {
+                switch (eleccion) {
+                    case ELECCION_CREAR_PARTIDA: {
+                        if (!ctrl.isPartidaEnCurso()) {
+                            //                        int cantJugadores = Integer.parseInt(preguntarInput("Cuántos jugadores" +
+                            //                                " deseas para la nueva partida?"));
+                            //                        ctrl.crearPartida(cantJugadores);
+                            if (nombreVista == null) {
+                                setNombreVista();
+                            }
+                            ctrl.crearPartida(2); //prueba
+                        } else {
+                            partidaIniciada++;
+                            opcionesIniciales();
+                        }
+                        break;
+                    }
+                    case ELECCION_JUGAR_PARTIDA: {
+                        if (ctrl.isPartidaEnCurso()) {
+                            //if (nombreVista == null) nombreVista = preguntarInput("Indica tu nombre: ");
+                            if (nombreVista == null) {
+                                setNombreVista();//prueba
+                            }
+                            int inicioPartida = ctrl.jugarPartidaRecienIniciada().ordinal();
+                            if (inicioPartida == FALTAN_JUGADORES) {
+                                input = "Esperando que ingresen más jugadores...";
+                                esperandoJugadores = true;
+                            } else if (inicioPartida == INICIAR_PARTIDA) {
+                                ctrl.empezarRonda();
+                                ctrl.cambioTurno();
+                                //cuando termina la partida
+                                //ctrl.finPartida();
+                            }
+                        } else {
+                            input = "Primero tienes que crear una partida";
+                        }
+                        break;
+                    }
+                    case ELECCION_RANKING: {
+                        input = getRankingString(ctrl.getRanking());
+                        break;
+                    }
+                    case ELECCION_REGLAS: {
+                        mostrarInfo(ifVista.REGLAS);
+                        break;
+                    }
+                    case ELECCION_SALIR: {
+                        frame.dispose();
+                        System.exit(0);
+                        break;
+                    }
+                }
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
+        } while (eleccion != ELECCION_SALIR);
     }
 
     private void setNombreVista() {
         nombreVista = UUID.randomUUID().toString()
                 .replace("-", "").substring(0, 10);
-        frameMesa.setTitle("Mesa - " + nombreVista);
-    }
-
-    private int menuInicial() {
-        int eleccion = 0;
-        do {
-            try {
-                eleccion = Integer.parseInt(preguntarInputInicial(ctrl.isPartidaEnCurso(), nombreVista));
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            } catch (RemoteException e) {
-                throw new RuntimeException(e);
-            }
-        } while (eleccion < ELECCION_SALIR || eleccion > ELECCION_REGLAS || eleccion == 0);
-        return eleccion;
-    }
-
-    static String preguntarInputInicial(boolean enCurso, String nombreVista) {
-        UIManager.put("OptionPane.messageFont", new Font("Arial", Font.PLAIN, 18));
-        UIManager.put("TextField.font", new Font("Arial", Font.PLAIN, 16));
-        String mostrar;
-        String titulo = "Menú inicial";
-        if (enCurso) {
-            mostrar = MENU_INICIAR + "\nYA HAY UNA PARTIDA INICIADA";
-        } else {
-            mostrar = MENU_INICIAR;
-        }
-        if (nombreVista != null) {
-            titulo += " - " + nombreVista;
-        }
-        return JOptionPane.showInputDialog(null, mostrar,titulo,JOptionPane.QUESTION_MESSAGE);
+        frame.setTitle("Mesa - " + nombreVista);
     }
 
     @Override
@@ -160,22 +206,28 @@ public class VentanaConsola extends JFrame implements ifVista {
 
     @Override
     public void actualizarManoJugador(ArrayList<String> cartas) {
-        manoSize = cartas.size();
-        StringBuilder cartasStr = new StringBuilder();
-        int i = 1;
-        for (String carta : cartas) {
-            cartasStr.append(i).append(" - ").append(carta).append("<br>");
-            i++;
-        }
-        JLabel labelCartas = new JLabel("<html>Mano:<br>" + cartasStr + "</html>");
-        panelMano.removeAll();
-        panelMano.add(labelCartas);
-        panelMano.repaint();
-        panelMano.revalidate();
+        SwingUtilities.invokeLater(() -> {
+            System.out.println("actualizando mano");
+            JPanel panelMano = panelMap.get("Mano");
+            manoSize = cartas.size();
+            panelMano.removeAll();
+            panelMano.revalidate();
+            panelMano.repaint();
+            StringBuilder cartasStr = new StringBuilder();
+            int i = 1;
+            for (String carta : cartas) {
+                cartasStr.append(i).append(" - ").append(carta).append("<br>");
+                i++;
+            }
+            JLabel labelCartas = new JLabel("<html>Mano:<br>" + cartasStr + "</html>");
+            panelMano.add(labelCartas);
+            cardLayout.show(cardPanel, "Mesa");
+        });
     }
 
     @Override
     public void actualizarPozo(String cartaATirar) {
+        JPanel panelPozo = panelMap.get("Pozo");
         JLabel labelPozo;
         if (cartaATirar.isEmpty()) {
             labelPozo = new JLabel("Pozo vacío");
@@ -189,6 +241,7 @@ public class VentanaConsola extends JFrame implements ifVista {
     }
 
     public void comienzoRonda(int ronda) {
+        JPanel panelInfoRonda = panelMap.get("infoRonda");
         JLabel label = new JLabel(ifVista.mostrarCombinacionRequerida(ronda));
         panelInfoRonda.removeAll();
         panelInfoRonda.add(label);
@@ -197,6 +250,7 @@ public class VentanaConsola extends JFrame implements ifVista {
     }
 
     public void actualizarRestricciones(boolean restriccion) {
+        JPanel panelRestricciones = panelMap.get("Restricciones");
         panelRestricciones.removeAll();
         if (restriccion) {
             Label label = new Label("Ya no puede robar con castigo y no puede volver a bajar en esta mano");
@@ -208,7 +262,7 @@ public class VentanaConsola extends JFrame implements ifVista {
 
     @Override
     public void setNumeroJugadorTitulo() {
-        frameMesa.setTitle("Mesa - Jugador N°" + ctrl.getNumJugador(nombreVista) + ": " + nombreVista);
+        frame.setTitle("Mesa - Jugador N°" + ctrl.getNumJugador(nombreVista) + ": " + nombreVista);
     }
 
     @Override
@@ -226,10 +280,15 @@ public class VentanaConsola extends JFrame implements ifVista {
 
     }
 
-
     public void mostrarInfo(String s) {
-        JOptionPane.showMessageDialog(null, s,
-                "Jugador: " + nombreVista, JOptionPane.INFORMATION_MESSAGE);
+        String titulo = "Aviso";
+        if (nombreVista!= null) {
+            titulo += " - Jugador: " + nombreVista;
+        }
+        String finalTitulo = titulo;
+        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, s,
+                finalTitulo, JOptionPane.INFORMATION_MESSAGE)
+        );
     }
 
     public String preguntarInput(String s) {
@@ -256,14 +315,14 @@ public class VentanaConsola extends JFrame implements ifVista {
         return valida;
     }
 
-    public void mostrarRanking(Object[] ranking) {
+    public String getRankingString(Object[] ranking) {
         StringBuilder s = new StringBuilder("Ranking de mejores jugadores: \n");
         int i = 1;
         for (Object o : ranking) {
             s.append(i).append(" - ").append(o).append("\n");
             i++;
         }
-        mostrarInfo(s.toString());
+        return s.toString();
     }
 
     public void setControlador(Controlador ctrl) {
@@ -383,12 +442,14 @@ public class VentanaConsola extends JFrame implements ifVista {
         }
         mostrar.append("<br><br>");
         JLabel labelJuegos = new JLabel(String.valueOf(mostrar));
+        JPanel panelJuegos = panelMap.get("Juegos");
         panelJuegos.add(labelJuegos);
         panelJuegos.revalidate();
         panelJuegos.repaint();
     }
 
     public void actualizarJuegos() {
+        JPanel panelJuegos = panelMap.get("Juegos");
         panelJuegos.removeAll();
         panelJuegos.revalidate();
         panelJuegos.repaint();
@@ -438,6 +499,7 @@ public class VentanaConsola extends JFrame implements ifVista {
                             .append(": ").append(puntos[i]).append("<br>");
         }
         JLabel labelPuntos = new JLabel(String.valueOf(s));
+        JPanel panelPuntuacion = panelMap.get("Puntuacion");
         panelPuntuacion.removeAll();
         panelPuntuacion.add(labelPuntos);
         panelPuntuacion.revalidate();

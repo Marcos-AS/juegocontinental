@@ -2,8 +2,6 @@ package vista;
 
 import controlador.Controlador;
 import modelo.ifCarta;
-import javax.swing.*;
-import java.awt.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
@@ -27,7 +25,7 @@ public interface ifVista {
     String YA_NO_PUEDE_BAJAR = "No puedes volver a bajar juegos en esta ronda.";
     String MOSTRAR_JUEGO_INVALIDO = "No puedes bajar porque la combinacion elegida no forma un juego valido para la ronda\n";
     String PREGUNTA_NUMERO_JUEGO = "En qué número de juego quieres acomodar tu carta?";
-    String PREGUNTA_ROBAR_CASTIGO = "Quieres robar con castigo? (robar del pozo y robar del mazo)\n1 - No\n2 - Si";
+    String PREGUNTA_ROBAR_CASTIGO = "Quieres robar con castigo? (robar del pozo y robar del mazo)\n(Si/No)";
     String MENU_ROBAR = "Querés robar del mazo o robar del pozo?\n1 - Robar del mazo\n2 - Robar del pozo\n-1 - Guardar partida y salir\nElige una opción: ";
     String MENU_BAJAR = """
         Elije una opción:
@@ -38,25 +36,15 @@ public interface ifVista {
         5 - Acomodar en un juego bajado ajeno
         -1 - Guardar partida y salir""";
     String MENU_INICIAR = """
-        Bienvenido al juego Continental
-        Elije una opción:
-        1 - Crear partida
-        2 - Jugar partida recién creada
-        3 - Ver ranking mejores jugadores
-        4 - Ver reglas de juego
-        -1 - Salir del juego
-        """;
-    String MENU_INICIAR_INICIADA = """
         <html><head><title>El Continental.</title></head>
-        <h1>Bienvenido al juego Continental</h1>
+        <h1>Bienvenido al juego El Continental</h1>
         Elije una opción:<br>
         1 - Crear partida<br>
         2 - Jugar partida recién creada<br>
         3 - Ver ranking mejores jugadores<br>
         4 - Ver reglas de juego<br>
         -1 - Salir del juego<br>
-        YA HAY UNA PARTIDA INICIADA
-        </html>""";
+        """;
 
     String REGLAS =
     """
@@ -200,4 +188,8 @@ public interface ifVista {
     void partidaCargada();
 
     void elegirJugador(ArrayList<String> nombreJugadores);
+
+    void nuevaPartida();
+
+    void finPartida();
 }

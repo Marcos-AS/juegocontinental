@@ -27,10 +27,6 @@ public class GUI implements ifVista {
 
     @Override
     public void iniciar() {
-        setFrame();
-    }
-
-    private void setFrame() {
         frame.setSize(800,800);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setIconImage(new ImageIcon(ifVista.asociarRuta("cartas_inicio")).getImage());
@@ -319,7 +315,6 @@ public class GUI implements ifVista {
 
     @Override
     public void actualizarManoJugador(ArrayList<String> cartas) {
-        System.out.println("funcionando manoo GUI");
         SwingUtilities.invokeLater(() -> {
             JPanel panelMano = panelMap.get("Mano");
             manoSize = cartas.size();
@@ -328,14 +323,12 @@ public class GUI implements ifVista {
             panelMano.repaint();
             mano = new ArrayList<>();
             for (int i = 0; i < manoSize; i++) {
-                //System.out.println("cargando desde " + carta);
                 String carta = cartas.get(i);
                 mano.add(carta);
                 JButton buttonCarta = getImageButton(carta);
                 buttonCarta.setBorder(BorderFactory.createTitledBorder(String.valueOf(i+1)));
                 panelMano.add(buttonCarta);
             }
-
             cardLayout.show(cardPanel, "Mesa");
         });
     }
@@ -619,6 +612,16 @@ public class GUI implements ifVista {
             System.out.println("boton agregado");
         }
         dialogoSeleccion.setVisible(true);
+    }
+
+    @Override
+    public void nuevaPartida() {
+        mostrarInfo("Se ha creado una partida.");
+    }
+
+    @Override
+    public void finPartida() {
+
     }
 
     private int preguntarCantParaBajar() {
