@@ -3,6 +3,8 @@ package vista;
 import controlador.Controlador;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -95,8 +97,16 @@ public class VentanaConsola extends JFrame implements ifVista {
     @Override
     public void finPartida() {
         partidaIniciada = 0;
+        JPanel panelMenu = panelMap.get("Menu");
+        JButton botonJugar = new JButton("Jugar otra partida");
+        botonJugar.addActionListener(e -> {
+            setEnabled(false);
+            switchInicial();
+        });
+        panelMenu.add(botonJugar);
+        panelMenu.revalidate();
+        panelMenu.repaint();
         cardLayout.show(cardPanel, "Menu");
-        switchInicial();
     }
 
     private int preguntarInputInicial(String input) {
