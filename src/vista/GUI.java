@@ -103,27 +103,22 @@ public class GUI implements ifVista {
         botonJugar.setEnabled(false);
 
         botonIniciar.addActionListener(e -> {
-            try {
-                botonIniciar.setEnabled(false);
-                int cantJugadores = 0;
-                if (!ctrl.isPartidaEnCurso()) {
+            botonIniciar.setEnabled(false);
+            int cantJugadores = 0;
+            if (!ctrl.isPartidaEnCurso()) {
 //                    while (cantJugadores < 2) {
 //                        cantJugadores = Integer.parseInt(preguntarInput("Cuántos jugadores" +
 //                                " deseas para la nueva partida?"));
 //                    }
 //                    ctrl.crearPartida(cantJugadores);
-                    if (nombreVista == null) {
-                        System.out.println("nombre vista null");
-                        setNombreVista();
-                    }
-                    ctrl.crearPartida(2); //prueba
-                } else {
-                    mostrarInfo("Ya hay una partida en curso");
+                if (nombreVista == null) {
+                    setNombreVista();
                 }
-                botonJugar.setEnabled(true);
-            } catch (RemoteException ex) {
-                throw new RuntimeException(ex);
+                ctrl.crearPartida(2); //prueba
+            } else {
+                mostrarInfo("Ya hay una partida en curso");
             }
+            botonJugar.setEnabled(true);
         });
 
         botonJugar.addActionListener(e -> {
@@ -144,24 +139,16 @@ public class GUI implements ifVista {
 
         botonCargar.addActionListener(e -> {
             if (ctrl.cargarPartida()) {
-                try {
-                    ctrl.cambioTurno();
-                } catch (RemoteException ex) {
-                    throw new RuntimeException(ex);
-                }
+                ctrl.cambioTurno();
             }
         });
 
-        try {
-            panelMenu.add(label);
-            panelMenu.add(botonIniciar, FlowLayout.LEFT);
-            panelMenu.add(botonJugar, FlowLayout.RIGHT);
-            panelMenu.add(botonCargar, FlowLayout.RIGHT);
-            panelMenu.add(new BarraMenu().agregarMenuBarra(ctrl.getRanking()),
-                    FlowLayout.LEADING);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
+        panelMenu.add(label);
+        panelMenu.add(botonIniciar, FlowLayout.LEFT);
+        panelMenu.add(botonJugar, FlowLayout.RIGHT);
+        panelMenu.add(botonCargar, FlowLayout.RIGHT);
+        panelMenu.add(new BarraMenu().agregarMenuBarra(ctrl.getRanking()),
+                FlowLayout.LEADING);
     }
 
     private void crearBotonesMenuBajar(JPanel panelMesa) {
@@ -180,51 +167,31 @@ public class GUI implements ifVista {
         guardarYSalir.setEnabled(false);
 
         bajarJuegoBoton.addActionListener(e -> {
-            try {
-                ctrl.switchMenuBajar(ifVista.ELECCION_BAJARSE);
-                if (!ctrl.isTurnoActual()) {
-                    activarBotonesBajar(false);
-                    ctrl.finTurno();
-                    ctrl.cambioTurno();
-                }
-            } catch (RemoteException ex) {
-                throw new RuntimeException(ex);
+            ctrl.switchMenuBajar(ifVista.ELECCION_BAJARSE);
+            if (!ctrl.isTurnoActual()) {
+                activarBotonesBajar(false);
+                ctrl.finTurno();
+                ctrl.cambioTurno();
             }
         });
 
         tirarAlPozoBoton.addActionListener(e -> {
-            try {
-                ctrl.switchMenuBajar(ifVista.ELECCION_TIRAR_AL_POZO);
-                activarBotonesBajar(false);
-                ctrl.finTurno();
-                ctrl.cambioTurno();
-            } catch (RemoteException ex) {
-                throw new RuntimeException(ex);
-            }
+            ctrl.switchMenuBajar(ifVista.ELECCION_TIRAR_AL_POZO);
+            activarBotonesBajar(false);
+            ctrl.finTurno();
+            ctrl.cambioTurno();
         });
 
         acomodarPropioBoton.addActionListener(e -> {
-            try {
-                ctrl.switchMenuBajar(ifVista.ELECCION_ACOMODAR_JUEGO_PROPIO);
-            } catch (RemoteException ex) {
-                throw new RuntimeException(ex);
-            }
+            ctrl.switchMenuBajar(ifVista.ELECCION_ACOMODAR_JUEGO_PROPIO);
         });
 
         acomodarAjenoBoton.addActionListener(e -> {
-            try {
-                ctrl.switchMenuBajar(ifVista.ELECCION_ACOMODAR_JUEGO_AJENO);
-            } catch (RemoteException ex) {
-                throw new RuntimeException(ex);
-            }
+            ctrl.switchMenuBajar(ifVista.ELECCION_ACOMODAR_JUEGO_AJENO);
         });
 
         ordenarBoton.addActionListener(e -> {
-            try {
-                ctrl.switchMenuBajar(ifVista.ELECCION_ORDENAR_CARTAS);
-            } catch (RemoteException ex) {
-                throw new RuntimeException(ex);
-            }
+            ctrl.switchMenuBajar(ifVista.ELECCION_ORDENAR_CARTAS);
         });
 
         guardarYSalir.addActionListener(e -> {
@@ -354,7 +321,6 @@ public class GUI implements ifVista {
 
     @Override
     public void comienzoRonda(int ronda) {
-        System.out.println("funcionando ronda GUI");
         JLabel label = new JLabel(ifVista.mostrarCombinacionRequerida(ronda));
         JPanel panelInfoRonda = panelMap.get("infoRonda");
         panelInfoRonda.removeAll();
@@ -650,6 +616,7 @@ public class GUI implements ifVista {
 
         panelBotones.add(botonTres);
         panelBotones.add(botonCuatro);
+        if (manoSize<4) botonCuatro.setEnabled(false);
         dialogo.add(panelBotones, BorderLayout.CENTER);
 
         dialogo.setVisible(true);
@@ -694,8 +661,9 @@ public class GUI implements ifVista {
     }
 
     private void setNombreVista() {
-        this.nombreVista = UUID.randomUUID().toString()
-                .replace("-", "").substring(0, 10);//prueba
+//        this.nombreVista = UUID.randomUUID().toString()
+//                .replace("-", "").substring(0, 10);//prueba
+        nombreVista = preguntarInput("Indique su nombre: ");
     }
 
     @Override

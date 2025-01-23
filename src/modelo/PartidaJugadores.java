@@ -37,8 +37,8 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
         return j;
     }
 
-    public static void repartirCartas(ArrayList<Jugador> jugadoresActuales,
-                  int numRonda, ArrayList<Carta> mazo) throws RemoteException {
+    public static void repartirCartasPrueba(ArrayList<Jugador> jugadoresActuales,
+                int numRonda, ArrayList<Carta> mazo) throws RemoteException {
         for (Jugador j : jugadoresActuales) {
             switch (numRonda) {
                 case 1:
@@ -77,13 +77,17 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
                     throw new IllegalArgumentException("Ronda no válida: " + numRonda);
             }
         }
+    }
 
-//        int numCartasARepartir = ifPartida.cartasPorRonda(numRonda);
-//        for(Jugador j: jugadoresActuales) {
-//            while (j.getMano().size() < numCartasARepartir) {
-//                j.agregarCarta(Mazo.sacarPrimeraDelMazo(mazo));
-//            }
-//        }
+
+    public static void repartirCartas(ArrayList<Jugador> jugadoresActuales,
+                  int numRonda, ArrayList<Carta> mazo) throws RemoteException {
+        int numCartasARepartir = ifPartida.cartasPorRonda(numRonda);
+        for(Jugador j: jugadoresActuales) {
+            while (j.getMano().size() < numCartasARepartir) {
+                j.agregarCarta(Mazo.sacarPrimeraDelMazo(mazo));
+            }
+        }
     }
 
     private static void asignarTrio(Jugador j, ArrayList<Carta> mazo) throws RemoteException {
@@ -195,7 +199,8 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
         }
     }
 
-    public static ArrayList<Jugador> ponerJugadoresEnOrden(ArrayList<Jugador> jugadoresActuales) throws RemoteException {
+    public static ArrayList<Jugador> ponerJugadoresEnOrden(ArrayList<Jugador> jugadoresActuales)
+            throws RemoteException {
         ArrayList<Jugador> jugadoresNuevo = new ArrayList<>();
         int[] numJugadores = new int[jugadoresActuales.size()];
         int i = 0;
@@ -215,11 +220,6 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
                                     ArrayList<Carta> mazo) throws RemoteException {
        jugadores.get(numJugador).getMano().add(Mazo.sacarPrimeraDelMazo(mazo));
        jugadores.get(numJugador).setRoboDelMazo(true);
-    }
-
-    public static void moverCartaEnMano(ArrayList<Jugador> jugadores, int numJugador,
-                                        int i, int i1) throws RemoteException {
-        jugadores.get(numJugador).moverCartaEnMano(i, i1);
     }
 
     public static void bajarJuego(ArrayList<Jugador> jugadores, int numJugador,

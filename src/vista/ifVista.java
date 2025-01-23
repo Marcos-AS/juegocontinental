@@ -112,6 +112,7 @@ public interface ifVista {
             case 7 -> "3 escaleras";
             default -> "";
         };
+        s += "\nTrío = 3 cartas (mínimo) con el mismo número\nEscalera = 4 cartas mínimo con número consecutivo y mismo palo";
         return s;
     }
 

@@ -30,8 +30,6 @@ public interface ifPartida extends IObservableRemoto, Serializable {
 
     void serializarGanador() throws RemoteException;
 
-    void removerObservadores() throws RemoteException;
-
     Serializador getRanking() throws RemoteException;
 
     ArrayList<Jugador> getJugadores() throws RemoteException;
@@ -70,7 +68,7 @@ public interface ifPartida extends IObservableRemoto, Serializable {
             throws RemoteException;
     void acomodarEnJuegoAjeno(int numJugador,int numJugadorAcomodar, int iCarta, int numJuego)
             throws RemoteException;
-    void setEnCurso() throws RemoteException;
+    void setEnCurso(boolean enCurso) throws RemoteException;
     void setNumJugadorQueEmpezoPartida(int numJugadorQueEmpezoPartida)
             throws RemoteException;
 

@@ -3,8 +3,6 @@ package modelo;
 import rmimvc.src.observer.IObservadorRemoto;
 import rmimvc.src.observer.ObservableRemoto;
 import serializacion.Serializador;
-
-import java.io.File;
 import java.io.Serial;
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -15,7 +13,7 @@ import static modelo.Eventos.*;
 public class Partida extends ObservableRemoto implements ifPartida, Serializable {
     protected static final int BARAJAS_HASTA_4_JUGADORES = 2;
     protected static final int BARAJAS_MAS_4_JUGADORES = 3;
-    private static final int TOTAL_RONDAS = 1;
+    private static final int TOTAL_RONDAS = 7;
     @Serial
     private static final long serialVersionUID = 1L;
     private final Serializador srlRanking = new Serializador("src/serializacion/ranking.dat");
@@ -213,7 +211,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     public void crearPartida(int observadorIndex, int cantJugadoresDeseada)
             throws RemoteException {
         setCantJugadoresDeseada(cantJugadoresDeseada);
-        setEnCurso();
+        setEnCurso(true);
         setNumTurno(observadorIndex);
         setNumJugadorQueEmpezoPartida(observadorIndex);
         numJugadorQueEmpiezaRonda = observadorIndex;
@@ -228,14 +226,6 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     @Override
     public int getObservadorIndex(IObservadorRemoto o) throws RemoteException {
         return getObservadores().indexOf(o);
-    }
-
-    @Override
-    public void removerObservadores() throws RemoteException {
-        int cantObservadores = getObservadores().size();
-        for (int i = cantObservadores-1; i >= 0; i--) {
-            removerObservador(getObservadores().get(i));
-        }
     }
 
     @Override
@@ -363,9 +353,13 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
 
     public void empezarRonda() throws RemoteException {
         mazo = Mazo.mezclarCartas(Mazo.iniciarMazo(Mazo.determinarNumBarajas(jugadores)));
+        //PartidaJugadores.repartirCartasPrueba(jugadores,numRonda,mazo);
         PartidaJugadores.repartirCartas(jugadores, numRonda, mazo);
         pozo = Mazo.sacarPrimeraDelMazo(mazo);
         numTurno = numJugadorQueEmpiezaRonda;
+        System.out.println(jugadores.get(0).getNombre());
+        System.out.println(jugadores.get(1).getNombre());
+        notificarObservadores(NOTIFICACION_PUNTOS);
         actualizarManoJugadores();
         notificarObservadores(NOTIFICACION_ACTUALIZAR_POZO);
         notificarObservadores(NOTIFICACION_ACTUALIZAR_JUEGOS);
@@ -387,13 +381,13 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     }
 
     private void finPartida() throws RemoteException {
-        setEnCurso();
+        setEnCurso(false);
         determinarGanador();
         serializarGanador();
         notificarObservadores(NOTIFICACION_GANADOR);
         notificarObservadores(NOTIFICACION_FIN_PARTIDA);
-        //lo siguiente es para poder seguir jugando otras partidas
-        //removerObservadores();
+        jugadores = new ArrayList<>();
+        numRonda = 1;
     }
 
     public void incPuedeBajar(int numJugador) throws RemoteException {
@@ -406,7 +400,8 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     }
 
     public void moverCartaEnMano(int numJugador, int i, int i1) throws RemoteException {
-        PartidaJugadores.moverCartaEnMano(jugadores, numJugador, i, i1);
+        jugadores.get(numJugador).moverCartaEnMano(i,i1);
+        actualizarMano(numJugador);
     }
 
     public void bajarJuego(int numJugador, int[] cartasABajar, int tipoJuego)
@@ -506,8 +501,8 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     }
 
     @Override
-    public void setEnCurso() throws RemoteException {
-        enCurso = !enCurso;
+    public void setEnCurso(boolean enCurso) throws RemoteException {
+        this.enCurso = enCurso;
     }
 
     @Override
@@ -530,5 +525,4 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     public void setCantJugadoresDeseada(int cantJugadoresDeseada) {
         this.cantJugadoresDeseada = cantJugadoresDeseada;
     }
-
 }

@@ -1,7 +1,6 @@
 package modelo;
 
 import rmimvc.src.observer.ObservableRemoto;
-
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
@@ -13,7 +12,8 @@ public class Mano extends ObservableRemoto {
         mano.add(destino, c);
     }
 
-    public static ArrayList<Carta> seleccionarCartasABajar(ArrayList<Carta> mano, int[] cartasABajar) {
+    public static ArrayList<Carta> seleccionarCartasABajar(ArrayList<Carta> mano,
+                                                           int[] cartasABajar) {
         ArrayList<Carta> juego = new ArrayList<>();
         for (int carta : cartasABajar) juego.add(mano.get(carta));
         return juego;
