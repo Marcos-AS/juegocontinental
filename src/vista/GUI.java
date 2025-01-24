@@ -709,7 +709,7 @@ public class GUI implements ifVista {
     @Override
     public boolean preguntarInputRobarCastigo() {
         int opcion = JOptionPane.showOptionDialog(
-                null,
+                SwingUtilities.getWindowAncestor(cardPanel),
                 "Quieres robar con castigo? (robar del pozo y robar del mazo)", // Mensaje
                 "Robo castigo - " + nombreVista, // Título del cuadro
                 JOptionPane.YES_NO_OPTION,
