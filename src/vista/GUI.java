@@ -26,7 +26,7 @@ public class GUI implements ifVista {
     private boolean guardarYSalir = false;
     private static final int ANCHO_CARTA = 80;
     private static final int ALTO_CARTA = 120;
-    private static final int ANCHO_FRAME = 900;
+    private static final int ANCHO_FRAME = 800;
     private static final int ALTO_FRAME = 800;
 
     @Override
@@ -145,6 +145,10 @@ public class GUI implements ifVista {
                 mostrarInfo("No hay una partida para cargar.");
             }
         });
+
+        buttonMap.put("botonJugar",botonJugar);
+        buttonMap.put("botonIniciar",botonIniciar);
+        buttonMap.put("botonCargar",botonCargar);
 
         panelMenu.add(label);
         panelMenu.add(Box.createVerticalStrut(30));
@@ -289,7 +293,7 @@ public class GUI implements ifVista {
 
     @Override
     public void cambioTurno() {
-        if (!guardarYSalir) {
+        if (!guardarYSalir && ctrl.isPartidaEnCurso()) {
             String nombre = ctrl.getTurnoDe();
             if (nombre.equals(nombreVista)) {
                 buttonMap.get("cartaPozo").setEnabled(true);
@@ -623,7 +627,10 @@ public class GUI implements ifVista {
 
     @Override
     public void finPartida() {
-
+        cardLayout.show(cardPanel, "Menu");
+        buttonMap.get("botonJugar").setEnabled(false);
+        buttonMap.get("botonIniciar").setEnabled(true);
+        buttonMap.get("botonCargar").setEnabled(true);
     }
 
     private int preguntarCantParaBajar() {

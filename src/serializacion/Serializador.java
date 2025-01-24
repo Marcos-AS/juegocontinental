@@ -68,8 +68,8 @@ public class Serializador implements Serializable {
                 r = ois.readObject();
             }
             ois.close();
-        } catch (EOFException e) {
-            System.out.println("Lectura completada");
+        } catch (EOFException ignored) {
+            //System.out.println("Lectura completada");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

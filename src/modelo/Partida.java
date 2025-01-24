@@ -13,7 +13,7 @@ import static modelo.Eventos.*;
 public class Partida extends ObservableRemoto implements ifPartida, Serializable {
     protected static final int BARAJAS_HASTA_4_JUGADORES = 2;
     protected static final int BARAJAS_MAS_4_JUGADORES = 3;
-    private static final int TOTAL_RONDAS = 7;
+    private static final int TOTAL_RONDAS = 7; //cambiar para probar
     @Serial
     private static final long serialVersionUID = 1L;
     private final Serializador srlRanking = new Serializador("src/serializacion/ranking.dat");

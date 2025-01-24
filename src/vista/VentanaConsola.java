@@ -108,9 +108,6 @@ public class VentanaConsola extends JFrame implements ifVista {
         panelMenu.add(botonJugar);
         panelMenu.revalidate();
         panelMenu.repaint();
-        for (Component comp : cardPanel.getComponents()) {
-            System.out.println("Panel encontrado: " + comp.getName());
-        }
         cardLayout.show(cardPanel, "Menu");
     }
 
