@@ -108,16 +108,9 @@ public class Controlador implements IControladorRemoto {
                     vista.salirAlMenu();
                     break;
                 }
-                case NOTIFICACION_PARTIDA_CARGADA: {
-                    vista.partidaCargada();
-                    break;
-                }
                 case NOTIFICACION_ELEGIR_JUGADOR: {
                     ArrayList<String> nombresDisponibles = partida.getNombreJugadores();
-                    nombresDisponibles.removeAll(partida.getNombresElegidos());
                     vista.elegirJugador(nombresDisponibles);
-//                    int obsIndex = partida.getObservadorIndex(this);
-//                    partida.setNumeroJugador(partida.getNumJugador(vista.getNombreVista()),obsIndex);
                     break;
                 }
                 case NOTIFICACION_FIN_PARTIDA: {
@@ -455,7 +448,8 @@ public class Controlador implements IControladorRemoto {
         try {
             if(partida.cargarPartida()) {
                 partida.notificarObservadores(NOTIFICACION_ELEGIR_JUGADOR);
-                partida.notificarObservadores(NOTIFICACION_PARTIDA_CARGADA);
+            } else {
+                return false;
             }
         } catch (RemoteException e) {
             throw new RuntimeException(e);
@@ -471,9 +465,13 @@ public class Controlador implements IControladorRemoto {
         }
     }
 
-    public void agregarNombreElegido(String nombre) {
+    public boolean agregarNombreElegido(String nombre) {
         try {
-            partida.agregarNombreElegido(nombre);
+            //ya están los jugadores creados, debo cambiar los nums de los jugadores
+            //para que matcheen con el nombre que eligieron y el num de observador
+            int obsIndex = partida.getObservadorIndex(this);
+            partida.setNumeroJugador(partida.getNumJugador(vista.getNombreVista()),obsIndex);
+            return partida.agregarNombreElegido(nombre);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

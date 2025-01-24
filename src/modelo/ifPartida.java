@@ -112,7 +112,7 @@ public interface ifPartida extends IObservableRemoto, Serializable {
 
     ArrayList<String> getNombreJugadores() throws RemoteException;
 
-    void agregarNombreElegido(String nombre) throws RemoteException;
+    boolean agregarNombreElegido(String nombre) throws RemoteException;
 
     ArrayList<String> getNombresElegidos() throws RemoteException;
 }

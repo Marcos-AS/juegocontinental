@@ -20,7 +20,6 @@ public interface ifVista {
     int ELECCION_SALIR = -1;
     int FALTAN_JUGADORES = 0;
     int INICIAR_PARTIDA = 1;
-    int PARTIDA_AUN_NO_CREADA = 2;
     String NO_PUEDE_ACOMODAR = "No puede acomodar porque no tienes o no hay juegos bajados o porque la carta que deseas acomodar no hace juego con el juego elegido.";
     String YA_NO_PUEDE_BAJAR = "No puedes volver a bajar juegos en esta ronda.";
     String MOSTRAR_JUEGO_INVALIDO = "No puedes bajar porque la combinacion elegida no forma un juego valido para la ronda\n";
@@ -33,8 +32,7 @@ public interface ifVista {
         2 - Tirar al pozo
         3 - Ordenar cartas
         4 - Acomodar en un juego bajado propio
-        5 - Acomodar en un juego bajado ajeno
-        -1 - Guardar partida y salir""";
+        5 - Acomodar en un juego bajado ajeno""";
     String MENU_INICIAR = """
         <html><head><title>El Continental.</title></head>
         <h1>Bienvenido al juego El Continental</h1>
@@ -101,18 +99,18 @@ public interface ifVista {
 
     void setControlador(Controlador ctrl);
     static String mostrarCombinacionRequerida(int ronda) {
-        String s = "Para esta ronda deben bajarse: ";
+        String s = "<html>Para esta ronda ";
         s += switch (ronda) {
-            case 1 -> "2 tríos";
-            case 2 -> "1 trío y 1 escalera";
-            case 3 -> "2 escaleras";
-            case 4 -> "3 tríos";
-            case 5 -> "2 tríos y 1 escalera";
-            case 6 -> "1 tríos y 2 escaleras";
-            case 7 -> "3 escaleras";
+            case 1 -> "(1/7) deben bajarse 2 tríos";
+            case 2 -> "(2/7) deben bajarse 1 trío y 1 escalera";
+            case 3 -> "(3/7) deben bajarse 2 escaleras";
+            case 4 -> "(4/7) deben bajarse 3 tríos";
+            case 5 -> "(5/7) deben bajarse 2 tríos y 1 escalera";
+            case 6 -> "(6/7) deben bajarse 1 tríos y 2 escaleras";
+            case 7 -> "(7/7) deben bajarse 3 escaleras";
             default -> "";
         };
-        s += "\nTrío = 3 cartas (mínimo) con el mismo número\nEscalera = 4 cartas mínimo con número consecutivo y mismo palo";
+        s += "<br>Trío = 3 cartas (mínimo) con el mismo número<br>Escalera = 4 cartas (mínimo) con número consecutivo y mismo palo</html>";
         return s;
     }
 
@@ -185,8 +183,6 @@ public interface ifVista {
     void setNumeroJugadorTitulo();
 
     void salirAlMenu();
-
-    void partidaCargada();
 
     void elegirJugador(ArrayList<String> nombreJugadores);
 

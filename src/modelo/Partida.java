@@ -81,8 +81,16 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     }
 
     @Override
-    public void agregarNombreElegido(String nombre) throws RemoteException {
-        PartidaJugadores.agregarNombreElegido(nombre);
+    public boolean agregarNombreElegido(String nombre) throws RemoteException {
+        boolean agregado = false;
+        if (PartidaJugadores.agregarNombreElegido(nombre)) {
+            agregado = true;
+        }
+        if (PartidaJugadores.getNombresElegidos().size()==jugadores.size()) {
+            notificacionesComienzoRonda();
+            notificarObservadores(NOTIFICACION_CAMBIO_TURNO);
+        }
+        return agregado;
     }
 
     @Override
@@ -353,12 +361,14 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
 
     public void empezarRonda() throws RemoteException {
         mazo = Mazo.mezclarCartas(Mazo.iniciarMazo(Mazo.determinarNumBarajas(jugadores)));
-        //PartidaJugadores.repartirCartasPrueba(jugadores,numRonda,mazo);
+        //PartidaJugadores.repartirCartasPrueba(jugadores,numRonda,mazo); //prueba
         PartidaJugadores.repartirCartas(jugadores, numRonda, mazo);
         pozo = Mazo.sacarPrimeraDelMazo(mazo);
         numTurno = numJugadorQueEmpiezaRonda;
-        System.out.println(jugadores.get(0).getNombre());
-        System.out.println(jugadores.get(1).getNombre());
+        notificacionesComienzoRonda();
+    }
+
+    public void notificacionesComienzoRonda() throws RemoteException {
         notificarObservadores(NOTIFICACION_PUNTOS);
         actualizarManoJugadores();
         notificarObservadores(NOTIFICACION_ACTUALIZAR_POZO);

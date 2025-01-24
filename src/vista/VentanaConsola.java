@@ -281,13 +281,7 @@ public class VentanaConsola extends JFrame implements ifVista {
     }
 
     @Override
-    public void partidaCargada() {
-
-    }
-
-    @Override
     public void elegirJugador(ArrayList<String> nombreJugadores) {
-
     }
 
     public void mostrarInfo(String s) {

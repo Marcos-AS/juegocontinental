@@ -9,14 +9,14 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
+import java.util.UUID; //prueba
 import java.util.List;
 
 public class GUI implements ifVista {
     private Controlador ctrl;
     private String nombreVista;
     private final JFrame frame = new JFrame("El Continental");
-    private static final Color fondo = new Color(34, 139, 34);
+    private static final Color fondoPanelMesa = new Color(81, 206, 81);
     private int manoSize;
     private ArrayList<String> mano;
     private CardLayout cardLayout;
@@ -24,13 +24,16 @@ public class GUI implements ifVista {
     private Map<String, JPanel> panelMap;
     private Map<String, JButton> buttonMap;
     private boolean guardarYSalir = false;
+    private static final int ANCHO_CARTA = 80;
+    private static final int ALTO_CARTA = 120;
+    private static final int ANCHO_FRAME = 900;
+    private static final int ALTO_FRAME = 800;
 
     @Override
     public void iniciar() {
-        frame.setSize(800,800);
+        frame.setSize(900,800);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setIconImage(new ImageIcon(ifVista.asociarRuta("cartas_inicio")).getImage());
-        frame.setBackground(fondo);
 
         cardLayout = new CardLayout();
         frame.setLayout(cardLayout);
@@ -56,15 +59,16 @@ public class GUI implements ifVista {
         panelMesa.repaint();
 
         crearBotonesMenuBajar(panelMesa);
-        JPanel panelIntermedio = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        panelIntermedio.add(addPozo());
-        panelIntermedio.add(addMazo());
-        panelMesa.add(panelIntermedio, BorderLayout.CENTER);
+        JPanel panelPozoYMazo = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        panelPozoYMazo.add(addPozo());
+        panelPozoYMazo.add(addMazo());
+        panelMesa.add(panelPozoYMazo, BorderLayout.CENTER);
         panelMesa.add(panelMano, BorderLayout.NORTH);
         panelMesa.add(panelJuegos, BorderLayout.SOUTH);
         panelMesa.add(panelInfoRonda, BorderLayout.PAGE_START);
         panelMesa.add(panelPuntos, BorderLayout.EAST);
         panelMesa.add(panelRestricciones, BorderLayout.PAGE_END);
+        panelMesa.setBackground(fondoPanelMesa);
 
         cardPanel.add(panelMenu, "Menu");
         cardPanel.add(panelEsperar, "Esperar");
@@ -91,10 +95,14 @@ public class GUI implements ifVista {
         panelMenu.repaint();
         panelMenu.revalidate();
 
-        panelMenu.setLayout(new FlowLayout());
+        panelMenu.setLayout(new BoxLayout(panelMenu, BoxLayout.Y_AXIS));
+        panelMenu.setBorder(BorderFactory.createEmptyBorder(50,50,50,50));
+        panelMenu.setBackground(new Color(85, 158, 196));
 
         JLabel label = new JLabel("¡Bienvenido al juego!");
         label.setFont(new Font("Arial", Font.BOLD, 20));
+        label.setForeground(Color.WHITE);
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JButton botonIniciar = new JButton("Iniciar Partida");
         JButton botonJugar = new JButton("Jugar");
@@ -123,6 +131,7 @@ public class GUI implements ifVista {
 
         botonJugar.addActionListener(e -> {
             try {
+                botonCargar.setEnabled(false);
                 if (nombreVista == null)
                     setNombreVista();
                 int inicioPartida = ctrl.jugarPartidaRecienIniciada().ordinal();
@@ -138,17 +147,26 @@ public class GUI implements ifVista {
         });
 
         botonCargar.addActionListener(e -> {
-            if (ctrl.cargarPartida()) {
-                ctrl.cambioTurno();
+            if (!ctrl.cargarPartida()) {
+                mostrarInfo("No hay una partida para cargar.");
             }
         });
 
         panelMenu.add(label);
-        panelMenu.add(botonIniciar, FlowLayout.LEFT);
-        panelMenu.add(botonJugar, FlowLayout.RIGHT);
-        panelMenu.add(botonCargar, FlowLayout.RIGHT);
-        panelMenu.add(new BarraMenu().agregarMenuBarra(ctrl.getRanking()),
-                FlowLayout.LEADING);
+        panelMenu.add(Box.createVerticalStrut(30));
+        panelMenu.add(botonIniciar);
+        panelMenu.add(Box.createVerticalStrut(20));
+        panelMenu.add(botonJugar);
+        panelMenu.add(Box.createVerticalStrut(20));
+        panelMenu.add(botonCargar);
+        panelMenu.add(Box.createVerticalStrut(30));
+        frame.setJMenuBar(new BarraMenu().agregarMenuBarra(ctrl.getRanking()));
+
+        for (Component comp : panelMenu.getComponents()) {
+            if (comp instanceof JButton) {
+                ((JButton) comp).setAlignmentX(Component.CENTER_ALIGNMENT);
+            }
+        }
     }
 
     private void crearBotonesMenuBajar(JPanel panelMesa) {
@@ -359,7 +377,7 @@ public class GUI implements ifVista {
 
         // Crear el ImageIcon con la imagen redimensionada
         Image imagenRedimensionada =
-                imagen.getImage().getScaledInstance(80, 120, Image.SCALE_SMOOTH);
+                imagen.getImage().getScaledInstance(ANCHO_CARTA,ALTO_CARTA, Image.SCALE_SMOOTH);
         ImageIcon iconRedimensionado = new ImageIcon(imagenRedimensionada);
         return new JButton(iconRedimensionado);
     }
@@ -556,28 +574,32 @@ public class GUI implements ifVista {
 
     @Override
     public void elegirJugador(ArrayList<String> nombreJugadores) {
-        JDialog dialogoSeleccion = new JDialog((JFrame) SwingUtilities.getWindowAncestor(cardPanel), "Seleccionar Jugador", true);
-        dialogoSeleccion.setLayout(new BorderLayout());
-        dialogoSeleccion.setSize(300, 200);
-        dialogoSeleccion.setLocationRelativeTo(null);
+        JPanel panelMenu = panelMap.get("Menu");
+        panelMenu.removeAll();
+        panelMenu.setLayout(new BoxLayout(panelMenu, BoxLayout.Y_AXIS));
 
-        JPanel panelJugadores = new JPanel();
-        panelJugadores.setLayout(new BoxLayout(panelJugadores, BoxLayout.Y_AXIS));
+        JLabel labelTitulo = new JLabel("Selecciona el jugador que eras en la partida anterior:");
+        labelTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelMenu.add(labelTitulo);
+        panelMenu.add(Box.createVerticalStrut(10));
 
-        // Crear un botón por cada nombre de jugador
         for (String nombre : nombreJugadores) {
             JButton botonJugador = new JButton(nombre);
-
             botonJugador.addActionListener(e -> {
                 nombreVista = nombre;
-                ctrl.agregarNombreElegido(nombre);
-                dialogoSeleccion.dispose();
+                if (ctrl.agregarNombreElegido(nombre)) {
+                    inicializarMenu();
+                }
+                else {
+                    mostrarInfo("Jugador ya elegido.");
+                }
             });
-
-            panelJugadores.add(botonJugador);
-            System.out.println("boton agregado");
+            panelMenu.add(botonJugador);
+            panelMenu.add(Box.createVerticalStrut(10));
         }
-        dialogoSeleccion.setVisible(true);
+
+        panelMenu.revalidate();
+        panelMenu.repaint();
     }
 
     @Override
@@ -741,10 +763,5 @@ public class GUI implements ifVista {
     @Override
     public void salirAlMenu() {
         cardLayout.show(cardPanel, "Menu");
-    }
-
-    @Override
-    public void partidaCargada() {
-        cardLayout.show(cardPanel, "Mesa");
     }
 }

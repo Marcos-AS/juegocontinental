@@ -23,8 +23,12 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
         return nombreJugadores;
     }
 
-    public static void agregarNombreElegido(String nombre) {
-        nombresElegidos.add(nombre);
+    public static boolean agregarNombreElegido(String nombre) {
+        if (!nombresElegidos.contains(nombre)) {
+            nombresElegidos.add(nombre);
+            return true;
+        }
+        return false;
     }
 
     public static Jugador getJugador(ArrayList<Jugador> jugadores, String nombreJugador) throws RemoteException {

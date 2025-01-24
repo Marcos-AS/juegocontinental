@@ -1,10 +1,8 @@
 package vista;
 
 import javax.swing.*;
-import javax.swing.text.JTextComponent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.rmi.RemoteException;
 
 public class BarraMenu extends JFrame{
 
@@ -30,7 +28,6 @@ public class BarraMenu extends JFrame{
         menuBarra.add(menuRanking);
 
         return menuBarra;
-        //setJMenuBar
     }
 
     private JMenuItem crearItemReglas() {
@@ -59,15 +56,14 @@ public class BarraMenu extends JFrame{
     private JMenuItem crearItemRanking(Object[] ranking) {
         JMenuItem itemVerRanking = new JMenuItem("Mostrar el ranking");
 
-        itemVerRanking.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFrame rankingFrame = new JFrame();
-                JLabel label = new JLabel(mostrarRanking(ranking));
-                rankingFrame.add(label);
-                rankingFrame.setSize(600,600);
-                rankingFrame.setVisible(true);
-            }
+        itemVerRanking.addActionListener(e -> {
+            JFrame rankingFrame = new JFrame("Ranking puntos partidas");
+            rankingFrame.setSize(600,600);
+            JLabel label = new JLabel(mostrarRanking(ranking));
+            JScrollPane scrollPane = new JScrollPane(label);
+            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+            rankingFrame.add(scrollPane);
+            rankingFrame.setVisible(true);
         });
         return itemVerRanking;
     }
