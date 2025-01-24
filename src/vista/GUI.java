@@ -31,7 +31,7 @@ public class GUI implements ifVista {
 
     @Override
     public void iniciar() {
-        frame.setSize(900,800);
+        frame.setSize(ANCHO_FRAME,ALTO_FRAME);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setIconImage(new ImageIcon(ifVista.asociarRuta("cartas_inicio")).getImage());
 
@@ -42,13 +42,13 @@ public class GUI implements ifVista {
         buttonMap = new HashMap<>();
 
         JPanel panelMenu = new JPanel();
-        JPanel panelEsperar = new JPanel();
         JPanel panelMesa = new JPanel();
         JPanel panelJuegos = new JPanel();
         JPanel panelMano = new JPanel(new FlowLayout());
         JPanel panelInfoRonda = new JPanel();
         JPanel panelRestricciones = new JPanel();
         JPanel panelPuntos = new JPanel();
+        JPanel panelTurno = new JPanel();
 
         panelMano.setBorder(BorderFactory.createTitledBorder("Tu mano"));
         panelMano.setBackground(Color.LIGHT_GRAY);
@@ -68,20 +68,20 @@ public class GUI implements ifVista {
         panelMesa.add(panelInfoRonda, BorderLayout.PAGE_START);
         panelMesa.add(panelPuntos, BorderLayout.EAST);
         panelMesa.add(panelRestricciones, BorderLayout.PAGE_END);
+        panelMesa.add(panelTurno, BorderLayout.PAGE_END);
         panelMesa.setBackground(fondoPanelMesa);
 
         cardPanel.add(panelMenu, "Menu");
-        cardPanel.add(panelEsperar, "Esperar");
         cardPanel.add(panelMesa, "Mesa");
 
         panelMap.put("Menu", panelMenu);
-        panelMap.put("Esperar", panelEsperar);
         panelMap.put("Mesa", panelMesa);
         panelMap.put("Juegos", panelJuegos);
         panelMap.put("Mano", panelMano);
         panelMap.put("infoRonda", panelInfoRonda);
         panelMap.put("Restricciones", panelRestricciones);
         panelMap.put("Puntos", panelPuntos);
+        panelMap.put("Turno", panelTurno);
 
         inicializarMenu();
         frame.add(cardPanel);
@@ -112,17 +112,11 @@ public class GUI implements ifVista {
 
         botonIniciar.addActionListener(e -> {
             botonIniciar.setEnabled(false);
-            int cantJugadores = 0;
             if (!ctrl.isPartidaEnCurso()) {
-//                    while (cantJugadores < 2) {
-//                        cantJugadores = Integer.parseInt(preguntarInput("Cuántos jugadores" +
-//                                " deseas para la nueva partida?"));
-//                    }
-//                    ctrl.crearPartida(cantJugadores);
                 if (nombreVista == null) {
                     setNombreVista();
                 }
-                ctrl.crearPartida(2); //prueba
+                ctrl.crearPartida(preguntarCantJugadoresPartida());
             } else {
                 mostrarInfo("Ya hay una partida en curso");
             }
@@ -167,6 +161,16 @@ public class GUI implements ifVista {
                 ((JButton) comp).setAlignmentX(Component.CENTER_ALIGNMENT);
             }
         }
+    }
+
+    private int preguntarCantJugadoresPartida() {
+        int cantJugadores = 0;
+        while (cantJugadores < 2) {
+            cantJugadores = Integer.parseInt(preguntarInput("Cuántos jugadores" +
+                    " deseas para la nueva partida?"));
+        }
+        return cantJugadores;
+        //return 2;//prueba
     }
 
     private void crearBotonesMenuBajar(JPanel panelMesa) {
@@ -291,9 +295,19 @@ public class GUI implements ifVista {
                 buttonMap.get("cartaPozo").setEnabled(true);
                 buttonMap.get("cartaMazo").setEnabled(true);
                 buttonMap.get("ordenar").setEnabled(true);
+                JPanel panelTurno = panelMap.get("Turno");
+                panelTurno.removeAll();
+                panelTurno.add(new JLabel("Es tu turno."));
+                panelTurno.revalidate();
+                panelTurno.repaint();
             } else {
                 buttonMap.get("cartaPozo").setEnabled(false);
                 buttonMap.get("cartaMazo").setEnabled(false);
+                JPanel panelTurno = panelMap.get("Turno");
+                panelTurno.removeAll();
+                panelTurno.add(new JLabel("Espera tu turno."));
+                panelTurno.revalidate();
+                panelTurno.repaint();
             }
         }
     }
@@ -406,7 +420,7 @@ public class GUI implements ifVista {
         JPanel panelRestricciones = panelMap.get("Restricciones");
         panelRestricciones.removeAll();
         if (restriccion) {
-            Label label = new Label("Ya no puede robar con castigo y no puede volver a bajar en esta mano");
+            Label label = new Label("Ya no puede robar con castigo y sólo puede bajar para cortar");
             panelRestricciones.add(label);
         }
         panelRestricciones.revalidate();
