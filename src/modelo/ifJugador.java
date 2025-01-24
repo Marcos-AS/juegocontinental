@@ -14,7 +14,6 @@ public interface ifJugador {
     int[] comprobarQueFaltaParaCortar(int ronda) throws RemoteException;
     void setTurnoActual(boolean turnoActual) throws RemoteException;
     void incrementarPuedeBajar() throws RemoteException;
-    boolean isRoboDelMazo();
     boolean isTurnoActual();
     int getPuedeBajar();
     ArrayList<ArrayList<Carta>> getJuegos();

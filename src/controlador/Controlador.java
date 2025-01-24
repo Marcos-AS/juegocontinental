@@ -143,9 +143,8 @@ public class Controlador implements IControladorRemoto {
     }
 
     public void switchMenuBajar(int eleccion) {
-        int numJugador = 0;
         try {
-            numJugador = partida.getNumTurno();
+            int numJugador = partida.getNumTurno();
             if (partida.isTurnoActual(numJugador)) {
                 switch (eleccion) {
                     case ifVista.ELECCION_BAJARSE:
@@ -366,7 +365,7 @@ public class Controlador implements IControladorRemoto {
     }
 
     public void crearPartida(int cantJugadoresDeseada) {
-        int observadorIndex = 0;
+        int observadorIndex;
         try {
             observadorIndex = partida.getObservadorIndex(this);
             partida.crearYAgregarJugador(vista.getNombreVista(), observadorIndex);

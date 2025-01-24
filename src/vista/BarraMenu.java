@@ -1,8 +1,6 @@
 package vista;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class BarraMenu extends JFrame{
 
@@ -32,24 +30,16 @@ public class BarraMenu extends JFrame{
 
     private JMenuItem crearItemReglas() {
         JMenuItem itemReglas = new JMenuItem("Reglas");
-        itemReglas.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                VentanaReglas ventanaReglas = new VentanaReglas();  // abrir una nueva ventana con las reglas
-                ventanaReglas.setVisible(true);
-            }
+        itemReglas.addActionListener(e -> {
+            VentanaReglas ventanaReglas = new VentanaReglas();  // abrir una nueva ventana con las reglas
+            ventanaReglas.setVisible(true);
         });
         return itemReglas;
     }
 
     private JMenuItem crearItemSalir() {
         JMenuItem itemSalir = new JMenuItem("Salir del juego");
-        itemSalir.addActionListener (new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
+        itemSalir.addActionListener (e -> System.exit(0));
         return itemSalir;
     }
 

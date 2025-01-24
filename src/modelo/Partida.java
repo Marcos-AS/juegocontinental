@@ -82,20 +82,12 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
 
     @Override
     public boolean agregarNombreElegido(String nombre) throws RemoteException {
-        boolean agregado = false;
-        if (PartidaJugadores.agregarNombreElegido(nombre)) {
-            agregado = true;
-        }
+        boolean agregado = PartidaJugadores.agregarNombreElegido(nombre);
         if (PartidaJugadores.getNombresElegidos().size()==jugadores.size()) {
             notificacionesComienzoRonda();
             notificarObservadores(NOTIFICACION_CAMBIO_TURNO);
         }
         return agregado;
-    }
-
-    @Override
-    public ArrayList<String> getNombresElegidos() throws RemoteException {
-        return PartidaJugadores.getNombresElegidos();
     }
 
     @Override
@@ -485,8 +477,8 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     }
 
     @Override
-    public Jugador determinarGanador() throws RemoteException {
-        return PartidaJugadores.determinarGanador(jugadores);
+    public void determinarGanador() throws RemoteException {
+        PartidaJugadores.determinarGanador(jugadores);
     }
 
     @Override

@@ -53,10 +53,6 @@ public class Jugador extends ObservableRemoto implements Serializable, ifJugador
         this.roboDelMazo = roboDelMazo;
     }
 
-    public boolean isRoboDelMazo() {
-        return roboDelMazo;
-    }
-
     public int getPuedeBajar() {
         return puedeBajar;
     }

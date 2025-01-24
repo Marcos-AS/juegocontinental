@@ -9,7 +9,7 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
     static int PUNTOS_FIGURA = 10;
     static int PUNTOS_AS = 20;
     static int PUNTOS_COMODIN = 50;
-    private static ArrayList<String> nombresElegidos = new ArrayList<>();
+    private static final ArrayList<String> nombresElegidos = new ArrayList<>();
 
     public static ArrayList<String> getNombresElegidos() {
         return nombresElegidos;
@@ -171,7 +171,7 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
         return arrayPuntos;
     }
 
-    public static Jugador determinarGanador(ArrayList<Jugador> jugadoresActuales)
+    public static void determinarGanador(ArrayList<Jugador> jugadoresActuales)
             throws RemoteException {
         Jugador ganador = jugadoresActuales.get(0);
         int menosPuntos = ganador.getPuntosPartida();
@@ -183,7 +183,6 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
         }
         ganador.setPuntosAlFinalizar(ganador.getPuntosPartida());
         ganador.setGanador(true);
-        return ganador;
     }
 
     public static Jugador getGanador(ArrayList<Jugador> jugadoresActuales) throws RemoteException {

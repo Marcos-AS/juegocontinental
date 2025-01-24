@@ -9,9 +9,9 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID; //prueba
 import java.util.List;
 
+//import java.util.UUID; //prueba
 public class GUI implements ifVista {
     private Controlador ctrl;
     private String nombreVista;
@@ -208,21 +208,15 @@ public class GUI implements ifVista {
             ctrl.cambioTurno();
         });
 
-        acomodarPropioBoton.addActionListener(e -> {
-            ctrl.switchMenuBajar(ifVista.ELECCION_ACOMODAR_JUEGO_PROPIO);
-        });
+        acomodarPropioBoton.addActionListener(e -> ctrl.switchMenuBajar(ifVista.ELECCION_ACOMODAR_JUEGO_PROPIO));
 
-        acomodarAjenoBoton.addActionListener(e -> {
-            ctrl.switchMenuBajar(ifVista.ELECCION_ACOMODAR_JUEGO_AJENO);
-        });
+        acomodarAjenoBoton.addActionListener(e -> ctrl.switchMenuBajar(ifVista.ELECCION_ACOMODAR_JUEGO_AJENO));
 
-        ordenarBoton.addActionListener(e -> {
-            ctrl.switchMenuBajar(ifVista.ELECCION_ORDENAR_CARTAS);
-        });
+        ordenarBoton.addActionListener(e -> ctrl.switchMenuBajar(ifVista.ELECCION_ORDENAR_CARTAS));
 
         guardarYSalir.addActionListener(e -> {
             ctrl.guardarPartida();
-            setGuardarYSalir(true);
+            setGuardarYSalir();
             ctrl.salirAlMenu();
         });
 
@@ -261,7 +255,7 @@ public class GUI implements ifVista {
     }
 
     private class CartaListener extends MouseAdapter {
-        private String origen;
+        private final String origen;
 
         public CartaListener(String origen) {
             this.origen = origen; // "pozo" o "mazo"
@@ -377,8 +371,8 @@ public class GUI implements ifVista {
         panelJuegos.repaint();
     }
 
-    private void setGuardarYSalir(boolean guardarYSalir) {
-        this.guardarYSalir = guardarYSalir;
+    private void setGuardarYSalir() {
+        this.guardarYSalir = true;
     }
 
     private JButton getImageButton(String carta) {
@@ -682,16 +676,6 @@ public class GUI implements ifVista {
         panelPuntuacion.repaint();
     }
 
-    public void mostrarRanking(Object[] ranking) {
-        StringBuilder s = new StringBuilder("Ranking de mejores jugadores:\n");
-        int i = 1;
-        for (Object o : ranking) {
-            s.append(i).append(" - ").append(o).append("\n");
-            i++;
-        }
-        JOptionPane.showMessageDialog(frame, s.toString(), "Ranking", JOptionPane.INFORMATION_MESSAGE);
-    }
-
     @Override
     public int getNumJugadorAcomodar() {
         return Integer.parseInt(preguntarInput("Ingresa el número de jugador en cuyos" +
@@ -704,10 +688,10 @@ public class GUI implements ifVista {
     }
 
     private void setNombreVista() {
-//        this.nombreVista = UUID.randomUUID().toString()
-//                .replace("-", "").substring(0, 10);//prueba
         nombreVista = preguntarInput("Indique su nombre: ");
     }
+//        this.nombreVista = UUID.randomUUID().toString()
+//                .replace("-", "").substring(0, 10);//prueba
 
     @Override
     public String getCartasString(ArrayList<String> cartas) {

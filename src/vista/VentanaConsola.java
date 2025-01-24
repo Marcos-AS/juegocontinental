@@ -11,7 +11,7 @@ import java.util.Map;
 public class VentanaConsola extends JFrame implements ifVista {
     private Controlador ctrl;
     private String nombreVista;
-    private JFrame frame = new JFrame("El Continental");
+    private final JFrame frame = new JFrame("El Continental");
     private Map<String, JPanel> panelMap;
     private Map<String, JButton> buttonMap;
     private int manoSize;
@@ -37,9 +37,11 @@ public class VentanaConsola extends JFrame implements ifVista {
         JPanel panelJuegos = new JPanel();
         panelJuegos.setLayout(new BoxLayout(panelJuegos, BoxLayout.Y_AXIS));
         JPanel panelRestricciones = new JPanel();
+        JPanel panelTurno = new JPanel();
 
         JPanel panelMesa = new JPanel();
         panelMesa.setLayout(new BoxLayout(panelMesa, BoxLayout.Y_AXIS));
+        panelMesa.add(panelTurno);
         panelMesa.add(panelPuntuacion);
         panelMesa.add(panelInfoRonda);
         panelMesa.add(panelPozo);
@@ -58,6 +60,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         panelMap.put("Puntuacion", panelPuntuacion);
         panelMap.put("Juegos", panelJuegos);
         panelMap.put("Restricciones", panelRestricciones);
+        panelMap.put("Turno", panelTurno);
 
         if (ctrl.isPartidaEnCurso()) partidaIniciada++;
         opcionesIniciales();
@@ -136,10 +139,7 @@ public class VentanaConsola extends JFrame implements ifVista {
                         if (nombreVista == null) {
                             setNombreVista();
                         }
-//                            int cantJugadores = Integer.parseInt(preguntarInput("Cuántos jugadores" +
-//                                    " deseas para la nueva partida?"));
-//                            ctrl.crearPartida(cantJugadores);
-                        ctrl.crearPartida(2); //prueba
+                        ctrl.crearPartida(preguntarCantJugadoresPartida());
                     } else {
                         partidaIniciada++;
                         opcionesIniciales();
@@ -188,18 +188,34 @@ public class VentanaConsola extends JFrame implements ifVista {
         }
     }
 
-        private void setNombreVista() {
+    private int preguntarCantJugadoresPartida() {
+        int cantJugadores = 0;
+        while (cantJugadores < 2) {
+            cantJugadores = Integer.parseInt(preguntarInput("Cuántos jugadores" +
+                    " deseas para la nueva partida?"));
+        }
+        return cantJugadores;
+        //return 2;//prueba
+    }
+
+    private void setNombreVista() {
         nombreVista = preguntarInput("Indica tu nombre: ");
-//        nombreVista = UUID.randomUUID().toString()
-//                .replace("-", "").substring(0, 10);
         frame.setTitle("Mesa - " + nombreVista);
     }
+    //        nombreVista = UUID.randomUUID().toString()
+    //                .replace("-", "").substring(0, 10);
 
     @Override
     public void cambioTurno() {
         if (ctrl.isPartidaEnCurso()) {
             String nombre = ctrl.getTurnoDe();
             if (nombre.equals(nombreVista)) {
+                JPanel panelTurno = panelMap.get("Turno");
+                panelTurno.removeAll();
+                panelTurno.add(new JLabel("Es tu turno."));
+                panelTurno.revalidate();
+                panelTurno.repaint();
+
                 ctrl.desarrolloRobo(preguntarInputRobar());
                 while (ctrl.isTurnoActual()) {
                     ctrl.switchMenuBajar(menuBajar());
@@ -207,6 +223,12 @@ public class VentanaConsola extends JFrame implements ifVista {
                 ctrl.finTurno();
                 if (ctrl.isPartidaEnCurso())
                     ctrl.cambioTurno();
+            } else {
+                JPanel panelTurno = panelMap.get("Turno");
+                panelTurno.removeAll();
+                panelTurno.add(new JLabel("Espera tu turno."));
+                panelTurno.revalidate();
+                panelTurno.repaint();
             }
         }
     }
@@ -214,7 +236,6 @@ public class VentanaConsola extends JFrame implements ifVista {
     @Override
     public void actualizarManoJugador(ArrayList<String> cartas) {
         SwingUtilities.invokeLater(() -> {
-            System.out.println("actualizando mano");
             JPanel panelMano = panelMap.get("Mano");
             manoSize = cartas.size();
             panelMano.removeAll();
@@ -296,24 +317,24 @@ public class VentanaConsola extends JFrame implements ifVista {
         String resp;
         do
             resp = JOptionPane.showInputDialog(null, s,nombreVista,JOptionPane.QUESTION_MESSAGE);
-        while (!validarEntrada(resp));
+        while (validarEntrada(resp));
         return resp;
     }
 
     public boolean validarEntrada(String resp) {
-        boolean valida = true;
+        boolean invalida = false;
         // si el usuario cerró el diálogo o presionó "Cancelar"
         if (resp == null) {
             JOptionPane.showMessageDialog(null, "No se puede cancelar esta entrada. Por favor, ingresa un valor.", "Error", JOptionPane.ERROR_MESSAGE);
-            valida = false;
+            invalida = true;
         }
 
         // Validar si la entrada está vacía o solo contiene espacios en blanco
         else if (resp.trim().isEmpty()) {
             JOptionPane.showMessageDialog(null, "La entrada no puede estar vacía. Intenta de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
-            valida = false;
+            invalida = true;
         }
-        return valida;
+        return invalida;
     }
 
     public String getRankingString(Object[] ranking) {
@@ -339,7 +360,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         String resp;
         do
             resp = JOptionPane.showInputDialog(null, s,nombreVista,JOptionPane.QUESTION_MESSAGE);
-        while (!validarEntrada(resp));
+        while (validarEntrada(resp));
         return resp;
     }
 
@@ -347,7 +368,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         String resp;
         do
             resp = JOptionPane.showInputDialog(null, ifVista.MENU_ROBAR,nombreVista,JOptionPane.QUESTION_MESSAGE);
-        while (!validarEntrada(resp));
+        while (validarEntrada(resp));
         return resp;
     }
 
@@ -355,7 +376,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         String resp;
         do
             resp = JOptionPane.showInputDialog(null, ifVista.PREGUNTA_ROBAR_CASTIGO,nombreVista,JOptionPane.QUESTION_MESSAGE);
-        while (!validarEntrada(resp));
+        while (validarEntrada(resp));
         return ifVista.isRespAfirmativa(resp);
     }
 

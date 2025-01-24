@@ -5,7 +5,6 @@ import java.io.Serializable;
 public enum Eventos implements Serializable {
     FALTAN_JUGADORES,
     INICIAR_PARTIDA,
-    PARTIDA_AUN_NO_CREADA,
     NOTIFICACION_ACTUALIZAR_POZO,
     NOTIFICACION_ACTUALIZAR_JUEGOS,
     NOTIFICACION_NUEVA_PARTIDA,
