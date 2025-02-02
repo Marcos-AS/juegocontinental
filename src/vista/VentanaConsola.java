@@ -7,6 +7,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 public class VentanaConsola extends JFrame implements ifVista {
     private Controlador ctrl;
@@ -216,13 +217,30 @@ public class VentanaConsola extends JFrame implements ifVista {
                 panelTurno.revalidate();
                 panelTurno.repaint();
 
-                ctrl.desarrolloRobo(preguntarInputRobar());
-                while (ctrl.isTurnoActual()) {
-                    ctrl.switchMenuBajar(menuBajar());
+                CountDownLatch latch = new CountDownLatch(1);
+                try {
+                    SwingUtilities.invokeLater(() -> {
+                        ctrl.desarrolloRobo(preguntarInputRobar());
+                        latch.countDown();
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                ctrl.finTurno();
-                if (ctrl.isPartidaEnCurso())
-                    ctrl.cambioTurno();
+
+                new Thread(() -> {
+                    try {
+                        latch.await();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    while (ctrl.isTurnoActual()) {
+                        ctrl.switchMenuBajar(menuBajar());
+                    }
+                    ctrl.finTurno();
+                    if (ctrl.isPartidaEnCurso()) {
+                        ctrl.cambioTurno();
+                    }
+                }).start();
             } else {
                 JPanel panelTurno = panelMap.get("Turno");
                 panelTurno.removeAll();

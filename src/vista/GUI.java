@@ -62,6 +62,7 @@ public class GUI implements ifVista {
         JPanel panelPozoYMazo = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         panelPozoYMazo.add(addPozo());
         panelPozoYMazo.add(addMazo());
+
         panelMesa.add(panelPozoYMazo, BorderLayout.CENTER);
         panelMesa.add(panelMano, BorderLayout.NORTH);
         panelMesa.add(panelJuegos, BorderLayout.SOUTH);
@@ -74,6 +75,7 @@ public class GUI implements ifVista {
         cardPanel.add(panelMenu, "Menu");
         cardPanel.add(panelMesa, "Mesa");
 
+        panelMap.put("pozoYMazo", panelPozoYMazo);
         panelMap.put("Menu", panelMenu);
         panelMap.put("Mesa", panelMesa);
         panelMap.put("Juegos", panelJuegos);
@@ -202,10 +204,22 @@ public class GUI implements ifVista {
         });
 
         tirarAlPozoBoton.addActionListener(e -> {
-            ctrl.switchMenuBajar(ifVista.ELECCION_TIRAR_AL_POZO);
-            activarBotonesBajar(false);
-            ctrl.finTurno();
-            ctrl.cambioTurno();
+            ctrl.switchMenuBajar(ELECCION_TIRAR_AL_POZO);
+            new SwingWorker<Void, Void>() {
+                @Override
+                protected Void doInBackground() throws Exception {
+                    Thread.sleep(100); // Espera un momento para que la GUI se actualice
+                    return null;
+                }
+
+                @Override
+                protected void done() {
+                    //Actualiza la GUI después de la espera
+                    activarBotonesBajar(false);
+                    ctrl.finTurno();
+                    ctrl.cambioTurno();
+                }
+            }.execute();
         });
 
         acomodarPropioBoton.addActionListener(e -> ctrl.switchMenuBajar(ifVista.ELECCION_ACOMODAR_JUEGO_PROPIO));
@@ -710,11 +724,11 @@ public class GUI implements ifVista {
     public boolean preguntarInputRobarCastigo() {
         int opcion = JOptionPane.showOptionDialog(
                 SwingUtilities.getWindowAncestor(cardPanel),
-                "Quieres robar con castigo? (robar del pozo y robar del mazo)", // Mensaje
-                "Robo castigo - " + nombreVista, // Título del cuadro
+                "Quieres robar con castigo? (robar del pozo y robar del mazo)",
+                "Robo castigo - " + nombreVista,
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
-                null, // Ícono personalizado (null usa el predeterminado)
+                null,
                 new Object[] { "Sí", "No" }, // Etiquetas de los botones
                 "Sí" // Botón predeterminado
         );

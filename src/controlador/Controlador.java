@@ -358,10 +358,9 @@ public class Controlador implements IControladorRemoto {
         if (!partida.getJugadoresQuePuedenRobarConCastigo().isEmpty()) {
             if (vista.preguntarInputRobarCastigo()) {
                 partida.robarConCastigo();
-                partida.setJugadoresQuePuedenRobarConCastigo();
+                partida.setJugadoresQuePuedenRobarConCastigo(); //se resetea así no continua el robo castigo
             }
         }
-
     }
 
     public void crearPartida(int cantJugadoresDeseada) {

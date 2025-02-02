@@ -103,7 +103,6 @@ public interface ifPartida extends IObservableRemoto, Serializable {
     int getNumJugador(String nombreJugador) throws RemoteException;
     void acomodarEnJuegoPropio(int numJugador,
                                int iCarta, int numJuego) throws RemoteException;
-    void setJugadoresQuePuedenRobarConCastigo() throws RemoteException;
     ArrayList<Integer> getJugadoresQuePuedenRobarConCastigo() throws RemoteException;
 
     Eventos comprobarPosibleCorte(int numJugador) throws RemoteException;
@@ -112,4 +111,6 @@ public interface ifPartida extends IObservableRemoto, Serializable {
     ArrayList<String> getNombreJugadores() throws RemoteException;
 
     boolean agregarNombreElegido(String nombre) throws RemoteException;
+
+    void setJugadoresQuePuedenRobarConCastigo() throws RemoteException;
 }
