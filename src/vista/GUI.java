@@ -630,6 +630,8 @@ public class GUI implements ifVista {
 
     @Override
     public void nuevaPartida() {
+        buttonMap.get("botonIniciar").setEnabled(false);
+        buttonMap.get("botonJugar").setEnabled(true);
         mostrarInfo("Se ha creado una partida.");
     }
 
