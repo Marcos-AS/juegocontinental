@@ -25,7 +25,7 @@ public interface ifVista {
     String MOSTRAR_JUEGO_INVALIDO = "No puedes bajar porque la combinacion elegida no forma un juego valido para la ronda\n";
     String PREGUNTA_NUMERO_JUEGO = "En qué número de juego quieres acomodar tu carta?";
     String PREGUNTA_ROBAR_CASTIGO = "Quieres robar con castigo? (robar del pozo y robar del mazo)\n(Si/No)";
-    String MENU_ROBAR = "Querés robar del mazo o robar del pozo?\n1 - Robar del mazo\n2 - Robar del pozo\n-1 - Guardar partida y salir\nElige una opción: ";
+    String MENU_ROBAR = "1 - Robar del mazo\n2 - Robar del pozo\nElige una opción: ";
     String MENU_BAJAR = """
         Elije una opción:
         1 - Bajar uno o más juegos
