@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class VentanaConsola extends JFrame implements ifVista {
     private Controlador ctrl;
@@ -19,7 +21,7 @@ public class VentanaConsola extends JFrame implements ifVista {
     private CardLayout cardLayout;
     private JPanel cardPanel;
     private int partidaIniciada = 0;
-
+    private final ExecutorService executor = Executors.newFixedThreadPool(1);
 
     public void iniciar() {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -227,7 +229,7 @@ public class VentanaConsola extends JFrame implements ifVista {
                     e.printStackTrace();
                 }
 
-                new Thread(() -> {
+                executor.submit(() -> {
                     try {
                         latch.await();
                     } catch (InterruptedException e) {
@@ -240,7 +242,7 @@ public class VentanaConsola extends JFrame implements ifVista {
                     if (ctrl.isPartidaEnCurso()) {
                         ctrl.cambioTurno();
                     }
-                }).start();
+                });
             } else {
                 JPanel panelTurno = panelMap.get("Turno");
                 panelTurno.removeAll();
