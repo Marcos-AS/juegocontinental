@@ -22,13 +22,8 @@ public interface ifPartida extends IObservableRemoto, Serializable {
     void setNumeroJugador(int numJugador, int nuevoNumero) throws RemoteException;
     void finTurno() throws RemoteException;
     boolean isTurnoActual(int numJugador) throws RemoteException;
-    int getTriosBajados(int numJugador) throws RemoteException;
-    int getEscalerasBajadas(int numJugador) throws RemoteException;
     int[] comprobarQueFaltaParaCortar(int numJugador) throws RemoteException;
     int getObservadorIndex(IObservadorRemoto o) throws RemoteException;
-
-    void serializarGanador() throws RemoteException;
-
     Serializador getRanking() throws RemoteException;
 
     ArrayList<Jugador> getJugadores() throws RemoteException;
@@ -38,27 +33,13 @@ public interface ifPartida extends IObservableRemoto, Serializable {
     Carta getPozo() throws RemoteException;
 
     Jugador getJugador(String nombreJugador) throws RemoteException;
-
-    void incrementarNumJugadorQueEmpiezaRonda() throws RemoteException;
-
     int getNumTurno() throws RemoteException;
-
-    void setNumTurno(int numTurno) throws RemoteException;
-
     int getNumJugadorRoboCastigo() throws RemoteException;
 
     int getNumJugadorCorte() throws RemoteException;
-
-    void setNumJugadorCorte(int numJugadorCorte) throws RemoteException;
-
     int[] getPuntosJugadores() throws RemoteException;
-
-    void determinarGanador() throws RemoteException;
     void actualizarMano(int numJugador) throws RemoteException;
     Jugador getGanador() throws RemoteException;
-
-    void incTurno() throws RemoteException;
-
     void crearYAgregarJugador(String nombre, int numObservador)
             throws RemoteException;
     int comprobarBajarse(int numJugador, int[] cartasABajar) throws RemoteException;
@@ -67,20 +48,11 @@ public interface ifPartida extends IObservableRemoto, Serializable {
             throws RemoteException;
     void acomodarEnJuegoAjeno(int numJugador,int numJugadorAcomodar, int iCarta, int numJuego)
             throws RemoteException;
-    void setEnCurso(boolean enCurso) throws RemoteException;
-    void setNumJugadorQueEmpezoPartida(int numJugadorQueEmpezoPartida)
-            throws RemoteException;
-
     int getCantJugadoresDeseada() throws RemoteException;
 
     void ponerJugadoresEnOrden() throws RemoteException;
-
-    void setCantJugadoresDeseada(int cantJugadoresDeseada) throws RemoteException;
     boolean isEnCurso() throws RemoteException;
     void robarDelMazo() throws RemoteException;
-
-    void setRoboDelMazo(int i, boolean b) throws RemoteException;
-
     void robarDelPozo() throws RemoteException;
 
     void robarConCastigo() throws RemoteException;
@@ -90,11 +62,6 @@ public interface ifPartida extends IObservableRemoto, Serializable {
     void tirarAlPozo(int numJugador, int cartaATirar) throws RemoteException;
 
     void moverCartaEnMano(int numJugador, int i, int i1) throws RemoteException;
-
-    void bajarJuego(int numJugador, int[] cartasABajar, int tipoJuego) throws RemoteException;
-
-    void setPuedeBajar(int numJugador, int i) throws RemoteException;
-
     String getNombreJugador(int numJugador) throws RemoteException;
 
     int getPuedeBajar(int numJugadorRoboCastigo) throws RemoteException;

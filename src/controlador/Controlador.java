@@ -16,8 +16,8 @@ import java.util.Objects;
 import static modelo.Eventos.*;
 
 public class Controlador implements IControladorRemoto {
-    ifVista vista;
-    ifPartida partida;
+    private final ifVista vista;
+    private ifPartida partida;
 
     public Controlador(ifVista vista) {
         this.vista = vista;
@@ -205,7 +205,7 @@ public class Controlador implements IControladorRemoto {
         }
     }
 
-    public void bajarJuegos(int numJugador) throws RemoteException {
+    private void bajarJuegos(int numJugador) throws RemoteException {
         int cantVecesQueBajo = partida.getPuedeBajar(numJugador);
         if (cantVecesQueBajo == 0 || cantVecesQueBajo == 1) {
             bajarseYComprobarCortar(numJugador);
@@ -214,12 +214,12 @@ public class Controlador implements IControladorRemoto {
         }
     }
 
-    public void ordenarCartas(int numJugador) throws RemoteException {
+    private void ordenarCartas(int numJugador) throws RemoteException {
         int[] cartasOrdenacion = vista.preguntarParaOrdenarCartas();
         partida.moverCartaEnMano(numJugador, cartasOrdenacion[0], cartasOrdenacion[1]);
     }
 
-    public void acomodarPropio(int numJugador) throws RemoteException {
+    private void acomodarPropio(int numJugador) throws RemoteException {
         ArrayList<ArrayList<String>> juegos = enviarJuegosJugador(numJugador);
         if (!juegos.isEmpty()) {
             int cartaAcomodar = vista.preguntarCartaParaAcomodar();
@@ -240,7 +240,7 @@ public class Controlador implements IControladorRemoto {
         }
     }
 
-    public void acomodarAjeno(int numJugador) throws RemoteException {
+    private void acomodarAjeno(int numJugador) throws RemoteException {
         if (hayJuegosEnMesa(numJugador)) {
             int iCartaAcomodar = vista.preguntarCartaParaAcomodar();
             int numJugadorAcomodar = vista.getNumJugadorAcomodar();
@@ -258,7 +258,7 @@ public class Controlador implements IControladorRemoto {
         }
     }
 
-    public void mostrarJuegosEnMesa() throws RemoteException {
+    private void mostrarJuegosEnMesa() throws RemoteException {
         vista.actualizarJuegos();
         for (int j = 0; j < getCantJugActuales(); j++) {
             vista.mostrarJuegos(partida.getNombreJugador(j),
@@ -274,7 +274,7 @@ public class Controlador implements IControladorRemoto {
         }
     }
 
-    public ArrayList<String> enviarManoJugador(ArrayList<Carta> mano)
+    private ArrayList<String> enviarManoJugador(ArrayList<Carta> mano)
             throws RemoteException {
         ArrayList<ifCarta> cs = new ArrayList<>(mano);
         return ifVista.cartasToStringArray(cs);
@@ -336,7 +336,7 @@ public class Controlador implements IControladorRemoto {
         }
     }
 
-    private static boolean hayRepetidos(int[] array) {
+    private boolean hayRepetidos(int[] array) {
         for (int i = 0; i < array.length; i++) {
             for (int j = i + 1; j < array.length; j++) {
                 if (array[i] == array[j]) {
@@ -347,14 +347,14 @@ public class Controlador implements IControladorRemoto {
         return false;
     }
 
-    public void tirarAlPozoTurno()
+    private void tirarAlPozoTurno()
             throws RemoteException {
         int numJugador = partida.getNumTurno();
         int cartaATirar = vista.preguntarQueBajarParaPozo();
         partida.tirarAlPozo(numJugador, cartaATirar);
     }
 
-    public void roboCastigo() throws RemoteException {
+    private void roboCastigo() throws RemoteException {
         if (!partida.getJugadoresQuePuedenRobarConCastigo().isEmpty()) {
             if (vista.preguntarInputRobarCastigo()) {
                 partida.robarConCastigo();

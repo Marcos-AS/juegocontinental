@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Mazo extends ObservableRemoto {
+    private static final int BARAJAS_HASTA_4_JUGADORES = 2;
+    private static final int BARAJAS_MAS_4_JUGADORES = 3;
 
-    public static ArrayList<Carta> iniciarMazo(int numBarajas)  throws RemoteException {
+    protected static ArrayList<Carta> iniciarMazo(int numBarajas) throws RemoteException {
         ArrayList<Carta> mazo = new ArrayList<>();
         int i = 0;
         while(i < numBarajas) {
@@ -20,13 +22,14 @@ public class Mazo extends ObservableRemoto {
             for(int j = 1; j < 14; j++)
                 mazo.add(new Carta(j, Palo.CORAZONES));
             for(int j = 0; j < 2; j++)
-                mazo.add(new Carta(-1, Palo.COMODIN));
+                mazo.add(new Carta(Carta.COMODIN, Palo.COMODIN));
             i++;
         }
         return mazo;
     }
 
-    public static ArrayList<Carta> mezclarCartas(ArrayList<Carta> mazo)  throws RemoteException{
+    protected static ArrayList<Carta> mezclarCartas(ArrayList<Carta> mazo)
+            throws RemoteException{
         ArrayList<Carta> mazoMezclado = new ArrayList<>();
         Random random = new Random();
         while(!mazo.isEmpty()) {
@@ -36,14 +39,15 @@ public class Mazo extends ObservableRemoto {
         return mazoMezclado;
     }
 
-    public static Carta sacarPrimeraDelMazo(ArrayList<Carta> mazo) {
+    protected static Carta sacarPrimeraDelMazo(ArrayList<Carta> mazo) {
         return mazo.remove(mazo.size()-1);
     }
 
-    public static int determinarNumBarajas(ArrayList<Jugador> jugadores) throws RemoteException {
-        int cantBarajas = Partida.BARAJAS_HASTA_4_JUGADORES;
+    protected static int determinarNumBarajas(ArrayList<Jugador> jugadores)
+            throws RemoteException {
+        int cantBarajas = BARAJAS_HASTA_4_JUGADORES;
         if (jugadores.size() >= 4 && jugadores.size() <= 6) {
-            cantBarajas = Partida.BARAJAS_MAS_4_JUGADORES;
+            cantBarajas = BARAJAS_MAS_4_JUGADORES;
             //} else if(this.jugadores.size() >= 6 && this.jugadores.size() <= 8) {
             //  cantBarajas = BARAJAS_MAS_6_JUGADORES;
         }

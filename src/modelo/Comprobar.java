@@ -1,7 +1,6 @@
 package modelo;
 
 import rmimvc.src.observer.ObservableRemoto;
-
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -11,7 +10,8 @@ public class Comprobar extends ObservableRemoto {
     protected static int ESCALERA = 1;
     public static int JUEGO_INVALIDO = 2;
 
-    protected static int comprobarJuego(ArrayList<Carta> juego, int ronda) throws RemoteException {
+    protected static int comprobarJuego(ArrayList<Carta> juego, int ronda)
+            throws RemoteException {
         int esJuego = JUEGO_INVALIDO;
         switch (ronda) {
             case 1:
@@ -37,16 +37,13 @@ public class Comprobar extends ObservableRemoto {
         return esJuego;
     }
 
-    protected static int comprobarTrio(ArrayList<Carta> juego) throws RemoteException {
+    private static int comprobarTrio(ArrayList<Carta> juego)
+            throws RemoteException {
         int formaTrio = 1;
         //igual a false, lo pongo en numero para despues saber si es una escalera o un trio
         int esTrio = JUEGO_INVALIDO;
         int i = 0;
         int numCarta = juego.get(i).getNumero();
-        //c c 6
-        //i = 2
-        //numCarta = c
-        //numCartaSig =
         while (numCarta == Carta.COMODIN && i < juego.size()-1) {
             formaTrio++;
             i++;
@@ -66,7 +63,8 @@ public class Comprobar extends ObservableRemoto {
         return esTrio;
     }
 
-    protected static int comprobarEscalera(ArrayList<Carta> juego) throws RemoteException {
+    private static int comprobarEscalera(ArrayList<Carta> juego)
+            throws RemoteException {
         int esEscalera = JUEGO_INVALIDO; //igual a false, lo pongo en numero para despues saber si es una escalera o un trio
         ArrayList<Carta> comodines = extraerComodines(juego);
 
@@ -96,7 +94,8 @@ public class Comprobar extends ObservableRemoto {
         return esEscalera;
     }
 
-    protected static ArrayList<Carta> extraerComodines(ArrayList<Carta> juego) throws RemoteException {
+    protected static ArrayList<Carta> extraerComodines(ArrayList<Carta> juego)
+            throws RemoteException {
         ArrayList<Carta> comodines = new ArrayList<>();
         Iterator<Carta> iterador = juego.iterator();
         while (iterador.hasNext()) {
@@ -109,7 +108,8 @@ public class Comprobar extends ObservableRemoto {
         return comodines;
     }
 
-    protected static boolean comprobarMismoPalo(ArrayList<Carta> cartas) throws RemoteException {
+    protected static boolean comprobarMismoPalo(ArrayList<Carta> cartas)
+            throws RemoteException {
         boolean mismoPalo = false;
         for (int i = 0; i < cartas.size() - 1; i++) {
             Palo palo = cartas.get(i).getPalo();
@@ -118,7 +118,8 @@ public class Comprobar extends ObservableRemoto {
         return mismoPalo;
     }
 
-    protected static void ordenarCartas(ArrayList<Carta> cartas) throws RemoteException { //metodo de insercion
+    protected static void ordenarCartas(ArrayList<Carta> cartas)
+            throws RemoteException { //metodo de insercion
         boolean intercambio = true;
         while (intercambio) {
             intercambio = false;
@@ -133,70 +134,8 @@ public class Comprobar extends ObservableRemoto {
         }
     }
 
-    protected static int comprobarAcomodarEnTrio(ArrayList<Carta> juego, int valorCarta)
-            throws RemoteException {
-        int resp = JUEGO_INVALIDO;
-        boolean noBuscar = valorCarta == Carta.COMODIN;
-        if (noBuscar){
-            resp = TRIO;
-        } else {
-            int i = 0;
-            Carta c;
-            do {
-                c = juego.get(i);
-                noBuscar = c.getNumero() != Carta.COMODIN;
-                if (!noBuscar)
-                    i++;
-                else {
-                    if (c.getNumero() == valorCarta)
-                        resp = TRIO;
-                }
-            }
-            while (!noBuscar && i < juego.size());
-        }
-        return resp;
-    }
-
-    protected static int comprobarAcomodarEnEscalera(ArrayList<Carta> juego) throws RemoteException {
-        int resp = JUEGO_INVALIDO;
-        if (comprobarMismoPalo(juego)) {
-            Carta cartaAcomodar = juego.get(juego.size()-1);
-            Carta ultimaCarta = juego.get(juego.size()-2);
-            Carta primeraCarta = juego.get(0);
-            //valida si se acomoda la carta al final o al principio
-            if (cartaAcomodar.getNumero() == ultimaCarta.getNumero()+1 ||
-                    cartaAcomodar.getNumero() == primeraCarta.getNumero()-1) {
-                resp = ESCALERA;
-            }
-        }
-        return resp;
-    }
-
-    protected static ArrayList<Carta> ordenarJuego(ArrayList<Carta> juego) throws RemoteException{
-        ArrayList<Carta> comodines = extraerComodines(juego);
-        ordenarCartas(juego);
-        ArrayList<Carta> juegoOrdenado = new ArrayList<>();
-        int numCActual;
-        int numCSiguiente;
-        Iterator<Carta> iterador = juego.iterator();
-        while (iterador.hasNext()) {
-            Carta cActual = iterador.next();
-            numCActual = cActual.getNumero();
-            juegoOrdenado.add(cActual);
-            iterador.remove();
-            if (iterador.hasNext()) {
-                numCSiguiente = juego.get(0).getNumero();
-                if (numCActual != numCSiguiente - 1) {
-                    juegoOrdenado.add(comodines.get(0));
-                    comodines.remove(0);
-                }
-            }
-        }
-        if (!comodines.isEmpty()) juegoOrdenado.add(comodines.get(0));
-        return juegoOrdenado;
-    }
-
-    public static boolean comprobarPosibleCorte(int ronda, int trios, int escaleras) throws RemoteException {
+    protected static boolean comprobarPosibleCorte(int ronda, int trios,
+                               int escaleras) throws RemoteException {
         boolean puedeCortar = false;
         switch (ronda) {
             case 1:

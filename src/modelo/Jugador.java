@@ -8,20 +8,19 @@ import java.util.ArrayList;
 
 public class Jugador extends ObservableRemoto implements Serializable, ifJugador {
     protected String nombre;
-    public int numeroJugador;
+    private int numeroJugador;
     private int puntosAlFinalizar;
     private final ArrayList<Partida> partidas = new ArrayList<>();
-    public boolean turnoActual = false;
+    private boolean turnoActual = false;
     private ArrayList<Carta> mano = new ArrayList<>();
-    public ArrayList<ArrayList<Carta>> juegos = new ArrayList<>();
-    public boolean roboDelMazo = false;
-    public int puedeBajar = 0;
-    public int triosBajados;
-    public int escalerasBajadas;
-    public int puntosPartida = 0;
-    public boolean ganador = false;
+    protected ArrayList<ArrayList<Carta>> juegos = new ArrayList<>();
+    private int puedeBajar = 0;
+    private int triosBajados;
+    private int escalerasBajadas;
+    protected int puntosPartida = 0;
+    private boolean ganador = false;
 
-    public Jugador(String nombre) throws RemoteException {
+    protected Jugador(String nombre) throws RemoteException {
         this.nombre = nombre;
     }
 
@@ -29,15 +28,15 @@ public class Jugador extends ObservableRemoto implements Serializable, ifJugador
         mano = new ArrayList<>();
     }
 
-    public void setTurnoActual(boolean turnoActual) throws RemoteException {
+    protected void setTurnoActual(boolean turnoActual) throws RemoteException {
         this.turnoActual = turnoActual;
     }
 
-    public boolean isTurnoActual() {
+    protected boolean isTurnoActual() {
         return turnoActual;
     }
 
-    public void setNumeroJugador(int numeroJugador) throws RemoteException {
+    protected void setNumeroJugador(int numeroJugador) throws RemoteException {
         this.numeroJugador = numeroJugador;
     }
 
@@ -45,15 +44,11 @@ public class Jugador extends ObservableRemoto implements Serializable, ifJugador
         return numeroJugador;
     }
 
-    public void agregarCarta(Carta c) throws RemoteException {
+    protected void agregarCarta(Carta c) throws RemoteException {
         mano.add(c);
     }
 
-    public void setRoboDelMazo(boolean roboDelMazo) throws RemoteException {
-        this.roboDelMazo = roboDelMazo;
-    }
-
-    public int getPuedeBajar() {
+    protected int getPuedeBajar() {
         return puedeBajar;
     }
 
@@ -61,44 +56,47 @@ public class Jugador extends ObservableRemoto implements Serializable, ifJugador
         return mano;
     }
 
-    public ArrayList<ArrayList<Carta>> getJuegos() {
+    protected ArrayList<ArrayList<Carta>> getJuegos() {
         return juegos;
     }
 
-    public int getTriosBajados() {
+    protected int getTriosBajados() {
         return triosBajados;
     }
 
-    public int getEscalerasBajadas() {
+    protected int getEscalerasBajadas() {
         return escalerasBajadas;
     }
 
-    public int getPuntosPartida() {
+    protected int getPuntosPartida() {
         return puntosPartida;
     }
 
-    public boolean isGanador() {
+    protected boolean isGanador() {
         return ganador;
     }
 
-    public void moverCartaEnMano(int indCarta, int destino) throws RemoteException {
+    protected void moverCartaEnMano(int indCarta, int destino)
+            throws RemoteException {
         Mano.moverCartaEnMano(mano, indCarta, destino);
     }
 
-    public void setPuedeBajar(int puedeBajar) throws RemoteException {
+    protected void setPuedeBajar(int puedeBajar) throws RemoteException {
         this.puedeBajar = puedeBajar;
     }
 
-    public void incrementarPuedeBajar() throws RemoteException {
+    protected void incrementarPuedeBajar() throws RemoteException {
         puedeBajar++;
     }
 
-    public ArrayList<Carta> seleccionarCartasABajar(int[] cartasABajar) throws RemoteException {
+    protected ArrayList<Carta> seleccionarCartasABajar(int[] cartasABajar)
+            throws RemoteException {
         return Mano.seleccionarCartasABajar(mano, cartasABajar);
     }
 
-    public void bajarJuego(int[] cartasABajar, int tipoJuego) throws RemoteException {
-        JuegoBajado.addJuego(juegos, seleccionarCartasABajar(cartasABajar), tipoJuego);
+    protected void bajarJuego(int[] cartasABajar, int tipoJuego)
+            throws RemoteException {
+        addJuego(seleccionarCartasABajar(cartasABajar), tipoJuego);
         eliminarDeLaMano(juegos.get(juegos.size() - 1));
         if (tipoJuego == Comprobar.TRIO) {
             incrementarTriosBajados();
@@ -107,21 +105,31 @@ public class Jugador extends ObservableRemoto implements Serializable, ifJugador
         }
     }
 
-    public void eliminarDeLaMano(ArrayList<Carta> cartasABajar) throws RemoteException {
+    private void addJuego(ArrayList<Carta> juego, int tipoJuego)
+            throws RemoteException {
+        if (tipoJuego == Comprobar.ESCALERA) {
+            juegos.add(JuegoBajado.ordenarJuego(juego));
+        } else {
+            juegos.add(juego);
+        }
+    }
+
+    private void eliminarDeLaMano(ArrayList<Carta> cartasABajar)
+            throws RemoteException {
         for(Carta c : cartasABajar) {
             mano.remove(c);
         }
     }
 
-    public void incrementarEscalerasBajadas() throws RemoteException {
+    private void incrementarEscalerasBajadas() throws RemoteException {
         escalerasBajadas++;
     }
 
-    public void incrementarTriosBajados() throws RemoteException {
+    private void incrementarTriosBajados() throws RemoteException {
         triosBajados++;
     }
 
-    public int[] comprobarQueFaltaParaCortar(int ronda) throws RemoteException {
+    protected int[] comprobarQueFaltaParaCortar(int ronda) throws RemoteException {
         int trios = 0;
         int escaleras = 0;
         int[] faltante = new int[2];
@@ -156,19 +164,19 @@ public class Jugador extends ObservableRemoto implements Serializable, ifJugador
         return faltante;
     }
 
-    public void setTriosBajados(int triosBajados) throws RemoteException {
+    protected void setTriosBajados(int triosBajados) throws RemoteException {
         this.triosBajados = triosBajados;
     }
 
-    public void setEscalerasBajadas(int escalerasBajadas) throws RemoteException {
+    protected void setEscalerasBajadas(int escalerasBajadas) throws RemoteException {
         this.escalerasBajadas = escalerasBajadas;
     }
 
-    public void setPuntosPartida(int puntosPartida) throws RemoteException {
+    protected void setPuntosPartida(int puntosPartida) throws RemoteException {
         this.puntosPartida = puntosPartida;
     }
 
-    public void setGanador(boolean ganador) throws RemoteException {
+    protected void setGanador(boolean ganador) throws RemoteException {
         this.ganador = ganador;
     }
 
@@ -176,19 +184,20 @@ public class Jugador extends ObservableRemoto implements Serializable, ifJugador
         return nombre;
     }
 
-    public int getPuntosAlFinalizar() throws RemoteException {
+    protected int getPuntosAlFinalizar() throws RemoteException {
         return puntosAlFinalizar;
     }
 
-    public void setPuntosAlFinalizar(int puntosAlFinalizar) throws RemoteException {
+    protected void setPuntosAlFinalizar(int puntosAlFinalizar)
+            throws RemoteException {
         this.puntosAlFinalizar = puntosAlFinalizar;
     }
 
-    public void sumarPartida(Partida p) throws RemoteException {
+    protected void sumarPartida(Partida p) throws RemoteException {
         partidas.add(p);
     }
 
-    public void resetJuegos() {
+    protected void resetJuegos() {
         juegos = new ArrayList<>();
     }
 }
