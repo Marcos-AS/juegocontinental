@@ -31,3 +31,4 @@ bin/
 miglayoutsrc/
 sources.txt
 .idea/
+*.iml
