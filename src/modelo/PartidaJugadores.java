@@ -222,7 +222,6 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
     public static void robarDelMazo(ArrayList<Jugador> jugadores, int numJugador,
                                     ArrayList<Carta> mazo) throws RemoteException {
        jugadores.get(numJugador).getMano().add(Mazo.sacarPrimeraDelMazo(mazo));
-       jugadores.get(numJugador).setRoboDelMazo(true);
     }
 
     public static void bajarJuego(ArrayList<Jugador> jugadores, int numJugador,
