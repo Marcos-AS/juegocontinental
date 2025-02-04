@@ -1,8 +1,7 @@
-TRABAJO REQUISITOS:
+REQUISITOS:
 - implementación del juego en red (RMI)
 - implementación de Modelo Vista Controlador
 - implementación de Observer
-- diagrama de clases
 - interfaz gráfica y de consola
 - persistir el estado de las partidas: para poder terminar y volver a jugar más tarde o para saber el ranking de mejores jugadores del juego
 
