@@ -1,13 +1,11 @@
 package modelo;
 
-import rmimvc.src.observer.ObservableRemoto;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class JuegoBajado extends ObservableRemoto {
+public class JuegoBajado {
     protected static boolean acomodarCarta(ArrayList<ArrayList<Carta>> juegos,
-           Carta carta, int numJuego, int ronda) throws RemoteException {
+           Carta carta, int numJuego, int ronda) {
         boolean acomodo;
         ArrayList<Carta> juegoElegido = new ArrayList<>(juegos.get(numJuego));
         //necesito saber si el juego bajado es un trio o una escalera
@@ -22,7 +20,7 @@ public class JuegoBajado extends ObservableRemoto {
     }
 
     protected static int comprobarAcomodarEnTrio(ArrayList<Carta> juego,
-                                                 int valorCarta) throws RemoteException {
+                                                 int valorCarta) {
         int resp = Comprobar.JUEGO_INVALIDO;
         boolean noBuscar = valorCarta == Carta.COMODIN;
         if (noBuscar){
@@ -45,8 +43,7 @@ public class JuegoBajado extends ObservableRemoto {
         return resp;
     }
 
-    protected static int comprobarAcomodarEnEscalera(ArrayList<Carta> juego)
-            throws RemoteException {
+    protected static int comprobarAcomodarEnEscalera(ArrayList<Carta> juego) {
         int resp = Comprobar.JUEGO_INVALIDO;
         if (Comprobar.comprobarMismoPalo(juego)) {
             Carta cartaAcomodar = juego.get(juego.size()-1);
@@ -61,8 +58,7 @@ public class JuegoBajado extends ObservableRemoto {
         return resp;
     }
 
-    protected static ArrayList<Carta> ordenarJuego(ArrayList<Carta> juego)
-            throws RemoteException{
+    protected static ArrayList<Carta> ordenarJuego(ArrayList<Carta> juego) {
         ArrayList<Carta> comodines = Comprobar.extraerComodines(juego);
         Comprobar.ordenarCartas(juego);
         ArrayList<Carta> juegoOrdenado = new ArrayList<>();

@@ -1,17 +1,14 @@
 package modelo;
 
-import rmimvc.src.observer.ObservableRemoto;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class Comprobar extends ObservableRemoto {
+public class Comprobar {
     protected static int TRIO = 0;
     protected static int ESCALERA = 1;
     public static int JUEGO_INVALIDO = 2;
 
-    protected static int comprobarJuego(ArrayList<Carta> juego, int ronda)
-            throws RemoteException {
+    protected static int comprobarJuego(ArrayList<Carta> juego, int ronda) {
         int esJuego = JUEGO_INVALIDO;
         switch (ronda) {
             case 1:
@@ -37,8 +34,7 @@ public class Comprobar extends ObservableRemoto {
         return esJuego;
     }
 
-    private static int comprobarTrio(ArrayList<Carta> juego)
-            throws RemoteException {
+    private static int comprobarTrio(ArrayList<Carta> juego) {
         int formaTrio = 1;
         //igual a false, lo pongo en numero para despues saber si es una escalera o un trio
         int esTrio = JUEGO_INVALIDO;
@@ -63,8 +59,7 @@ public class Comprobar extends ObservableRemoto {
         return esTrio;
     }
 
-    private static int comprobarEscalera(ArrayList<Carta> juego)
-            throws RemoteException {
+    private static int comprobarEscalera(ArrayList<Carta> juego) {
         int esEscalera = JUEGO_INVALIDO; //igual a false, lo pongo en numero para despues saber si es una escalera o un trio
         ArrayList<Carta> comodines = extraerComodines(juego);
 
@@ -94,8 +89,7 @@ public class Comprobar extends ObservableRemoto {
         return esEscalera;
     }
 
-    protected static ArrayList<Carta> extraerComodines(ArrayList<Carta> juego)
-            throws RemoteException {
+    protected static ArrayList<Carta> extraerComodines(ArrayList<Carta> juego) {
         ArrayList<Carta> comodines = new ArrayList<>();
         Iterator<Carta> iterador = juego.iterator();
         while (iterador.hasNext()) {
@@ -108,8 +102,7 @@ public class Comprobar extends ObservableRemoto {
         return comodines;
     }
 
-    protected static boolean comprobarMismoPalo(ArrayList<Carta> cartas)
-            throws RemoteException {
+    protected static boolean comprobarMismoPalo(ArrayList<Carta> cartas) {
         boolean mismoPalo = false;
         for (int i = 0; i < cartas.size() - 1; i++) {
             Palo palo = cartas.get(i).getPalo();
@@ -118,8 +111,7 @@ public class Comprobar extends ObservableRemoto {
         return mismoPalo;
     }
 
-    protected static void ordenarCartas(ArrayList<Carta> cartas)
-            throws RemoteException { //metodo de insercion
+    protected static void ordenarCartas(ArrayList<Carta> cartas) { //metodo de insercion
         boolean intercambio = true;
         while (intercambio) {
             intercambio = false;
@@ -135,7 +127,7 @@ public class Comprobar extends ObservableRemoto {
     }
 
     protected static boolean comprobarPosibleCorte(int ronda, int trios,
-                               int escaleras) throws RemoteException {
+                               int escaleras) {
         boolean puedeCortar = false;
         switch (ronda) {
             case 1:

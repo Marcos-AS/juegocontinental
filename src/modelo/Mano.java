@@ -1,10 +1,8 @@
 package modelo;
 
-import rmimvc.src.observer.ObservableRemoto;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-public class Mano extends ObservableRemoto {
+public class Mano {
 
     protected static void moverCartaEnMano(ArrayList<Carta> mano,
                                         int indCarta, int destino) {
@@ -20,8 +18,7 @@ public class Mano extends ObservableRemoto {
         return juego;
     }
 
-    protected static void resetearMano(ArrayList<Jugador> jugadores)
-            throws RemoteException {
+    protected static void resetearMano(ArrayList<Jugador> jugadores) {
         for (Jugador j : jugadores) {
             j.resetMano();
         }

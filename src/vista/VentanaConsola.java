@@ -11,7 +11,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class VentanaConsola extends JFrame implements ifVista {
+public class VentanaConsola implements ifVista {
     private Controlador ctrl;
     private String nombreVista;
     private final JFrame frame = new JFrame("El Continental");
@@ -23,6 +23,7 @@ public class VentanaConsola extends JFrame implements ifVista {
     private int partidaIniciada = 0;
     private final ExecutorService executor = Executors.newFixedThreadPool(1);
 
+    @Override
     public void iniciar() {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(600,800);
@@ -288,6 +289,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         panelPozo.revalidate();
     }
 
+    @Override
     public void comienzoRonda(int ronda) {
         JPanel panelInfoRonda = panelMap.get("infoRonda");
         JLabel label = new JLabel(ifVista.mostrarCombinacionRequerida(ronda));
@@ -297,6 +299,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         panelInfoRonda.repaint();
     }
 
+    @Override
     public void actualizarRestricciones(boolean restriccion) {
         JPanel panelRestricciones = panelMap.get("Restricciones");
         panelRestricciones.removeAll();
@@ -322,6 +325,7 @@ public class VentanaConsola extends JFrame implements ifVista {
     public void elegirJugador(ArrayList<String> nombreJugadores) {
     }
 
+    @Override
     public void mostrarInfo(String s) {
         String titulo = "Aviso";
         if (nombreVista!= null) {
@@ -333,6 +337,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         );
     }
 
+    @Override
     public String preguntarInput(String s) {
         String resp;
         do
@@ -341,7 +346,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         return resp;
     }
 
-    public boolean validarEntrada(String resp) {
+    private boolean validarEntrada(String resp) {
         boolean invalida = false;
         // si el usuario cerró el diálogo o presionó "Cancelar"
         if (resp == null) {
@@ -357,7 +362,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         return invalida;
     }
 
-    public String getRankingString(Object[] ranking) {
+    private String getRankingString(Object[] ranking) {
         StringBuilder s = new StringBuilder("Ranking de mejores jugadores: \n");
         int i = 1;
         for (Object o : ranking) {
@@ -367,15 +372,18 @@ public class VentanaConsola extends JFrame implements ifVista {
         return s.toString();
     }
 
+    @Override
     public void setControlador(Controlador ctrl) {
         this.ctrl = ctrl;
     }
 
+    @Override
     public int getNumJugadorAcomodar() {
         return Integer.parseInt(preguntarInput("Ingresa el número de jugador en cuyos" +
                         " juegos bajados quieres acomodar: "));
     }
 
+    @Override
     public String preguntarInputMenu(String s) {
         String resp;
         do
@@ -384,6 +392,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         return resp;
     }
 
+    @Override
     public String preguntarInputRobar() {
         String resp;
         do
@@ -392,6 +401,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         return resp;
     }
 
+    @Override
     public boolean preguntarInputRobarCastigo() {
         String resp;
         do
@@ -400,10 +410,12 @@ public class VentanaConsola extends JFrame implements ifVista {
         return ifVista.isRespAfirmativa(resp);
     }
 
+    @Override
     public String getNombreVista() {
         return nombreVista;
     }
 
+    @Override
     public String getCartasString(ArrayList<String> cartas) {
         int i = 1;
         StringBuilder s = new StringBuilder();
@@ -414,6 +426,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         return s.toString();
     }
 
+    @Override
     public int menuBajar() {
         int eleccion = 0;
         while (eleccion < ELECCION_BAJARSE || eleccion > ELECCION_ACOMODAR_JUEGO_AJENO) {
@@ -422,6 +435,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         return eleccion;
     }
 
+    @Override
     public int[] preguntarParaOrdenarCartas() {
         int[] elecciones = new int[2];
         int cartaSeleccion = -1;
@@ -442,16 +456,19 @@ public class VentanaConsola extends JFrame implements ifVista {
         return elecciones;
     }
 
+    @Override
     public int preguntarCartaParaAcomodar() {
         return Integer.parseInt(
                 preguntarInputMenu("Indica el número de carta que quieres acomodar" +
                         " en un juego"));
     }
 
+    @Override
     public void mostrarAcomodoCarta(String nombre) {
         mostrarInfo("Se acomodó la carta en el juego.");
     }
 
+    @Override
     public void mostrarJuegos(String nombreJugador, ArrayList<ArrayList<String>> juegos) {
         StringBuilder mostrar = new StringBuilder("<html>");
         int numJuego = 1;
@@ -473,6 +490,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         panelJuegos.repaint();
     }
 
+    @Override
     public void actualizarJuegos() {
         JPanel panelJuegos = panelMap.get("Juegos");
         panelJuegos.removeAll();
@@ -480,11 +498,13 @@ public class VentanaConsola extends JFrame implements ifVista {
         panelJuegos.repaint();
     }
 
+    @Override
     public boolean preguntarSiQuiereSeguirBajandoJuegos() {
         String resp = preguntarInputMenu("Deseas bajar un juego? (Si/No)");
         return ifVista.isRespAfirmativa(resp);
     }
 
+    @Override
     public int[] preguntarQueBajarParaJuego() {
         int[] cartasABajar = new int[preguntarCantParaBajar()];
         int iCarta;
@@ -507,6 +527,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         return numCartas;
     }
 
+    @Override
     public int preguntarQueBajarParaPozo() {
         int eleccion = Integer.parseInt(
                 preguntarInputMenu("Indica el índice de carta para tirar al pozo: "))-1;
@@ -517,6 +538,7 @@ public class VentanaConsola extends JFrame implements ifVista {
         return eleccion;
     }
 
+    @Override
     public void mostrarPuntosRonda(int[] puntos) throws RemoteException {
         StringBuilder s = new StringBuilder("<html>Puntuación<br>");
         for (int i = 0; i < puntos.length; i++) {
@@ -530,5 +552,4 @@ public class VentanaConsola extends JFrame implements ifVista {
         panelPuntuacion.revalidate();
         panelPuntuacion.repaint();
     }
-
  }

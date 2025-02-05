@@ -1,15 +1,13 @@
 package modelo;
 
-import rmimvc.src.observer.ObservableRemoto;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Mazo extends ObservableRemoto {
+public class Mazo {
     private static final int BARAJAS_HASTA_4_JUGADORES = 2;
     private static final int BARAJAS_MAS_4_JUGADORES = 3;
 
-    protected static ArrayList<Carta> iniciarMazo(int numBarajas) throws RemoteException {
+    protected static ArrayList<Carta> iniciarMazo(int numBarajas) {
         ArrayList<Carta> mazo = new ArrayList<>();
         int i = 0;
         while(i < numBarajas) {
@@ -28,8 +26,7 @@ public class Mazo extends ObservableRemoto {
         return mazo;
     }
 
-    protected static ArrayList<Carta> mezclarCartas(ArrayList<Carta> mazo)
-            throws RemoteException{
+    protected static ArrayList<Carta> mezclarCartas(ArrayList<Carta> mazo) {
         ArrayList<Carta> mazoMezclado = new ArrayList<>();
         Random random = new Random();
         while(!mazo.isEmpty()) {
@@ -43,8 +40,7 @@ public class Mazo extends ObservableRemoto {
         return mazo.remove(mazo.size()-1);
     }
 
-    protected static int determinarNumBarajas(ArrayList<Jugador> jugadores)
-            throws RemoteException {
+    protected static int determinarNumBarajas(ArrayList<Jugador> jugadores) {
         int cantBarajas = BARAJAS_HASTA_4_JUGADORES;
         if (jugadores.size() >= 4 && jugadores.size() <= 6) {
             cantBarajas = BARAJAS_MAS_4_JUGADORES;

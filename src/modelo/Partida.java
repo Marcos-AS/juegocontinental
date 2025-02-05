@@ -385,7 +385,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
 
     private void bajarJuego(int numJugador, int[] cartasABajar, int tipoJuego)
             throws RemoteException {
-        PartidaJugadores.bajarJuego(jugadores, numJugador, cartasABajar, tipoJuego);
+        jugadores.get(numJugador).bajarJuego(cartasABajar, tipoJuego);
         actualizarMano(numJugador);
     }
 

@@ -1,5 +1,5 @@
 REQUISITOS:
-- implementación del juego en red (RMI)
+- implementación del juego en red (RMI) (uso de la librería: https://github.com/federicoradeljak/libreria-rmimvc)
 - implementación de Modelo Vista Controlador
 - implementación de Observer
 - interfaz gráfica y de consola

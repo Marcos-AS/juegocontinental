@@ -1,21 +1,19 @@
 package modelo;
 
-import rmimvc.src.observer.ObservableRemoto;
-import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-public class PartidaJugadores extends ObservableRemoto implements Serializable {
-    static int PUNTOS_FIGURA = 10;
-    static int PUNTOS_AS = 20;
-    static int PUNTOS_COMODIN = 50;
+public class PartidaJugadores {
+    private static final int PUNTOS_FIGURA = 10;
+    private static final int PUNTOS_AS = 20;
+    private static final int PUNTOS_COMODIN = 50;
     private static final ArrayList<String> nombresElegidos = new ArrayList<>();
 
     public static ArrayList<String> getNombresElegidos() {
         return nombresElegidos;
     }
 
-    public static ArrayList<String> getNombreJugadores(ArrayList<Jugador> jugadores) throws RemoteException{
+    protected static ArrayList<String> getNombreJugadores(ArrayList<Jugador> jugadores) {
         ArrayList<String> nombreJugadores = new ArrayList<>();
         for (Jugador j : jugadores) {
             nombreJugadores.add(j.getNombre());
@@ -23,7 +21,7 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
         return nombreJugadores;
     }
 
-    public static boolean agregarNombreElegido(String nombre) {
+    protected static boolean agregarNombreElegido(String nombre) {
         if (!nombresElegidos.contains(nombre)) {
             nombresElegidos.add(nombre);
             return true;
@@ -31,7 +29,7 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
         return false;
     }
 
-    public static Jugador getJugador(ArrayList<Jugador> jugadores, String nombreJugador) throws RemoteException {
+    protected static Jugador getJugador(ArrayList<Jugador> jugadores, String nombreJugador) {
         Jugador j = null;
         for (Jugador jug : jugadores) {
             if (jug.getNombre().equals(nombreJugador)) {
@@ -42,7 +40,7 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
     }
 
     public static void repartirCartasPrueba(ArrayList<Jugador> jugadoresActuales,
-                int numRonda, ArrayList<Carta> mazo) throws RemoteException {
+                int numRonda, ArrayList<Carta> mazo) {
         for (Jugador j : jugadoresActuales) {
             switch (numRonda) {
                 case 1:
@@ -84,17 +82,18 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
     }
 
 
-    public static void repartirCartas(ArrayList<Jugador> jugadoresActuales,
+    protected static void repartirCartas(ArrayList<Jugador> jugadores,
                   int numRonda, ArrayList<Carta> mazo) throws RemoteException {
         int numCartasARepartir = ifPartida.cartasPorRonda(numRonda);
-        for(Jugador j: jugadoresActuales) {
+        for(Jugador j: jugadores) {
             while (j.getMano().size() < numCartasARepartir) {
                 j.agregarCarta(Mazo.sacarPrimeraDelMazo(mazo));
             }
         }
     }
 
-    private static void asignarTrio(Jugador j, ArrayList<Carta> mazo) throws RemoteException {
+    //para función de prueba
+    private static void asignarTrio(Jugador j, ArrayList<Carta> mazo) {
         // Elegir un valor aleatorio para el trío (1 a 13)
         int valorTrio = (int) (Math.random() * 13) + 1;
 
@@ -113,8 +112,8 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
         }
     }
 
-    private static void asignarEscalera(Jugador jugador, ArrayList<Carta> mazo)
-            throws RemoteException {
+    //para función de prueba
+    private static void asignarEscalera(Jugador jugador, ArrayList<Carta> mazo) {
         for (Palo palo : Palo.values()) {
             for (int i = 1; i <= 10; i++) {
                 ArrayList<Carta> escalera = new ArrayList<>();
@@ -140,7 +139,7 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
         }
     }
 
-    public static int sumarPuntos(Jugador j) throws RemoteException {
+    protected static int sumarPuntos(Jugador j) {
         int puntos = j.puntosPartida;
         for (Carta c : j.getMano()) {
             int num = c.getNumero();
@@ -161,21 +160,20 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
         return puntos;
     }
 
-    public static int[] getPuntosJugadores(ArrayList<Jugador> jugadoresActuales) throws RemoteException {
-        int[] arrayPuntos = new int[jugadoresActuales.size()];
+    protected static int[] getPuntosJugadores(ArrayList<Jugador> jugadores) {
+        int[] arrayPuntos = new int[jugadores.size()];
         int i = 0;
-        for (Jugador j : jugadoresActuales) {
+        for (Jugador j : jugadores) {
             arrayPuntos[i] = j.getPuntosPartida();
             i++;
         }
         return arrayPuntos;
     }
 
-    public static void determinarGanador(ArrayList<Jugador> jugadoresActuales)
-            throws RemoteException {
-        Jugador ganador = jugadoresActuales.get(0);
+    protected static void determinarGanador(ArrayList<Jugador> jugadores) {
+        Jugador ganador = jugadores.get(0);
         int menosPuntos = ganador.getPuntosPartida();
-        for(Jugador j: jugadoresActuales) {
+        for(Jugador j: jugadores) {
             if(j.getPuntosPartida() < menosPuntos) {
                 menosPuntos = j.getPuntosPartida();
                 ganador = j;
@@ -185,16 +183,16 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
         ganador.setGanador(true);
     }
 
-    public static Jugador getGanador(ArrayList<Jugador> jugadoresActuales) throws RemoteException {
+    protected static Jugador getGanador(ArrayList<Jugador> jugadores) {
         Jugador ganador = null;
-        for (Jugador j : jugadoresActuales) {
+        for (Jugador j : jugadores) {
             if (j.isGanador()) ganador = j;
         }
         return ganador;
     }
 
-    public static void resetearJuegosJugadores(ArrayList<Jugador> jugadoresActuales) throws RemoteException {
-        for (Jugador jugador : jugadoresActuales) {
+    protected static void resetearJuegosJugadores(ArrayList<Jugador> jugadores) {
+        for (Jugador jugador : jugadores) {
             jugador.setTriosBajados(0);
             jugador.setEscalerasBajadas(0);
             jugador.setPuedeBajar(0);
@@ -202,30 +200,24 @@ public class PartidaJugadores extends ObservableRemoto implements Serializable {
         }
     }
 
-    public static ArrayList<Jugador> ponerJugadoresEnOrden(ArrayList<Jugador> jugadoresActuales)
-            throws RemoteException {
+    protected static ArrayList<Jugador> ponerJugadoresEnOrden(ArrayList<Jugador> jugadores) {
         ArrayList<Jugador> jugadoresNuevo = new ArrayList<>();
-        int[] numJugadores = new int[jugadoresActuales.size()];
+        int[] numJugadores = new int[jugadores.size()];
         int i = 0;
-        for (Jugador j : jugadoresActuales) {
+        for (Jugador j : jugadores) {
             int numJugador = j.getNumeroJugador();
             numJugadores[i] = numJugador;
             i++;
         }
 
         for (int num : numJugadores) {
-            jugadoresNuevo.add(jugadoresActuales.get(num));
+            jugadoresNuevo.add(jugadores.get(num));
         }
         return jugadoresNuevo;
     }
 
-    public static void robarDelMazo(ArrayList<Jugador> jugadores, int numJugador,
-                                    ArrayList<Carta> mazo) throws RemoteException {
+    protected static void robarDelMazo(ArrayList<Jugador> jugadores, int numJugador,
+                                    ArrayList<Carta> mazo) {
        jugadores.get(numJugador).getMano().add(Mazo.sacarPrimeraDelMazo(mazo));
-    }
-
-    public static void bajarJuego(ArrayList<Jugador> jugadores, int numJugador,
-                                  int[] cartasABajar, int tipoJuego) throws RemoteException {
-        jugadores.get(numJugador).bajarJuego(cartasABajar, tipoJuego);
     }
 }

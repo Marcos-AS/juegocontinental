@@ -4,7 +4,7 @@ import javax.swing.*;
 
 public class BarraMenu extends JFrame{
 
-    public JMenuBar agregarMenuBarra(Object[] ranking) {
+    protected JMenuBar agregarMenuBarra(Object[] ranking) {
         JMenuBar menuBarra = new JMenuBar();
 
         // ITEM "MENU" -------------------------------------------------------------------------------
@@ -58,7 +58,7 @@ public class BarraMenu extends JFrame{
         return itemVerRanking;
     }
 
-    public String mostrarRanking(Object[] ranking) {
+    private String mostrarRanking(Object[] ranking) {
         StringBuilder s = new StringBuilder("<html>Ranking de mejores jugadores: <br>");
         int i = 1;
         for (Object o : ranking) {
@@ -68,5 +68,4 @@ public class BarraMenu extends JFrame{
         s.append("</html>");
         return s.toString();
     }
-
 }

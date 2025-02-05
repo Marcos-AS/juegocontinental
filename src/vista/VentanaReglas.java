@@ -5,7 +5,7 @@ import java.awt.*;
 
 public class VentanaReglas extends JFrame{
 
-    public VentanaReglas() {
+    protected VentanaReglas() {
         setTitle("Reglas");
         setSize(1100, 700);
         setLocationRelativeTo(null);

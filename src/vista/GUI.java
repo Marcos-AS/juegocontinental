@@ -16,7 +16,7 @@ public class GUI implements ifVista {
     private Controlador ctrl;
     private String nombreVista;
     private final JFrame frame = new JFrame("El Continental");
-    private static final Color fondoPanelMesa = new Color(81, 206, 81);
+    private final Color fondoPanelMesa = new Color(81, 206, 81);
     private int manoSize;
     private ArrayList<String> mano;
     private CardLayout cardLayout;
@@ -24,14 +24,10 @@ public class GUI implements ifVista {
     private Map<String, JPanel> panelMap;
     private Map<String, JButton> buttonMap;
     private boolean guardarYSalir = false;
-    private static final int ANCHO_CARTA = 80;
-    private static final int ALTO_CARTA = 120;
-    private static final int ANCHO_FRAME = 800;
-    private static final int ALTO_FRAME = 800;
 
     @Override
     public void iniciar() {
-        frame.setSize(ANCHO_FRAME,ALTO_FRAME);
+        frame.setSize(800,800);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setIconImage(new ImageIcon(ifVista.asociarRuta("cartas_inicio")).getImage());
 
@@ -403,7 +399,7 @@ public class GUI implements ifVista {
 
         // Crear el ImageIcon con la imagen redimensionada
         Image imagenRedimensionada =
-                imagen.getImage().getScaledInstance(ANCHO_CARTA,ALTO_CARTA, Image.SCALE_SMOOTH);
+                imagen.getImage().getScaledInstance(80,120, Image.SCALE_SMOOTH);
         ImageIcon iconRedimensionado = new ImageIcon(imagenRedimensionada);
         return new JButton(iconRedimensionado);
     }

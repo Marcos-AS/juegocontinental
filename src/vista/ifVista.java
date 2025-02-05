@@ -6,13 +6,13 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public interface ifVista {
+    String ELECCION_ROBAR_DEL_MAZO = "1";
+    String ELECCION_ROBAR_DEL_POZO = "2";
     int ELECCION_BAJARSE = 1;
     int ELECCION_TIRAR_AL_POZO = 2;
     int ELECCION_ORDENAR_CARTAS = 3;
     int ELECCION_ACOMODAR_JUEGO_PROPIO = 4;
     int ELECCION_ACOMODAR_JUEGO_AJENO = 5;
-    String ELECCION_ROBAR_DEL_MAZO = "1";
-    String ELECCION_ROBAR_DEL_POZO = "2";
     int ELECCION_CREAR_PARTIDA = 1;
     int ELECCION_JUGAR_PARTIDA = 2;
     int ELECCION_RANKING = 3;
@@ -181,12 +181,8 @@ public interface ifVista {
     void actualizarJuegos();
     void actualizarRestricciones(boolean restriccion);
     void setNumeroJugadorTitulo();
-
     void salirAlMenu();
-
     void elegirJugador(ArrayList<String> nombreJugadores);
-
     void nuevaPartida();
-
     void finPartida();
 }
