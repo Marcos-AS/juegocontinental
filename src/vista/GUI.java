@@ -274,14 +274,17 @@ public class GUI implements ifVista {
         @Override
         public void mouseClicked(MouseEvent e) {
             JButton boton = (JButton) e.getSource();
+            if (!boton.isEnabled()) {
+                return;
+            }
+            boton.setEnabled(false);
             buttonMap.get("guardar").setEnabled(false);
-            robarCarta(origen, boton);
+            robarCarta(origen);
         }
     }
 
-    private void robarCarta(String origen, JButton botonOrigen) {
+    private void robarCarta(String origen) {
         String eleccion = "";
-        botonOrigen.setEnabled(false);
         if ("pozo".equals(origen)) {
             eleccion = ELECCION_ROBAR_DEL_POZO;
             buttonMap.get("cartaMazo").setEnabled(false);
