@@ -1,7 +1,8 @@
 package modelo;
 
-public interface ifCarta {
-    Palo getPalo();
+import java.io.Serializable;
 
+public interface ifCarta extends Serializable {
+    Palo getPalo();
     int getNumero();
 }

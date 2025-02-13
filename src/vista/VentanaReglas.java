@@ -3,12 +3,12 @@ package vista;
 import javax.swing.*;
 import java.awt.*;
 
-public class VentanaReglas extends JFrame{
+public class VentanaReglas {
 
-    protected VentanaReglas() {
-        setTitle("Reglas");
-        setSize(1100, 700);
-        setLocationRelativeTo(null);
+    protected JFrame getVentanaReglas() {
+        JFrame ventanaReglas = new JFrame("Reglas");
+        ventanaReglas.setSize(1100,700);
+        ventanaReglas.setLocationRelativeTo(null);
 
         // crear un JTextArea con el contenido de la variable 'reglas'
         JTextArea areaTexto = new JTextArea(ifVista.REGLAS);
@@ -28,7 +28,7 @@ public class VentanaReglas extends JFrame{
         areaTexto.setBackground(new Color(56, 102, 65));  // configurar color de fondo
 
         JScrollPane desplazarPanel = new JScrollPane(areaTexto);    // permite desplazarse por el contenido de "areaTexto"
-
-        getContentPane().add(desplazarPanel, BorderLayout.CENTER);
+        ventanaReglas.add(desplazarPanel,BorderLayout.CENTER);
+        return ventanaReglas;
     }
 }

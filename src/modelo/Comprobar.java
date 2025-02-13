@@ -69,7 +69,10 @@ public class Comprobar {
             for (int i = 0; i < juego.size()-1; i++) {
                 int numCartaActual = juego.get(i).getNumero();
                 int numCartaSiguiente = juego.get(i + 1).getNumero();
-                if (numCartaSiguiente == numCartaActual + 1) {
+                if (numCartaActual == Carta.K && numCartaSiguiente == Carta.AS) {
+                    contadorEscalera++;
+                }
+                else if (numCartaSiguiente == numCartaActual + 1) {
                     contadorEscalera++;
                 } else {
                     if (!comodines.isEmpty()) {
@@ -87,6 +90,32 @@ public class Comprobar {
                 esEscalera = ESCALERA;
         }
         return esEscalera;
+    }
+
+    protected static void ordenarCartas(ArrayList<Carta> cartas) { //metodo de insercion
+        boolean intercambio = true, contieneK = false,contieneAs = false;
+        while (intercambio) {
+            intercambio = false;
+            for (int i = 0; i < cartas.size() - 1; i++) {
+                Carta cartaActual = cartas.get(i);
+                Carta cartaSiguiente = cartas.get(i+1);
+                //valido si hay una k y un as, entonces el as debe ser la ultima carta
+                if (!contieneK) contieneK = cartaActual.getNumero() == Carta.K ||
+                        cartaSiguiente.getNumero() == Carta.K;
+                if (!contieneAs) contieneAs = cartaActual.getNumero() == Carta.AS ||
+                        cartaSiguiente.getNumero() == Carta.AS;
+
+                if (cartaActual.getNumero() > cartaSiguiente.getNumero()) {
+                    intercambio = true;
+                    cartas.set(i, cartaSiguiente); //muevo la siguiente un lugar hacia atras
+                    cartas.set(i + 1, cartaActual); //o lo mismo, muevo la actual un lugar hacia delante
+                }
+            }
+        }
+        if (contieneAs&&contieneK) {
+            Carta as = cartas.remove(0);
+            cartas.add(as);
+        }
     }
 
     protected static ArrayList<Carta> extraerComodines(ArrayList<Carta> juego) {
@@ -109,21 +138,6 @@ public class Comprobar {
             mismoPalo = palo == cartas.get(i + 1).getPalo();
         }
         return mismoPalo;
-    }
-
-    protected static void ordenarCartas(ArrayList<Carta> cartas) { //metodo de insercion
-        boolean intercambio = true;
-        while (intercambio) {
-            intercambio = false;
-            for (int i = 0; i < cartas.size() - 1; i++) {
-                Carta cartaActual = cartas.get(i);
-                if (cartaActual.getNumero() > cartas.get(i + 1).getNumero()) {
-                    intercambio = true;
-                    cartas.set(i, cartas.get(i + 1));
-                    cartas.set(i + 1, cartaActual);
-                }
-            }
-        }
     }
 
     protected static boolean comprobarPosibleCorte(int ronda, int trios,

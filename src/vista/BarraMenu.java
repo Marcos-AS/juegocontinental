@@ -2,7 +2,7 @@ package vista;
 
 import javax.swing.*;
 
-public class BarraMenu extends JFrame{
+public class BarraMenu {
 
     protected JMenuBar agregarMenuBarra(Object[] ranking) {
         JMenuBar menuBarra = new JMenuBar();
@@ -32,7 +32,8 @@ public class BarraMenu extends JFrame{
         JMenuItem itemReglas = new JMenuItem("Reglas");
         itemReglas.addActionListener(e -> {
             VentanaReglas ventanaReglas = new VentanaReglas();  // abrir una nueva ventana con las reglas
-            ventanaReglas.setVisible(true);
+            JFrame reglas = ventanaReglas.getVentanaReglas();
+            reglas.setVisible(true);
         });
         return itemReglas;
     }

@@ -18,6 +18,7 @@ public class GUI implements ifVista {
     private final JFrame frame = new JFrame("El Continental");
     private final Color fondoPanelMesa = new Color(81, 206, 81);
     private int manoSize;
+    private int ronda;
     private ArrayList<String> mano;
     private CardLayout cardLayout;
     private JPanel cardPanel;
@@ -364,6 +365,7 @@ public class GUI implements ifVista {
 
     @Override
     public void comienzoRonda(int ronda) {
+        this.ronda = ronda;
         JLabel label = new JLabel(ifVista.mostrarCombinacionRequerida(ronda));
         JPanel panelInfoRonda = panelMap.get("infoRonda");
         panelInfoRonda.removeAll();
@@ -440,10 +442,11 @@ public class GUI implements ifVista {
 
     private int seleccionarUnaCarta(String tituloDialogo) {
         // Crear un diálogo para la selección de una carta
-        JDialog dialogo = new JDialog((JFrame) SwingUtilities.getWindowAncestor(cardPanel), tituloDialogo, true);
+        JDialog dialogo = new JDialog((JFrame) SwingUtilities.getWindowAncestor(cardPanel),
+                tituloDialogo, true);
         dialogo.setLayout(new BorderLayout());
         dialogo.setSize(400, 600);
-        dialogo.setLocationRelativeTo(null);
+        dialogo.setLocationRelativeTo(frame);
 
         // Panel para mostrar las cartas
         JPanel panelCartas = new JPanel(new FlowLayout());
@@ -550,10 +553,11 @@ public class GUI implements ifVista {
     @Override
     public int[] preguntarQueBajarParaJuego() {
         // Crear un diálogo para la selección de cartas
-        JDialog dialogo = new JDialog((JFrame) SwingUtilities.getWindowAncestor(cardPanel), "Seleccionar cartas", true);
+        JDialog dialogo = new JDialog((JFrame) SwingUtilities.getWindowAncestor(cardPanel),
+                "Seleccionar cartas", true);
         dialogo.setLayout(new BorderLayout());
         dialogo.setSize(400, 600);
-        dialogo.setLocationRelativeTo(null);
+        dialogo.setLocationRelativeTo(frame);
 
         // Panel para mostrar las cartas
         JPanel panelCartas = new JPanel(new FlowLayout());
@@ -646,7 +650,7 @@ public class GUI implements ifVista {
         JDialog dialogo = new JDialog((JFrame) SwingUtilities.getWindowAncestor(cardPanel), "Seleccionar cantidad de cartas", true);
         dialogo.setLayout(new FlowLayout());
         dialogo.setSize(300, 150);
-        dialogo.setLocationRelativeTo(null);
+        dialogo.setLocationRelativeTo(frame);
 
         JPanel panelBotones = new JPanel();
         dialogo.add(new JLabel("¿Cuántas cartas quieres bajar para el juego?"), BorderLayout.NORTH);
@@ -669,6 +673,7 @@ public class GUI implements ifVista {
         panelBotones.add(botonTres);
         panelBotones.add(botonCuatro);
         if (manoSize<4) botonCuatro.setEnabled(false);
+        if (this.ronda == 3 || this.ronda == 7) botonTres.setEnabled(false);
         dialogo.add(panelBotones, BorderLayout.CENTER);
 
         dialogo.setVisible(true);
@@ -681,7 +686,7 @@ public class GUI implements ifVista {
         JPanel panelPuntuacion = panelMap.get("Puntos");
         StringBuilder puntuacion = new StringBuilder("<html>Puntuación<br>");
         for (int i = 0; i < puntos.length; i++) {
-            puntuacion.append(ctrl.getJugadorPartida(i).getNombre()).append(": ").append(puntos[i]).append("<br>");
+            puntuacion.append(ctrl.getJugador(i).getNombre()).append(": ").append(puntos[i]).append("<br>");
         }
 
         JLabel labelPuntos = new JLabel(String.valueOf(puntuacion));
@@ -762,7 +767,7 @@ public class GUI implements ifVista {
     @Override
     public boolean preguntarSiQuiereSeguirBajandoJuegos() {
         int opcion = JOptionPane.showOptionDialog(
-                null,
+                frame, //parent
                 "¿Deseas bajar un juego?", // Mensaje
                 "Bajar juego", // Título del cuadro
                 JOptionPane.YES_NO_OPTION,

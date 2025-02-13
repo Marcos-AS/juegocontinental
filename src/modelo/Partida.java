@@ -137,18 +137,23 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         return enCurso;
     }
 
-    public ArrayList<ArrayList<Carta>> getJuegos(int numJugador) throws RemoteException {
-        return jugadores.get(numJugador).getJuegos();
+    public ArrayList<ArrayList<ifCarta>> getJuegos(int numJugador) throws RemoteException {
+        ArrayList<ArrayList<ifCarta>> a = new ArrayList<>();
+        for (ArrayList<Carta> listaCartas : jugadores.get(numJugador).getJuegos()) {
+            ArrayList<ifCarta> listaIfCartas = new ArrayList<>(listaCartas);
+            a.add(listaIfCartas);
+        }
+        return a;
     }
 
     public void setNumeroJugador(int numJugador, int nuevoNumero) throws RemoteException {
         jugadores.get(numJugador).setNumeroJugador(nuevoNumero);
     }
 
-    public boolean comprobarAcomodarCartaAjeno(int numJugador, int numJugadorAcomodar,
-                           int numCarta, int numJuego) throws RemoteException {
-        Carta c = jugadores.get(numJugador).getMano().get(numCarta);
-        return JuegoBajado.acomodarCarta(jugadores.get(numJugadorAcomodar).juegos,c,numJuego,numRonda);
+    public boolean comprobarAcomodarAjeno(int numJ, int numJAcomodar,
+                           int iCarta, int iJuego) throws RemoteException {
+        Carta c = jugadores.get(numJ).getMano().get(iCarta);
+        return JuegoBajado.acomodarCarta(jugadores.get(numJAcomodar).juegos,c,iJuego,numRonda);
     }
 
     public boolean comprobarAcomodarCartaPropio(int numJugador, int numCarta, int numJuego)
@@ -157,25 +162,27 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
         return JuegoBajado.acomodarCarta(jugadores.get(numJugador).juegos,c,numJuego,numRonda);
     }
 
-    public void acomodarEnJuegoAjeno(int numJugador, int numJugadorAcomodar,
-                             int iCarta, int numJuego) throws RemoteException {
-        Carta c = jugadores.get(numJugador).getMano().remove(iCarta);
-        jugadores.get(numJugadorAcomodar).getJuegos().get(numJuego).add(c);
+    public void acomodarAjeno(int numJ, int numJAcomodar,
+                             int iCarta, int iJuego) throws RemoteException {
+        Carta c = jugadores.get(numJ).getMano().remove(iCarta);
+        jugadores.get(numJAcomodar).getJuegos().get(iJuego).add(c);
     }
 
-    public void acomodarEnJuegoPropio(int numJugador,
-                                     int iCarta, int numJuego) throws RemoteException {
-        Carta c = jugadores.get(numJugador).getMano().remove(iCarta);
-        jugadores.get(numJugador).getJuegos().get(numJuego).add(c);
+    public void acomodarPropio(int numJ,int iCarta, int iJuego) throws RemoteException {
+        Carta c = jugadores.get(numJ).getMano().remove(iCarta);
+        jugadores.get(numJ).getJuegos().get(iJuego).add(c);
     }
 
-    public int comprobarBajarse(int numJugador, int[] cartasABajar)
+    public boolean comprobarBajarse(int numJugador, int[] cartasABajar)
             throws RemoteException{
+        boolean puedeBajarse = false;
         int tipoJuego = Comprobar.comprobarJuego(jugadores.get(numJugador)
                 .seleccionarCartasABajar(cartasABajar),numRonda);
-        if(tipoJuego != Comprobar.JUEGO_INVALIDO)
+        if(tipoJuego != Comprobar.JUEGO_INVALIDO) {
+            puedeBajarse = true;
             bajarJuego(numJugador, cartasABajar, tipoJuego);
-        return tipoJuego;
+        }
+        return puedeBajarse;
     }
 
     public boolean cortar(int numJugador) throws RemoteException {
@@ -374,8 +381,8 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     }
 
     public void actualizarMano(int numJugador) throws RemoteException {
-        notificarObservador(numJugador, new NotificacionActualizarMano(
-                jugadores.get(numJugador).getMano()));
+        ArrayList<ifCarta> mano = new ArrayList<>(jugadores.get(numJugador).getMano());
+        notificarObservador(numJugador, new NotificacionActualizarMano(mano));
     }
 
     public void moverCartaEnMano(int numJugador, int i, int i1) throws RemoteException {
@@ -386,6 +393,7 @@ public class Partida extends ObservableRemoto implements ifPartida, Serializable
     private void bajarJuego(int numJugador, int[] cartasABajar, int tipoJuego)
             throws RemoteException {
         jugadores.get(numJugador).bajarJuego(cartasABajar, tipoJuego);
+        incPuedeBajar(numJugador);
         actualizarMano(numJugador);
     }
 

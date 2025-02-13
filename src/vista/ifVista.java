@@ -47,12 +47,13 @@ public interface ifVista {
     String REGLAS =
     """
         OBJETIVO
-        ------------------------------------------------------------------------------------------------------------------------------------------------------------
-        El objetivo del juego es formar las combinaciones requeridas en cada una de las 7 rondas, procurando acumular la menor cantidad posible de puntos.
+        --------------------------------------------------------------------------------------
+        El objetivo del juego es formar las combinaciones requeridas en cada una de las 7 rondas,
+        procurando acumular la menor cantidad posible de puntos.
         Al final de todas las rondas, el jugador con menos puntos es el ganador.
         
         RONDAS
-        ------------------------------------------------------------------------------------------------------------------------------------------------------------
+        --------------------------------------------------------------------------------------
         Se juegan 7 rondas, cada una con requisitos específicos:
         - Ronda 1: Dos tríos
         - Ronda 2: Un trío y una escalera
@@ -62,40 +63,52 @@ public interface ifVista {
         - Ronda 6: Un trío y dos escaleras
         - Ronda 7: Tres escaleras
         
+        DEFINICIONES
+        --------------------------------------------------------------------------------------
+        Trío: 3 cartas con el mismo número, sin importar el palo.
+        Escalera: 4 o más cartas consecutivas del mismo palo. Puede comenzar con cualquier carta,
+        y el As puede ser la carta más baja como la más alta.
+        Reglas sobre el Comodín: 
+        - Se puede tener un trío de comodines
+        - Se pueden tener dos o más comodines en una escalera pero no juntos
+        
         REPARTO DE CARTAS:
-        En la 1ra ronda se reparten 6 cartas y en cada ronda se reparte una carta más llegando a 13 cartas en la 7ma ronda.
+        --------------------------------------------------------------------------------------
+        En la 1ra ronda se reparten 6 cartas y en cada ronda se reparte una carta más llegando
+        a 13 cartas en la 7ma ronda.
         Cuando se termina de repartir se deja el mazo en el medio y se da vuelta la primera.
         
-        DEFINICIONES
-        ------------------------------------------------------------------------------------------------------------------------------------------------------------
-        Trío: 3 cartas con el mismo número, sin importar el palo.
-        Escalera: 4 o más cartas consecutivas del mismo palo. Puede comenzar con cualquier carta, y el as puede ser la carta intermedia entre la K y el 2.
-        Comodín: Se puede tener un trío de comodines, pero no se pueden colocar dos comodines JUNTOS en una escalera.
-        
         ROBO
-        ------------------------------------------------------------------------------------------------------------------------------------------------------------
-        En cada turno, el jugador debe robar una carta y descartar otra. Si no roba del pozo, los siguientes jugadores pueden optar por robar del pozo, pero si lo hacen,
-         también deben robar otra del mazo (robo con "castigo"). Este proceso sigue en orden hacia la derecha. En caso de que ningún jugador desee robar del pozo,
-         cada jugador debe robar una carta en su turno, ya sea del mazo o del pozo.
+        --------------------------------------------------------------------------------------
+        En cada turno, el jugador debe robar una carta y descartar otra. Si no roba del pozo,
+        los siguientes jugadores pueden optar por robar del pozo, pero si lo hacen,
+        también deben robar otra del mazo (robo con "castigo"). Este proceso sigue en orden
+        hacia la derecha. En caso de que ningún jugador desee robar del pozo,
+        cada jugador debe robar una carta en su turno, ya sea del mazo o del pozo.
         
         BAJAR JUEGOS Y CORTAR
-        ------------------------------------------------------------------------------------------------------------------------------------------------------------
+        --------------------------------------------------------------------------------------
         Para cortar, el jugador debe tener completa la combinación requerida para la ronda.
-        Se puede cortar con la carta que sobra, o elegir no cortar si no hay cartas sobrantes. En estos casos, el jugador gana la ronda.
-        No se puede cortar si al jugador le sobra más de una carta.  Si le sobra más de una carta, debe acomodar en los juegos bajados las que le sobraron y ahí podrá cortar.
-        Además, el jugador puede bajar sus juegos una vez durante la ronda, con las siguientes restricciones:
+        Se puede cortar con la carta que sobra, o elegir no cortar si no hay cartas sobrantes.
+        En estos casos, el jugador gana la ronda.
+        No se puede cortar si al jugador le sobra más de una carta.  Si le sobra más de una 
+        carta, debe acomodar en los juegos bajados las que le sobraron y ahí podrá cortar.
+        Además, el jugador puede bajar sus juegos una vez durante la ronda, con las siguientes
+        restricciones:
         - No puede robar con "castigo".
         - No puede bajar de nuevo.
         - Las cartas sobrantes se pueden colocar en los juegos bajados por otros jugadores.
         
         FIN DE LA RONDA
-        ------------------------------------------------------------------------------------------------------------------------------------------------------------ \r
-        Al finalizar cada ronda, se suman los puntos de las cartas que los jugadores tienen en la mano. El ganador de la ronda no suma puntos. \r
-        Las cartas tienen valores específicos: los números valen su denominación, las figuras valen 10, el as vale 20 y el comodín 50.\r
+        --------------------------------------------------------------------------------------
+        Al finalizar cada ronda, se suman los puntos de las cartas que los jugadores tienen en
+        la mano. El ganador de la ronda no suma puntos. \r
+        Las cartas tienen valores específicos: los números valen su denominación, las figuras
+        valen 10, el as vale 20 y el comodín 50.\r
      
         FIN DEL JUEGO
-        ------------------------------------------------------------------------------------------------------------------------------------------------------------ \r
-        Después de todas las rondas, el jugador con menos puntos es declarado ganador.""";
+        -------------------------------------------------------------------------------------- 
+       Después de todas las rondas, el jugador con menos puntos es declarado ganador.""";
 
     void setControlador(Controlador ctrl);
     static String mostrarCombinacionRequerida(int ronda) {

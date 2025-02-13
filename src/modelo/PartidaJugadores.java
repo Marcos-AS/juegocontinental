@@ -1,13 +1,17 @@
 package modelo;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class PartidaJugadores {
     private static final int PUNTOS_FIGURA = 10;
     private static final int PUNTOS_AS = 20;
     private static final int PUNTOS_COMODIN = 50;
+    private static final int CANT_CARTAS_INICIAL = 6;
     private static final ArrayList<String> nombresElegidos = new ArrayList<>();
+
+    private static int cartasPorRonda(int ronda) {
+        return CANT_CARTAS_INICIAL + ronda -1;
+    }
 
     public static ArrayList<String> getNombresElegidos() {
         return nombresElegidos;
@@ -83,8 +87,8 @@ public class PartidaJugadores {
 
 
     protected static void repartirCartas(ArrayList<Jugador> jugadores,
-                  int numRonda, ArrayList<Carta> mazo) throws RemoteException {
-        int numCartasARepartir = ifPartida.cartasPorRonda(numRonda);
+                  int numRonda, ArrayList<Carta> mazo) {
+        int numCartasARepartir = cartasPorRonda(numRonda);
         for(Jugador j: jugadores) {
             while (j.getMano().size() < numCartasARepartir) {
                 j.agregarCarta(Mazo.sacarPrimeraDelMazo(mazo));

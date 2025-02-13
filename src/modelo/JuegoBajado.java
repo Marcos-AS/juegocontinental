@@ -62,17 +62,17 @@ public class JuegoBajado {
         ArrayList<Carta> comodines = Comprobar.extraerComodines(juego);
         Comprobar.ordenarCartas(juego);
         ArrayList<Carta> juegoOrdenado = new ArrayList<>();
-        int numCActual;
-        int numCSiguiente;
+        int numCartaActual;
+        int numCartaSiguiente;
         Iterator<Carta> iterador = juego.iterator();
         while (iterador.hasNext()) {
             Carta cActual = iterador.next();
-            numCActual = cActual.getNumero();
+            numCartaActual = cActual.getNumero();
             juegoOrdenado.add(cActual);
             iterador.remove();
             if (iterador.hasNext()) {
-                numCSiguiente = juego.get(0).getNumero();
-                if (numCActual != numCSiguiente - 1) {
+                numCartaSiguiente = juego.get(0).getNumero();
+                if (numCartaActual != numCartaSiguiente - 1) {
                     juegoOrdenado.add(comodines.get(0));
                     comodines.remove(0);
                 }
