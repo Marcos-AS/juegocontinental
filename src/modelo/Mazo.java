@@ -7,7 +7,7 @@ public class Mazo {
     private static final int BARAJAS_HASTA_4_JUGADORES = 2;
     private static final int BARAJAS_MAS_4_JUGADORES = 3;
 
-    protected static ArrayList<Carta> iniciarMazo(int numBarajas) {
+    static ArrayList<Carta> iniciarMazo(int numBarajas) {
         ArrayList<Carta> mazo = new ArrayList<>();
         int i = 0;
         while(i < numBarajas) {
@@ -26,7 +26,7 @@ public class Mazo {
         return mazo;
     }
 
-    protected static ArrayList<Carta> mezclarCartas(ArrayList<Carta> mazo) {
+    static ArrayList<Carta> mezclarCartas(ArrayList<Carta> mazo) {
         ArrayList<Carta> mazoMezclado = new ArrayList<>();
         Random random = new Random();
         while(!mazo.isEmpty()) {
@@ -36,11 +36,11 @@ public class Mazo {
         return mazoMezclado;
     }
 
-    protected static Carta sacarPrimeraDelMazo(ArrayList<Carta> mazo) {
+    static Carta sacarPrimeraDelMazo(ArrayList<Carta> mazo) {
         return mazo.remove(mazo.size()-1);
     }
 
-    protected static int determinarNumBarajas(ArrayList<Jugador> jugadores) {
+    static int determinarNumBarajas(ArrayList<Jugador> jugadores) {
         int cantBarajas = BARAJAS_HASTA_4_JUGADORES;
         if (jugadores.size() >= 4 && jugadores.size() <= 6) {
             cantBarajas = BARAJAS_MAS_4_JUGADORES;

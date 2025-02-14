@@ -4,45 +4,45 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Jugador implements Serializable, ifJugador {
-    protected String nombre;
+    String nombre;
     private int numeroJugador;
     private int puntosAlFinalizar;
     private final ArrayList<Partida> partidas = new ArrayList<>();
     private boolean turnoActual = false;
     private ArrayList<Carta> mano = new ArrayList<>();
-    protected ArrayList<ArrayList<Carta>> juegos = new ArrayList<>();
+    ArrayList<ArrayList<Carta>> juegos = new ArrayList<>();
     private int puedeBajar = 0;
     private int triosBajados;
     private int escalerasBajadas;
-    protected int puntosPartida = 0;
+    int puntosPartida = 0;
     private boolean ganador = false;
 
-    protected Jugador(String nombre) {
+    Jugador(String nombre) {
         this.nombre = nombre;
     }
 
-    protected void resetMano() {
+    void resetMano() {
         mano = new ArrayList<>();
     }
 
-    protected void agregarCarta(Carta c) {
+    void agregarCarta(Carta c) {
         mano.add(c);
     }
 
-    protected void moverCartaEnMano(int indCarta, int destino) {
+    void moverCartaEnMano(int indCarta, int destino) {
         Mano.moverCartaEnMano(mano, indCarta, destino);
     }
 
-    protected void incrementarPuedeBajar() {
+    void incrementarPuedeBajar() {
         puedeBajar++;
     }
 
-    protected ArrayList<Carta> seleccionarCartasABajar(int[]
+    ArrayList<Carta> seleccionarCartasABajar(int[]
                                                cartasABajar) {
         return Mano.seleccionarCartasABajar(mano, cartasABajar);
     }
 
-    protected void bajarJuego(int[] cartasABajar, int tipoJuego) {
+    void bajarJuego(int[] cartasABajar, int tipoJuego) {
         addJuego(seleccionarCartasABajar(cartasABajar), tipoJuego);
         eliminarDeLaMano(juegos.get(juegos.size() - 1));
         if (tipoJuego == Comprobar.TRIO) {
@@ -74,7 +74,7 @@ public class Jugador implements Serializable, ifJugador {
         triosBajados++;
     }
 
-    protected int[] comprobarQueFaltaParaCortar(int ronda) {
+    int[] comprobarQueFaltaParaCortar(int ronda) {
         int trios = 0;
         int escaleras = 0;
         int[] faltante = new int[2];
@@ -109,27 +109,27 @@ public class Jugador implements Serializable, ifJugador {
         return faltante;
     }
 
-    protected void sumarPartida(Partida p) {
+    void sumarPartida(Partida p) {
         partidas.add(p);
     }
 
-    protected void resetJuegos() {
+    void resetJuegos() {
         juegos = new ArrayList<>();
     }
 
-    protected void setTriosBajados(int triosBajados) {
+    void setTriosBajados(int triosBajados) {
         this.triosBajados = triosBajados;
     }
 
-    protected void setEscalerasBajadas(int escalerasBajadas) {
+    void setEscalerasBajadas(int escalerasBajadas) {
         this.escalerasBajadas = escalerasBajadas;
     }
 
-    protected void setPuntosPartida(int puntosPartida) {
+    void setPuntosPartida(int puntosPartida) {
         this.puntosPartida = puntosPartida;
     }
 
-    protected void setGanador(boolean ganador) {
+    void setGanador(boolean ganador) {
         this.ganador = ganador;
     }
 
@@ -137,31 +137,31 @@ public class Jugador implements Serializable, ifJugador {
         return nombre;
     }
 
-    protected int getPuntosAlFinalizar() {
+    int getPuntosAlFinalizar() {
         return puntosAlFinalizar;
     }
 
-    protected void setPuntosAlFinalizar(int puntosAlFinalizar) {
+    void setPuntosAlFinalizar(int puntosAlFinalizar) {
         this.puntosAlFinalizar = puntosAlFinalizar;
     }
 
-    protected void setPuedeBajar(int puedeBajar) {
+    void setPuedeBajar(int puedeBajar) {
         this.puedeBajar = puedeBajar;
     }
 
-    protected boolean isGanador() {
+    boolean isGanador() {
         return ganador;
     }
 
-    protected void setTurnoActual(boolean turnoActual) {
+    void setTurnoActual(boolean turnoActual) {
         this.turnoActual = turnoActual;
     }
 
-    protected boolean isTurnoActual() {
+    boolean isTurnoActual() {
         return turnoActual;
     }
 
-    protected void setNumeroJugador(int numeroJugador) {
+    void setNumeroJugador(int numeroJugador) {
         this.numeroJugador = numeroJugador;
     }
 
@@ -169,27 +169,27 @@ public class Jugador implements Serializable, ifJugador {
         return numeroJugador;
     }
 
-    protected int getPuedeBajar() {
+    int getPuedeBajar() {
         return puedeBajar;
     }
 
-    protected ArrayList<Carta> getMano() {
+    ArrayList<Carta> getMano() {
         return mano;
     }
 
-    protected ArrayList<ArrayList<Carta>> getJuegos() {
+    ArrayList<ArrayList<Carta>> getJuegos() {
         return juegos;
     }
 
-    protected int getTriosBajados() {
+    int getTriosBajados() {
         return triosBajados;
     }
 
-    protected int getEscalerasBajadas() {
+    int getEscalerasBajadas() {
         return escalerasBajadas;
     }
 
-    protected int getPuntosPartida() {
+    int getPuntosPartida() {
         return puntosPartida;
     }
 }

@@ -4,8 +4,8 @@ public class Carta implements ifCarta {
     private final int numero;
     private final Palo palo;
     public static final int COMODIN = -1;
-    protected static final int K = 13;
-    protected static final int AS = 1;
+    static final int K = 13;
+    static final int AS = 1;
 
     public Carta(int num, Palo palo) {
         numero = num;

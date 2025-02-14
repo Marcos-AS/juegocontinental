@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class JuegoBajado {
-    protected static boolean acomodarCarta(ArrayList<ArrayList<Carta>> juegos,
+    static boolean acomodarCarta(ArrayList<ArrayList<Carta>> juegos,
            Carta carta, int numJuego, int ronda) {
         boolean acomodo;
         ArrayList<Carta> juegoElegido = new ArrayList<>(juegos.get(numJuego));
@@ -19,7 +19,7 @@ public class JuegoBajado {
         return acomodo;
     }
 
-    protected static int comprobarAcomodarEnTrio(ArrayList<Carta> juego,
+    static int comprobarAcomodarEnTrio(ArrayList<Carta> juego,
                                                  int valorCarta) {
         int resp = Comprobar.JUEGO_INVALIDO;
         boolean noBuscar = valorCarta == Carta.COMODIN;
@@ -43,7 +43,7 @@ public class JuegoBajado {
         return resp;
     }
 
-    protected static int comprobarAcomodarEnEscalera(ArrayList<Carta> juego) {
+    static int comprobarAcomodarEnEscalera(ArrayList<Carta> juego) {
         int resp = Comprobar.JUEGO_INVALIDO;
         if (Comprobar.comprobarMismoPalo(juego)) {
             Carta cartaAcomodar = juego.get(juego.size()-1);
@@ -58,7 +58,7 @@ public class JuegoBajado {
         return resp;
     }
 
-    protected static ArrayList<Carta> ordenarJuego(ArrayList<Carta> juego) {
+    static ArrayList<Carta> ordenarJuego(ArrayList<Carta> juego) {
         ArrayList<Carta> comodines = Comprobar.extraerComodines(juego);
         Comprobar.ordenarCartas(juego);
         ArrayList<Carta> juegoOrdenado = new ArrayList<>();

@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class Comprobar {
-    protected static int TRIO = 0;
-    protected static int ESCALERA = 1;
+    static int TRIO = 0;
+    static int ESCALERA = 1;
     public static int JUEGO_INVALIDO = 2;
 
-    protected static int comprobarJuego(ArrayList<Carta> juego, int ronda) {
+    static int comprobarJuego(ArrayList<Carta> juego, int ronda) {
         int esJuego = JUEGO_INVALIDO;
         switch (ronda) {
             case 1:
@@ -92,7 +92,7 @@ public class Comprobar {
         return esEscalera;
     }
 
-    protected static void ordenarCartas(ArrayList<Carta> cartas) { //metodo de insercion
+    static void ordenarCartas(ArrayList<Carta> cartas) { //metodo de insercion
         boolean intercambio = true, contieneK = false,contieneAs = false;
         while (intercambio) {
             intercambio = false;
@@ -118,7 +118,7 @@ public class Comprobar {
         }
     }
 
-    protected static ArrayList<Carta> extraerComodines(ArrayList<Carta> juego) {
+    static ArrayList<Carta> extraerComodines(ArrayList<Carta> juego) {
         ArrayList<Carta> comodines = new ArrayList<>();
         Iterator<Carta> iterador = juego.iterator();
         while (iterador.hasNext()) {
@@ -131,7 +131,7 @@ public class Comprobar {
         return comodines;
     }
 
-    protected static boolean comprobarMismoPalo(ArrayList<Carta> cartas) {
+    static boolean comprobarMismoPalo(ArrayList<Carta> cartas) {
         boolean mismoPalo = false;
         for (int i = 0; i < cartas.size() - 1; i++) {
             Palo palo = cartas.get(i).getPalo();
@@ -140,7 +140,7 @@ public class Comprobar {
         return mismoPalo;
     }
 
-    protected static boolean comprobarPosibleCorte(int ronda, int trios,
+    static boolean comprobarPosibleCorte(int ronda, int trios,
                                int escaleras) {
         boolean puedeCortar = false;
         switch (ronda) {

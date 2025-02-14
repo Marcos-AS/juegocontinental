@@ -17,7 +17,7 @@ public class PartidaJugadores {
         return nombresElegidos;
     }
 
-    protected static ArrayList<String> getNombreJugadores(ArrayList<Jugador> jugadores) {
+    static ArrayList<String> getNombreJugadores(ArrayList<Jugador> jugadores) {
         ArrayList<String> nombreJugadores = new ArrayList<>();
         for (Jugador j : jugadores) {
             nombreJugadores.add(j.getNombre());
@@ -25,7 +25,7 @@ public class PartidaJugadores {
         return nombreJugadores;
     }
 
-    protected static boolean agregarNombreElegido(String nombre) {
+    static boolean agregarNombreElegido(String nombre) {
         if (!nombresElegidos.contains(nombre)) {
             nombresElegidos.add(nombre);
             return true;
@@ -33,7 +33,7 @@ public class PartidaJugadores {
         return false;
     }
 
-    protected static Jugador getJugador(ArrayList<Jugador> jugadores, String nombreJugador) {
+    static Jugador getJugador(ArrayList<Jugador> jugadores, String nombreJugador) {
         Jugador j = null;
         for (Jugador jug : jugadores) {
             if (jug.getNombre().equals(nombreJugador)) {
@@ -86,7 +86,7 @@ public class PartidaJugadores {
     }
 
 
-    protected static void repartirCartas(ArrayList<Jugador> jugadores,
+    static void repartirCartas(ArrayList<Jugador> jugadores,
                   int numRonda, ArrayList<Carta> mazo) {
         int numCartasARepartir = cartasPorRonda(numRonda);
         for(Jugador j: jugadores) {
@@ -143,7 +143,7 @@ public class PartidaJugadores {
         }
     }
 
-    protected static int sumarPuntos(Jugador j) {
+    static int sumarPuntos(Jugador j) {
         int puntos = j.puntosPartida;
         for (Carta c : j.getMano()) {
             int num = c.getNumero();
@@ -164,7 +164,7 @@ public class PartidaJugadores {
         return puntos;
     }
 
-    protected static int[] getPuntosJugadores(ArrayList<Jugador> jugadores) {
+    static int[] getPuntosJugadores(ArrayList<Jugador> jugadores) {
         int[] arrayPuntos = new int[jugadores.size()];
         int i = 0;
         for (Jugador j : jugadores) {
@@ -174,7 +174,7 @@ public class PartidaJugadores {
         return arrayPuntos;
     }
 
-    protected static void determinarGanador(ArrayList<Jugador> jugadores) {
+    static void determinarGanador(ArrayList<Jugador> jugadores) {
         Jugador ganador = jugadores.get(0);
         int menosPuntos = ganador.getPuntosPartida();
         for(Jugador j: jugadores) {
@@ -187,7 +187,7 @@ public class PartidaJugadores {
         ganador.setGanador(true);
     }
 
-    protected static Jugador getGanador(ArrayList<Jugador> jugadores) {
+    static Jugador getGanador(ArrayList<Jugador> jugadores) {
         Jugador ganador = null;
         for (Jugador j : jugadores) {
             if (j.isGanador()) ganador = j;
@@ -195,7 +195,7 @@ public class PartidaJugadores {
         return ganador;
     }
 
-    protected static void resetearJuegosJugadores(ArrayList<Jugador> jugadores) {
+    static void resetearJuegosJugadores(ArrayList<Jugador> jugadores) {
         for (Jugador jugador : jugadores) {
             jugador.setTriosBajados(0);
             jugador.setEscalerasBajadas(0);
@@ -204,7 +204,7 @@ public class PartidaJugadores {
         }
     }
 
-    protected static ArrayList<Jugador> ponerJugadoresEnOrden(ArrayList<Jugador> jugadores) {
+    static ArrayList<Jugador> ponerJugadoresEnOrden(ArrayList<Jugador> jugadores) {
         ArrayList<Jugador> jugadoresNuevo = new ArrayList<>();
         int[] numJugadores = new int[jugadores.size()];
         int i = 0;
@@ -220,7 +220,7 @@ public class PartidaJugadores {
         return jugadoresNuevo;
     }
 
-    protected static void robarDelMazo(ArrayList<Jugador> jugadores, int numJugador,
+    static void robarDelMazo(ArrayList<Jugador> jugadores, int numJugador,
                                     ArrayList<Carta> mazo) {
        jugadores.get(numJugador).getMano().add(Mazo.sacarPrimeraDelMazo(mazo));
     }
