@@ -1,10 +1,6 @@
 package controlador;
 
-import modelo.ifPartida;
-import modelo.ifJugador;
-import modelo.ifCarta;
-import modelo.Eventos;
-import modelo.NotificacionActualizarMano;
+import modelo.*;
 import vista.ifVista;
 import static modelo.Eventos.*;
 import rmimvc.src.cliente.IControladorRemoto;
@@ -117,8 +113,8 @@ public class Controlador implements IControladorRemoto {
                 }
             }
         }
-        else if (o instanceof NotificacionActualizarMano notif) {
-            vista.actualizarManoJugador(enviarManoJugador(notif.cartas()));
+        else if (o instanceof Mano mano) {
+            vista.actualizarManoJugador(enviarManoJugador((Mano)mano.get()));
         }
     }
 

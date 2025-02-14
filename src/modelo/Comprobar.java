@@ -40,7 +40,7 @@ public class Comprobar {
         int esTrio = JUEGO_INVALIDO;
         int i = 0;
         int numCarta = juego.get(i).getNumero();
-        while (numCarta == Carta.COMODIN && i < juego.size()-1) {
+        while (numCarta == -1 && i < juego.size()-1) {
             formaTrio++;
             i++;
             numCarta = juego.get(i).getNumero();
@@ -48,7 +48,7 @@ public class Comprobar {
         while (i < juego.size()-1) {
             i++;
             int numCartaSig = juego.get(i).getNumero();
-            if (numCarta == numCartaSig || numCartaSig == Carta.COMODIN) {
+            if (numCarta == numCartaSig || numCartaSig == -1) {
                 formaTrio++;
             } else {
                 formaTrio = 0;
@@ -69,7 +69,7 @@ public class Comprobar {
             for (int i = 0; i < juego.size()-1; i++) {
                 int numCartaActual = juego.get(i).getNumero();
                 int numCartaSiguiente = juego.get(i + 1).getNumero();
-                if (numCartaActual == Carta.K && numCartaSiguiente == Carta.AS) {
+                if (numCartaActual == 13 && numCartaSiguiente == 1) {
                     contadorEscalera++;
                 }
                 else if (numCartaSiguiente == numCartaActual + 1) {
@@ -100,10 +100,10 @@ public class Comprobar {
                 Carta cartaActual = cartas.get(i);
                 Carta cartaSiguiente = cartas.get(i+1);
                 //valido si hay una k y un as, entonces el as debe ser la ultima carta
-                if (!contieneK) contieneK = cartaActual.getNumero() == Carta.K ||
-                        cartaSiguiente.getNumero() == Carta.K;
-                if (!contieneAs) contieneAs = cartaActual.getNumero() == Carta.AS ||
-                        cartaSiguiente.getNumero() == Carta.AS;
+                if (!contieneK) contieneK = cartaActual.getNumero() == 13 ||
+                        cartaSiguiente.getNumero() == 13;
+                if (!contieneAs) contieneAs = cartaActual.getNumero() == 1 ||
+                        cartaSiguiente.getNumero() == 1;
 
                 if (cartaActual.getNumero() > cartaSiguiente.getNumero()) {
                     intercambio = true;

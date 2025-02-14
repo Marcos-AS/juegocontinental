@@ -45,7 +45,8 @@ public class Cliente extends ServidorRMI {
 	 * @throws RemoteException excepción lanzada por problemas de comunicación de red con objetos remotos.
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends Remote & IObservableRemoto> IControladorRemoto iniciar(IControladorRemoto controlador)
+	public <T extends Remote & IObservableRemoto> IControladorRemoto iniciar
+	(IControladorRemoto controlador)
 			throws RMIMVCException, RemoteException {
 		this.iniciarServidorRMI();
 		Registry registro = LocateRegistry.getRegistry(this.serverHost, this.serverPort);

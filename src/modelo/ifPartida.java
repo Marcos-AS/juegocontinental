@@ -3,14 +3,13 @@ package modelo;
 import rmimvc.src.observer.IObservableRemoto;
 import rmimvc.src.observer.IObservadorRemoto;
 import serializacion.Serializador;
-import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-public interface ifPartida extends IObservableRemoto, Serializable {
+public interface ifPartida extends IObservableRemoto {
     ArrayList<ArrayList<ifCarta>> getJuegos(int numJugador) throws RemoteException;
     boolean comprobarAcomodarAjeno(int numJugador, int numJugadorAcomodar,
-                        int numCarta, int numJuego) throws RemoteException;
+                                   int numCarta, int numJuego) throws RemoteException;
     boolean comprobarAcomodarCartaPropio(int numJugador, int numCarta, int numJuego)
             throws RemoteException;
     void setNumeroJugador(int numJugador, int nuevoNumero) throws RemoteException;
@@ -53,11 +52,12 @@ public interface ifPartida extends IObservableRemoto, Serializable {
     void guardarPartida() throws RemoteException;
     int getNumJugador(String nombreJugador) throws RemoteException;
     void acomodarPropio(int numJugador,
-                               int iCarta, int numJuego) throws RemoteException;
+                        int iCarta, int numJuego) throws RemoteException;
     ArrayList<Integer> getJugadoresQuePuedenRobarConCastigo() throws RemoteException;
     Eventos comprobarPosibleCorte(int numJugador) throws RemoteException;
     boolean cargarPartida() throws RemoteException;
     ArrayList<String> getNombreJugadores() throws RemoteException;
     boolean agregarNombreElegido(String nombre) throws RemoteException;
     void setJugadoresQuePuedenRobarConCastigo() throws RemoteException;
+
 }

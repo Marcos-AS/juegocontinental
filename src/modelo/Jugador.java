@@ -3,13 +3,15 @@ package modelo;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import static modelo.Partida.*;
+
 public class Jugador implements Serializable, ifJugador {
     String nombre;
     private int numeroJugador;
     private int puntosAlFinalizar;
     private final ArrayList<Partida> partidas = new ArrayList<>();
     private boolean turnoActual = false;
-    private ArrayList<Carta> mano = new ArrayList<>();
+    private Mano mano = new Mano();
     ArrayList<ArrayList<Carta>> juegos = new ArrayList<>();
     private int puedeBajar = 0;
     private int triosBajados;
@@ -21,30 +23,13 @@ public class Jugador implements Serializable, ifJugador {
         this.nombre = nombre;
     }
 
-    void resetMano() {
-        mano = new ArrayList<>();
-    }
-
-    void agregarCarta(Carta c) {
-        mano.add(c);
-    }
-
-    void moverCartaEnMano(int indCarta, int destino) {
-        Mano.moverCartaEnMano(mano, indCarta, destino);
-    }
-
     void incrementarPuedeBajar() {
         puedeBajar++;
     }
 
-    ArrayList<Carta> seleccionarCartasABajar(int[]
-                                               cartasABajar) {
-        return Mano.seleccionarCartasABajar(mano, cartasABajar);
-    }
-
     void bajarJuego(int[] cartasABajar, int tipoJuego) {
-        addJuego(seleccionarCartasABajar(cartasABajar), tipoJuego);
-        eliminarDeLaMano(juegos.get(juegos.size() - 1));
+        addJuego(mano.seleccionarCartasABajar(cartasABajar), tipoJuego);
+        mano.eliminarDeLaMano(juegos.get(juegos.size() - 1));
         if (tipoJuego == Comprobar.TRIO) {
             incrementarTriosBajados();
         } else if (tipoJuego == Comprobar.ESCALERA) {
@@ -57,12 +42,6 @@ public class Jugador implements Serializable, ifJugador {
             juegos.add(JuegoBajado.ordenarJuego(juego));
         } else {
             juegos.add(juego);
-        }
-    }
-
-    private void eliminarDeLaMano(ArrayList<Carta> cartasABajar) {
-        for(Carta c : cartasABajar) {
-            mano.remove(c);
         }
     }
 
@@ -113,20 +92,12 @@ public class Jugador implements Serializable, ifJugador {
         partidas.add(p);
     }
 
-    void resetJuegos() {
+    void resetFinRonda() {
         juegos = new ArrayList<>();
-    }
-
-    void setTriosBajados(int triosBajados) {
-        this.triosBajados = triosBajados;
-    }
-
-    void setEscalerasBajadas(int escalerasBajadas) {
-        this.escalerasBajadas = escalerasBajadas;
-    }
-
-    void setPuntosPartida(int puntosPartida) {
-        this.puntosPartida = puntosPartida;
+        triosBajados = 0;
+        escalerasBajadas = 0;
+        puedeBajar = 0;
+        mano.resetMano();
     }
 
     void setGanador(boolean ganador) {
@@ -173,7 +144,7 @@ public class Jugador implements Serializable, ifJugador {
         return puedeBajar;
     }
 
-    ArrayList<Carta> getMano() {
+    Mano getMano() {
         return mano;
     }
 

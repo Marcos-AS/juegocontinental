@@ -22,7 +22,7 @@ public class JuegoBajado {
     static int comprobarAcomodarEnTrio(ArrayList<Carta> juego,
                                                  int valorCarta) {
         int resp = Comprobar.JUEGO_INVALIDO;
-        boolean noBuscar = valorCarta == Carta.COMODIN;
+        boolean noBuscar = valorCarta == -1;
         if (noBuscar){
             resp = Comprobar.TRIO;
         } else {
@@ -30,7 +30,7 @@ public class JuegoBajado {
             Carta c;
             do {
                 c = juego.get(i);
-                noBuscar = c.getNumero() != Carta.COMODIN;
+                noBuscar = c.getNumero() != -1;
                 if (!noBuscar)
                     i++;
                 else {
