@@ -1,5 +1,7 @@
 package modelo;
 
+import java.io.Serializable;
+
 public class Carta implements ifCarta {
     private final int numero;
     private final Palo palo;

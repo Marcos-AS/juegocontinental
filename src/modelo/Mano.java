@@ -1,8 +1,9 @@
 package modelo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Mano {
+public class Mano implements Serializable {
     private ArrayList<Carta> mano = new ArrayList<>();
 
     void resetMano() {
@@ -43,7 +44,7 @@ public class Mano {
         }
     }
 
-    ArrayList<Carta> get() {
+    public ArrayList<Carta> get() {
         return mano;
     }
 }

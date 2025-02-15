@@ -1,19 +1,26 @@
 package modelo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
-
-import static modelo.Partida.*;
 
 public class Puntuacion {
     Map<Jugador, Integer> puntuacion;
     Jugador ganador = null;
-    private static Puntuacion instancia;
-    private Puntuacion() {}
 
-    public static Puntuacion getInstancia() {
-        if (instancia== null) instancia = new Puntuacion();
-        return instancia;
+    public Puntuacion(ArrayList<Jugador> jugadores) {
+        puntuacion = new HashMap<>();
+        for (Jugador j : jugadores) {
+            puntuacion.put(j,0);
+        }
+    }
+
+    public Jugador getGanador() {
+        return ganador;
+    }
+
+    int getPuntosGanador() {
+        return puntuacion.get(ganador);
     }
 
     void determinarGanador() {
@@ -28,7 +35,11 @@ public class Puntuacion {
     }
 
     void sumarPuntos(Jugador j) {
-        for (Carta c : m) {
+        final int PUNTOS_FIGURA = 10;
+        final int PUNTOS_AS = 20;
+        final int PUNTOS_COMODIN = 50;
+        int puntosPartida = 0;
+        for (Carta c : j.getMano().get()) {
             int num = c.getNumero();
             switch (num) {
                 case 1:
@@ -44,5 +55,6 @@ public class Puntuacion {
                     puntosPartida += num;
             }
         }
+        puntuacion.put(j, puntuacion.getOrDefault(j,0)+puntosPartida);
     }
 }

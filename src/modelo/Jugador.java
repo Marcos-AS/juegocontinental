@@ -3,89 +3,98 @@ package modelo;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import static modelo.Partida.*;
-
 public class Jugador implements Serializable, ifJugador {
     String nombre;
     private int numeroJugador;
-    private int puntosAlFinalizar;
     private final ArrayList<Partida> partidas = new ArrayList<>();
     private boolean turnoActual = false;
     private Mano mano = new Mano();
-    ArrayList<ArrayList<Carta>> juegos = new ArrayList<>();
-    private int puedeBajar = 0;
-    private int triosBajados;
-    private int escalerasBajadas;
-    int puntosPartida = 0;
-    private boolean ganador = false;
+    ArrayList<JuegoBajado> juegos = new ArrayList<>();
 
     Jugador(String nombre) {
         this.nombre = nombre;
     }
 
-    void incrementarPuedeBajar() {
-        puedeBajar++;
-    }
-
-    void bajarJuego(int[] cartasABajar, int tipoJuego) {
-        addJuego(mano.seleccionarCartasABajar(cartasABajar), tipoJuego);
-        mano.eliminarDeLaMano(juegos.get(juegos.size() - 1));
-        if (tipoJuego == Comprobar.TRIO) {
-            incrementarTriosBajados();
-        } else if (tipoJuego == Comprobar.ESCALERA) {
-            incrementarEscalerasBajadas();
-        }
-    }
-
-    private void addJuego(ArrayList<Carta> juego, int tipoJuego) {
-        if (tipoJuego == Comprobar.ESCALERA) {
-            juegos.add(JuegoBajado.ordenarJuego(juego));
-        } else {
-            juegos.add(juego);
-        }
-    }
-
-    private void incrementarEscalerasBajadas() {
-        escalerasBajadas++;
-    }
-
-    private void incrementarTriosBajados() {
-        triosBajados++;
+    private class Conteo {
+        int trios;
+        int escaleras;
     }
 
     int[] comprobarQueFaltaParaCortar(int ronda) {
+        Conteo conteo = new Conteo();
+        getTriosYEscalerasBajadas(conteo);
         int trios = 0;
         int escaleras = 0;
         int[] faltante = new int[2];
         switch (ronda) {
             case 1:
-                trios = 2 - triosBajados;
+                trios = 2 - conteo.trios;
                 break;
             case 2:
-                trios = 1 - triosBajados;
-                escaleras = 1 - escalerasBajadas;
+                trios = 1 - conteo.trios;
+                escaleras = 1 - conteo.escaleras;
                 break;
             case 3:
-                escaleras = 2 - escalerasBajadas;
+                escaleras = 2 - conteo.escaleras;
                 break;
             case 4:
-                trios = 3 - triosBajados;
+                trios = 3 - conteo.trios;
                 break;
             case 5:
-                trios = 2 - triosBajados;
-                escaleras = 1 - escalerasBajadas;
+                trios = 2 - conteo.trios;
+                escaleras = 1 - conteo.escaleras;
                 break;
             case 6:
-                trios = 1 - triosBajados;
-                escaleras = 2 - escalerasBajadas;
+                trios = 1 - conteo.trios;
+                escaleras = 2 - conteo.escaleras;
                 break;
             case 7:
-                escaleras = 3 - escalerasBajadas;
+                escaleras = 3 - conteo.escaleras;
                 break;
         }
         faltante[0] = trios;
         faltante[1] = escaleras;
         return faltante;
+    }
+
+    private void getTriosYEscalerasBajadas(Conteo conteo) {
+        for (JuegoBajado j : juegos) {
+            if (j.tipo==TipoJuego.TRIO) conteo.trios++;
+            else if (j.tipo==TipoJuego.ESCALERA) conteo.escaleras++;
+        }
+    }
+
+    boolean comprobarPosibleCorte(int ronda) {
+        int trios = 0, escaleras = 0;
+        Conteo conteo = new Conteo();
+        getTriosYEscalerasBajadas(conteo);
+        boolean puedeCortar = false;
+        switch (ronda) {
+            case 1:
+                puedeCortar = conteo.trios == 2;
+                break;
+            case 2:
+                puedeCortar = conteo.trios == 1 && conteo.escaleras == 1;
+                break;
+            case 3:
+                puedeCortar = conteo.escaleras == 2;
+                break;
+            case 4:
+                puedeCortar = conteo.trios == 3;
+                break;
+            case 5:
+                puedeCortar = conteo.trios == 2 && conteo.escaleras == 1;
+                break;
+            case 6:
+                puedeCortar = conteo.trios == 1 && conteo.escaleras == 2;
+                break;
+            case 7:
+                puedeCortar = conteo.escaleras == 3;
+                break;
+            default:
+                break;
+        }
+        return puedeCortar;
     }
 
     void sumarPartida(Partida p) {
@@ -94,34 +103,11 @@ public class Jugador implements Serializable, ifJugador {
 
     void resetFinRonda() {
         juegos = new ArrayList<>();
-        triosBajados = 0;
-        escalerasBajadas = 0;
-        puedeBajar = 0;
         mano.resetMano();
-    }
-
-    void setGanador(boolean ganador) {
-        this.ganador = ganador;
     }
 
     public String getNombre() {
         return nombre;
-    }
-
-    int getPuntosAlFinalizar() {
-        return puntosAlFinalizar;
-    }
-
-    void setPuntosAlFinalizar(int puntosAlFinalizar) {
-        this.puntosAlFinalizar = puntosAlFinalizar;
-    }
-
-    void setPuedeBajar(int puedeBajar) {
-        this.puedeBajar = puedeBajar;
-    }
-
-    boolean isGanador() {
-        return ganador;
     }
 
     void setTurnoActual(boolean turnoActual) {
@@ -140,27 +126,7 @@ public class Jugador implements Serializable, ifJugador {
         return numeroJugador;
     }
 
-    int getPuedeBajar() {
-        return puedeBajar;
-    }
-
     Mano getMano() {
         return mano;
-    }
-
-    ArrayList<ArrayList<Carta>> getJuegos() {
-        return juegos;
-    }
-
-    int getTriosBajados() {
-        return triosBajados;
-    }
-
-    int getEscalerasBajadas() {
-        return escalerasBajadas;
-    }
-
-    int getPuntosPartida() {
-        return puntosPartida;
     }
 }

@@ -5,14 +5,6 @@ import java.util.Random;
 
 public class Mazo {
     private ArrayList<Carta> mazo;
-    private static Mazo instancia;
-
-    private Mazo(){}
-
-    public static Mazo getInstancia() {
-        if (instancia==null) instancia = new Mazo();
-        return instancia;
-    }
 
     void iniciarMazo(int cantJugadores) {
         mazo = new ArrayList<>();

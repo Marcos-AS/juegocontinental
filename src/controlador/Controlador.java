@@ -1,8 +1,13 @@
 package controlador;
 
-import modelo.*;
-import vista.ifVista;
+import modelo.ifPartida;
+import modelo.ifCarta;
+import modelo.ifJugador;
+import modelo.Eventos;
+import modelo.Mano;
+import modelo.Carta;
 import static modelo.Eventos.*;
+import vista.ifVista;
 import rmimvc.src.cliente.IControladorRemoto;
 import rmimvc.src.observer.IObservableRemoto;
 import java.rmi.RemoteException;
@@ -86,8 +91,7 @@ public class Controlador implements IControladorRemoto {
                     break;
                 }
                 case NOTIFICACION_GANADOR: {
-                    String ganador = partida.getGanador().getNombre();
-                    vista.mostrarInfo(ganador + " es el ganador!");
+                    vista.mostrarInfo(partida.getGanador() + " es el ganador!");
                     break;
                 }
                 case NOTIFICACION_BAJO_JUEGO: {
@@ -114,7 +118,7 @@ public class Controlador implements IControladorRemoto {
             }
         }
         else if (o instanceof Mano mano) {
-            vista.actualizarManoJugador(enviarManoJugador((Mano)mano.get()));
+            vista.actualizarManoJugador(enviarManoJugador(mano.get()));
         }
     }
 
@@ -200,7 +204,7 @@ public class Controlador implements IControladorRemoto {
     }
 
     private void bajarJuegos(int numJugador) throws RemoteException {
-        int cantVecesQueBajo = partida.getPuedeBajar(numJugador);
+        int cantVecesQueBajo = partida.getCantJuegos(numJugador);
         if (cantVecesQueBajo == 0 || cantVecesQueBajo == 1) {
             bajarseYComprobarCortar(numJugador);
         } else {
@@ -279,7 +283,7 @@ public class Controlador implements IControladorRemoto {
         }
     }
 
-    private ArrayList<String> enviarManoJugador(ArrayList<ifCarta> mano)
+    private ArrayList<String> enviarManoJugador(ArrayList<Carta> mano)
             throws RemoteException {
         ArrayList<ifCarta> cs = new ArrayList<>(mano);
         return ifVista.cartasToStringArray(cs);

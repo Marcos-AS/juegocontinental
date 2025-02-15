@@ -1,30 +1,39 @@
 package modelo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class JuegoBajado {
-    static boolean acomodarCarta(ArrayList<ArrayList<Carta>> juegos,
-           Carta carta, int numJuego, int ronda) {
+public class JuegoBajado implements Serializable {
+    public ArrayList<Carta> juego;
+    public TipoJuego tipo;
+    private final ReglaJuego MISMO_PALO = new ReglaMismoPalo();
+
+    public JuegoBajado(ArrayList<Carta> juego, TipoJuego tipo) {
+        ArrayList<Carta> juegoOrdenado = new ArrayList<>();
+        if (tipo==TipoJuego.ESCALERA) {
+            juegoOrdenado = ordenarJuego(juego);
+        }
+        this.juego = juegoOrdenado;
+        this.tipo = tipo;
+    }
+
+    boolean acomodarCarta(Carta carta) {
         boolean acomodo;
-        ArrayList<Carta> juegoElegido = new ArrayList<>(juegos.get(numJuego));
         //necesito saber si el juego bajado es un trio o una escalera
-        if (Comprobar.comprobarJuego(juegoElegido, ronda) == Comprobar.TRIO) {
-            acomodo = comprobarAcomodarEnTrio(juegoElegido, carta.getNumero())
-                    == Comprobar.TRIO;
+        if (tipo == TipoJuego.TRIO) {
+            acomodo = comprobarAcomodarEnTrio(carta.getNumero());
         } else {
-            juegoElegido.add(carta);
-            acomodo = comprobarAcomodarEnEscalera(juegoElegido) == Comprobar.ESCALERA;
+            acomodo = comprobarAcomodarEnEscalera(carta);
         }
         return acomodo;
     }
 
-    static int comprobarAcomodarEnTrio(ArrayList<Carta> juego,
-                                                 int valorCarta) {
-        int resp = Comprobar.JUEGO_INVALIDO;
+    private boolean comprobarAcomodarEnTrio(int valorCarta) {
+        boolean resp = false;
         boolean noBuscar = valorCarta == -1;
         if (noBuscar){
-            resp = Comprobar.TRIO;
+            resp = true;
         } else {
             int i = 0;
             Carta c;
@@ -34,8 +43,7 @@ public class JuegoBajado {
                 if (!noBuscar)
                     i++;
                 else {
-                    if (c.getNumero() == valorCarta)
-                        resp = Comprobar.TRIO;
+                    resp = c.getNumero() == valorCarta;
                 }
             }
             while (!noBuscar && i < juego.size());
@@ -43,24 +51,23 @@ public class JuegoBajado {
         return resp;
     }
 
-    static int comprobarAcomodarEnEscalera(ArrayList<Carta> juego) {
-        int resp = Comprobar.JUEGO_INVALIDO;
-        if (Comprobar.comprobarMismoPalo(juego)) {
+    private boolean comprobarAcomodarEnEscalera(Carta c) {
+        boolean resp = false;
+        juego.add(c);
+        if (MISMO_PALO.esValido(juego)) {
             Carta cartaAcomodar = juego.get(juego.size()-1);
             Carta ultimaCarta = juego.get(juego.size()-2);
             Carta primeraCarta = juego.get(0);
             //valida si se acomoda la carta al final o al principio
-            if (cartaAcomodar.getNumero() == ultimaCarta.getNumero()+1 ||
-                    cartaAcomodar.getNumero() == primeraCarta.getNumero()-1) {
-                resp = Comprobar.ESCALERA;
-            }
+            resp = cartaAcomodar.getNumero() == ultimaCarta.getNumero()+1 ||
+                    cartaAcomodar.getNumero() == primeraCarta.getNumero()-1;
         }
         return resp;
     }
 
-    static ArrayList<Carta> ordenarJuego(ArrayList<Carta> juego) {
-        ArrayList<Carta> comodines = Comprobar.extraerComodines(juego);
-        Comprobar.ordenarCartas(juego);
+    private ArrayList<Carta> ordenarJuego(ArrayList<Carta> juego) {
+        ArrayList<Carta> comodines = ReglaJuego.extraerComodines(juego);
+        ReglaJuego.ordenarCartas(juego);
         ArrayList<Carta> juegoOrdenado = new ArrayList<>();
         int numCartaActual;
         int numCartaSiguiente;
