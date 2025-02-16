@@ -10,7 +10,7 @@ public class JuegoBajado implements Serializable {
     private final ReglaJuego MISMO_PALO = new ReglaMismoPalo();
 
     public JuegoBajado(ArrayList<Carta> juego, TipoJuego tipo) {
-        ArrayList<Carta> juegoOrdenado = new ArrayList<>();
+        ArrayList<Carta> juegoOrdenado = juego;
         if (tipo==TipoJuego.ESCALERA) {
             juegoOrdenado = ordenarJuego(juego);
         }
@@ -20,7 +20,6 @@ public class JuegoBajado implements Serializable {
 
     boolean acomodarCarta(Carta carta) {
         boolean acomodo;
-        //necesito saber si el juego bajado es un trio o una escalera
         if (tipo == TipoJuego.TRIO) {
             acomodo = comprobarAcomodarEnTrio(carta.getNumero());
         } else {

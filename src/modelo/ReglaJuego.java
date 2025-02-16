@@ -4,15 +4,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public interface ReglaJuego extends Serializable {
-    boolean esValido(ArrayList<Carta> juego);
+abstract class ReglaJuego implements Serializable {
+    abstract boolean esValido(ArrayList<Carta> juego);
 
     static ArrayList<Carta> extraerComodines(ArrayList<Carta> juego) {
         ArrayList<Carta> comodines = new ArrayList<>();
         Iterator<Carta> iterador = juego.iterator();
         while (iterador.hasNext()) {
             Carta c = iterador.next();
-            if (c.getPalo()==Palo.COMODIN) {
+            if (c.getPalo()== Carta.Palo.COMODIN) {
                 comodines.add(c);
                 iterador.remove();
             }

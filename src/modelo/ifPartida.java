@@ -5,9 +5,10 @@ import rmimvc.src.observer.IObservadorRemoto;
 import serializacion.Serializador;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Map;
 
 public interface ifPartida extends IObservableRemoto {
-    ArrayList<ArrayList<ifCarta>> getJuegos(int numJugador) throws RemoteException;
+    ArrayList<ArrayList<Carta>> getJuegos(int numJugador) throws RemoteException;
     boolean comprobarAcomodarAjeno(int numJugador, int numJugadorAcomodar,
                                    int numCarta, int numJuego) throws RemoteException;
     boolean comprobarAcomodarCartaPropio(int numJugador, int numCarta, int numJuego)
@@ -18,14 +19,13 @@ public interface ifPartida extends IObservableRemoto {
     int[] comprobarQueFaltaParaCortar(int numJugador) throws RemoteException;
     int getObservadorIndex(IObservadorRemoto o) throws RemoteException;
     Serializador getRanking() throws RemoteException;
-    ArrayList<Jugador> getJugadores() throws RemoteException;
+    int getCantJugadores() throws RemoteException;
     int getNumRonda() throws RemoteException;
     ifCarta getPozo() throws RemoteException;
-    Jugador getJugador(String nombreJugador) throws RemoteException;
+    int getNumeroJugador(String nombreJugador) throws RemoteException;
     int getNumTurno() throws RemoteException;
     int getNumJugadorRoboCastigo() throws RemoteException;
-    int getNumJugadorCorte() throws RemoteException;
-    int[] getPuntosJugadores() throws RemoteException;
+    Map<String, Integer> getPuntosJugadores() throws RemoteException;
     void actualizarMano(int numJugador) throws RemoteException;
     String getGanador() throws RemoteException;
     void crearYAgregarJugador(String nombre, int numObservador)
@@ -57,7 +57,7 @@ public interface ifPartida extends IObservableRemoto {
     boolean cargarPartida() throws RemoteException;
     ArrayList<String> getNombreJugadores() throws RemoteException;
     boolean agregarNombreElegido(String nombre) throws RemoteException;
-    void setJugadoresQuePuedenRobarConCastigo() throws RemoteException;
-
     int getCantJuegos(int numJugador) throws RemoteException;
+    void setJugadoresQuePuedenRobarConCastigo() throws RemoteException;
+    void iniciarPuntuacion() throws RemoteException;
 }

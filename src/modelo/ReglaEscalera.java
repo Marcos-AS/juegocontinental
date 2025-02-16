@@ -2,11 +2,11 @@ package modelo;
 
 import java.util.ArrayList;
 
-public class ReglaEscalera implements ReglaJuego{
+class ReglaEscalera extends ReglaJuego{
     private final ReglaJuego MISMO_PALO = new ReglaMismoPalo();
 
     @Override
-    public boolean esValido(ArrayList<Carta> juego) {
+    boolean esValido(ArrayList<Carta> juego) {
         boolean esEscalera = false;
         ArrayList<Carta> comodines = ReglaJuego.extraerComodines(juego);
         if (MISMO_PALO.esValido(juego)) {

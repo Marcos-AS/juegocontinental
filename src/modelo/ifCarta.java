@@ -3,6 +3,6 @@ package modelo;
 import java.io.Serializable;
 
 public interface ifCarta extends Serializable {
-    Palo getPalo();
+    Carta.Palo getPalo();
     int getNumero();
 }

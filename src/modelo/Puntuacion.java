@@ -3,8 +3,9 @@ package modelo;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-public class Puntuacion {
+class Puntuacion {
     Map<Jugador, Integer> puntuacion;
     Jugador ganador = null;
 
@@ -30,8 +31,12 @@ public class Puntuacion {
                 .orElse(null);
     }
 
-    int[] getPuntosJugadores() {
-        return puntuacion.values().stream().mapToInt(Integer::intValue).toArray();
+    Map<String, Integer> getPuntosJugadores() {
+        return puntuacion.entrySet().stream()
+                .collect(Collectors.toMap(
+                        entry -> entry.getKey().getNombre(),
+                        Map.Entry::getValue
+                ));
     }
 
     void sumarPuntos(Jugador j) {

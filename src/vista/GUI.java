@@ -682,11 +682,11 @@ public class GUI implements ifVista {
     }
 
     @Override
-    public void mostrarPuntosRonda(int[] puntos) throws RemoteException {
+    public void mostrarPuntosRonda(Map<String, Integer> puntos) {
         JPanel panelPuntuacion = panelMap.get("Puntos");
         StringBuilder puntuacion = new StringBuilder("<html>Puntuación<br>");
-        for (int i = 0; i < puntos.length; i++) {
-            puntuacion.append(ctrl.getJugador(i).getNombre()).append(": ").append(puntos[i]).append("<br>");
+        for (Map.Entry<String, Integer> entry : puntos.entrySet()) {
+            puntuacion.append(entry.getKey()).append(": ").append(entry.getValue()).append("<br>");
         }
 
         JLabel labelPuntos = new JLabel(String.valueOf(puntuacion));

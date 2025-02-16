@@ -3,7 +3,7 @@ package modelo;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Jugador implements Serializable, ifJugador {
+class Jugador implements Serializable {
     String nombre;
     private int numeroJugador;
     private final ArrayList<Partida> partidas = new ArrayList<>();
@@ -15,41 +15,36 @@ public class Jugador implements Serializable, ifJugador {
         this.nombre = nombre;
     }
 
-    private class Conteo {
-        int trios;
-        int escaleras;
-    }
-
     int[] comprobarQueFaltaParaCortar(int ronda) {
-        Conteo conteo = new Conteo();
-        getTriosYEscalerasBajadas(conteo);
+        int triosBajados = getTriosBajados();
+        int escalerasBajadas = getEscalerasBajadas();
         int trios = 0;
         int escaleras = 0;
         int[] faltante = new int[2];
         switch (ronda) {
             case 1:
-                trios = 2 - conteo.trios;
+                trios = 2 - triosBajados;
                 break;
             case 2:
-                trios = 1 - conteo.trios;
-                escaleras = 1 - conteo.escaleras;
+                trios = 1 - triosBajados;
+                escaleras = 1 - escalerasBajadas;
                 break;
             case 3:
-                escaleras = 2 - conteo.escaleras;
+                escaleras = 2 - escalerasBajadas;
                 break;
             case 4:
-                trios = 3 - conteo.trios;
+                trios = 3 - triosBajados;
                 break;
             case 5:
-                trios = 2 - conteo.trios;
-                escaleras = 1 - conteo.escaleras;
+                trios = 2 - triosBajados;
+                escaleras = 1 - escalerasBajadas;
                 break;
             case 6:
-                trios = 1 - conteo.trios;
-                escaleras = 2 - conteo.escaleras;
+                trios = 1 - triosBajados;
+                escaleras = 2 - escalerasBajadas;
                 break;
             case 7:
-                escaleras = 3 - conteo.escaleras;
+                escaleras = 3 - escalerasBajadas;
                 break;
         }
         faltante[0] = trios;
@@ -57,39 +52,47 @@ public class Jugador implements Serializable, ifJugador {
         return faltante;
     }
 
-    private void getTriosYEscalerasBajadas(Conteo conteo) {
+    private int getTriosBajados() {
+        int trios = 0;
         for (JuegoBajado j : juegos) {
-            if (j.tipo==TipoJuego.TRIO) conteo.trios++;
-            else if (j.tipo==TipoJuego.ESCALERA) conteo.escaleras++;
+            if (j.tipo==TipoJuego.TRIO) trios++;
         }
+        return trios;
+    }
+
+    private int getEscalerasBajadas() {
+        int escaleras = 0;
+        for (JuegoBajado j : juegos) {
+            if (j.tipo==TipoJuego.ESCALERA) escaleras++;
+        }
+        return escaleras;
     }
 
     boolean comprobarPosibleCorte(int ronda) {
-        int trios = 0, escaleras = 0;
-        Conteo conteo = new Conteo();
-        getTriosYEscalerasBajadas(conteo);
+        int trios = getTriosBajados();
+        int escaleras = getEscalerasBajadas();
         boolean puedeCortar = false;
         switch (ronda) {
             case 1:
-                puedeCortar = conteo.trios == 2;
+                puedeCortar = trios == 2;
                 break;
             case 2:
-                puedeCortar = conteo.trios == 1 && conteo.escaleras == 1;
+                puedeCortar = trios == 1 && escaleras == 1;
                 break;
             case 3:
-                puedeCortar = conteo.escaleras == 2;
+                puedeCortar = escaleras == 2;
                 break;
             case 4:
-                puedeCortar = conteo.trios == 3;
+                puedeCortar = trios == 3;
                 break;
             case 5:
-                puedeCortar = conteo.trios == 2 && conteo.escaleras == 1;
+                puedeCortar = trios == 2 && escaleras == 1;
                 break;
             case 6:
-                puedeCortar = conteo.trios == 1 && conteo.escaleras == 2;
+                puedeCortar = trios == 1 && escaleras == 2;
                 break;
             case 7:
-                puedeCortar = conteo.escaleras == 3;
+                puedeCortar = escaleras == 3;
                 break;
             default:
                 break;

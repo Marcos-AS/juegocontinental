@@ -2,10 +2,10 @@ package modelo;
 
 import java.util.ArrayList;
 
-public class ReglaTrio implements ReglaJuego {
+class ReglaTrio extends ReglaJuego {
 
     @Override
-    public boolean esValido(ArrayList<Carta> juego) {
+    boolean esValido(ArrayList<Carta> juego) {
         int formaTrio = 1;
         //igual a false, lo pongo en numero para despues saber si es una escalera o un trio
         boolean esTrio;

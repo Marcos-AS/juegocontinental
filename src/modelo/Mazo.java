@@ -3,7 +3,7 @@ package modelo;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Mazo {
+class Mazo {
     private ArrayList<Carta> mazo;
 
     void iniciarMazo(int cantJugadores) {
@@ -12,15 +12,15 @@ public class Mazo {
         int i = 0;
         while(i < numBarajas) {
             for(int j = 1; j < 14; j++)
-                mazo.add(new Carta(j, Palo.PICAS));
+                mazo.add(new Carta(j, Carta.Palo.PICAS));
             for(int j = 1; j < 14; j++)
-                mazo.add(new Carta(j, Palo.DIAMANTES));
+                mazo.add(new Carta(j, Carta.Palo.DIAMANTES));
             for(int j = 1; j < 14; j++)
-                mazo.add(new Carta(j, Palo.TREBOL));
+                mazo.add(new Carta(j, Carta.Palo.TREBOL));
             for(int j = 1; j < 14; j++)
-                mazo.add(new Carta(j, Palo.CORAZONES));
+                mazo.add(new Carta(j, Carta.Palo.CORAZONES));
             for(int j = 0; j < 2; j++)
-                mazo.add(new Carta(-1, Palo.COMODIN));
+                mazo.add(new Carta(-1, Carta.Palo.COMODIN));
             i++;
         }
         mezclarCartas();
@@ -59,41 +59,40 @@ public class Mazo {
         }
     }
 
-    public static void repartirCartasPrueba(ArrayList<Jugador> jugadoresActuales,
-                                            int numRonda, ArrayList<Carta> mazo) {
-        for (Jugador j : jugadoresActuales) {
+    void repartirCartasPrueba(ArrayList<Jugador> jugadores, int numRonda) {
+        for (Jugador j : jugadores) {
             switch (numRonda) {
                 case 1:
-                    asignarTrio(j, mazo);
-                    asignarTrio(j, mazo);
+                    asignarTrio(j);
+                    asignarTrio(j);
                     break;
                 case 2:
-                    asignarTrio(j, mazo);
-                    asignarEscalera(j, mazo);
+                    asignarTrio(j);
+                    asignarEscalera(j);
                     break;
                 case 3:
-                    asignarEscalera(j, mazo);
-                    asignarEscalera(j, mazo);
+                    asignarEscalera(j);
+                    asignarEscalera(j);
                     break;
                 case 4:
-                    asignarTrio(j, mazo);
-                    asignarTrio(j, mazo);
-                    asignarTrio(j, mazo);
+                    asignarTrio(j);
+                    asignarTrio(j);
+                    asignarTrio(j);
                     break;
                 case 5:
-                    asignarTrio(j, mazo);
-                    asignarTrio(j, mazo);
-                    asignarEscalera(j, mazo);
+                    asignarTrio(j);
+                    asignarTrio(j);
+                    asignarEscalera(j);
                     break;
                 case 6:
-                    asignarTrio(j, mazo);
-                    asignarEscalera(j, mazo);
-                    asignarEscalera(j, mazo);
+                    asignarTrio(j);
+                    asignarEscalera(j);
+                    asignarEscalera(j);
                     break;
                 case 7:
-                    asignarEscalera(j, mazo);
-                    asignarEscalera(j, mazo);
-                    asignarEscalera(j, mazo);
+                    asignarEscalera(j);
+                    asignarEscalera(j);
+                    asignarEscalera(j);
                     break;
                 default:
                     throw new IllegalArgumentException("Ronda no válida: " + numRonda);
@@ -102,7 +101,7 @@ public class Mazo {
     }
 
     //para función de prueba
-    private static void asignarTrio(Jugador j, ArrayList<Carta> mazo) {
+    private void asignarTrio(Jugador j) {
         // Elegir un valor aleatorio para el trío (1 a 13)
         int valorTrio = (int) (Math.random() * 13) + 1;
 
@@ -122,8 +121,8 @@ public class Mazo {
     }
 
     //para función de prueba
-    private static void asignarEscalera(Jugador jugador, ArrayList<Carta> mazo) {
-        for (Palo palo : Palo.values()) {
+    private void asignarEscalera(Jugador jugador) {
+        for (Carta.Palo palo : Carta.Palo.values()) {
             for (int i = 1; i <= 10; i++) {
                 ArrayList<Carta> escalera = new ArrayList<>();
                 for (int j = 0; j < 4; j++) {

@@ -539,11 +539,10 @@ public class VentanaConsola implements ifVista {
     }
 
     @Override
-    public void mostrarPuntosRonda(int[] puntos) throws RemoteException {
+    public void mostrarPuntosRonda(Map<String, Integer> puntos) throws RemoteException {
         StringBuilder s = new StringBuilder("<html>Puntuación<br>");
-        for (int i = 0; i < puntos.length; i++) {
-            s.append(ctrl.getJugador(i).getNombre())
-                            .append(": ").append(puntos[i]).append("<br>");
+        for (Map.Entry<String, Integer> entry : puntos.entrySet()) {
+            s.append(entry.getKey()).append(": ").append(entry.getValue()).append("<br>");
         }
         JLabel labelPuntos = new JLabel(String.valueOf(s));
         JPanel panelPuntuacion = panelMap.get("Puntuacion");

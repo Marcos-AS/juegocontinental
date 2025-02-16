@@ -4,6 +4,7 @@ import controlador.Controlador;
 import modelo.ifCarta;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Map;
 
 public interface ifVista {
     String ELECCION_ROBAR_DEL_MAZO = "1";
@@ -184,7 +185,7 @@ public interface ifVista {
     boolean preguntarSiQuiereSeguirBajandoJuegos();
     int[] preguntarQueBajarParaJuego();
     int preguntarQueBajarParaPozo();
-    void mostrarPuntosRonda(int[] puntos) throws RemoteException;
+    void mostrarPuntosRonda(Map<String, Integer> puntos) throws RemoteException;
     void iniciar() throws RemoteException;
     boolean preguntarInputRobarCastigo() throws RemoteException;
     String preguntarInputRobar();
