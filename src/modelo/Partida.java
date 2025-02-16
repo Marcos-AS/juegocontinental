@@ -6,6 +6,9 @@ import serializacion.Serializador;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import static modelo.Eventos.*;
 import static modelo.TipoJuego.ESCALERA;
 import static modelo.TipoJuego.TRIO;
@@ -284,7 +287,17 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
         jugadores.get(numTurno).getMano().agregarCarta(mazo.sacarPrimeraDelMazo()); //robo del mazo
         actualizarMano(numTurno);
         if (pozo!=null) {
-            notificarRoboConCastigo(numTurno);
+            notificarObservador(numTurno, NOTIFICACION_ESPERA);
+            ExecutorService executorService = Executors.newSingleThreadExecutor();
+            executorService.execute(() -> {
+                try {
+                    notificarRoboConCastigo(numTurno);
+                    notificarObservador(numTurno, NOTIFICACION_TERMINA_ESPERA);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            executorService.shutdown();
         }
     }
 

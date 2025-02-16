@@ -1,6 +1,5 @@
 package vista;
 
-import controlador.Controlador;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -8,29 +7,17 @@ import java.awt.event.MouseEvent;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
 
 //import java.util.UUID; //prueba
-public class GUI implements ifVista {
-    private Controlador ctrl;
-    private String nombreVista;
-    private final JFrame frame = new JFrame("El Continental");
-    private final Color fondoPanelMesa = new Color(81, 206, 81);
-    private int manoSize;
-    private int ronda;
+public class GUI extends ifVista {
     private ArrayList<String> mano;
-    private CardLayout cardLayout;
-    private JPanel cardPanel;
-    private Map<String, JPanel> panelMap;
-    private Map<String, JButton> buttonMap;
-    private boolean guardarYSalir = false;
 
     @Override
     public void iniciar() {
         frame.setSize(800,800);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setIconImage(new ImageIcon(ifVista.asociarRuta("cartas_inicio")).getImage());
+        frame.setIconImage(new ImageIcon(asociarRuta("cartas_inicio")).getImage());
 
         cardLayout = new CardLayout();
         frame.setLayout(cardLayout);
@@ -67,7 +54,7 @@ public class GUI implements ifVista {
         panelMesa.add(panelPuntos, BorderLayout.EAST);
         panelMesa.add(panelRestricciones, BorderLayout.PAGE_END);
         panelMesa.add(panelTurno, BorderLayout.PAGE_END);
-        panelMesa.setBackground(fondoPanelMesa);
+        panelMesa.setBackground(new Color(81, 206, 81));
 
         cardPanel.add(panelMenu, "Menu");
         cardPanel.add(panelMesa, "Mesa");
@@ -79,7 +66,7 @@ public class GUI implements ifVista {
         panelMap.put("Mano", panelMano);
         panelMap.put("infoRonda", panelInfoRonda);
         panelMap.put("Restricciones", panelRestricciones);
-        panelMap.put("Puntos", panelPuntos);
+        panelMap.put("Puntuacion", panelPuntos);
         panelMap.put("Turno", panelTurno);
 
         inicializarMenu();
@@ -189,10 +176,9 @@ public class GUI implements ifVista {
         acomodarPropioBoton.setEnabled(false);
         acomodarAjenoBoton.setEnabled(false);
         ordenarBoton.setEnabled(false);
-        guardarYSalir.setEnabled(false);
 
         bajarJuegoBoton.addActionListener(e -> {
-            ctrl.switchMenuBajar(ifVista.ELECCION_BAJARSE);
+            ctrl.switchMenuBajar(ELECCION_BAJARSE);
             if (!ctrl.isTurnoActual()) {
                 activarBotonesBajar(false);
                 ctrl.finTurno();
@@ -219,16 +205,15 @@ public class GUI implements ifVista {
             }.execute();
         });
 
-        acomodarPropioBoton.addActionListener(e -> ctrl.switchMenuBajar(ifVista.ELECCION_ACOMODAR_JUEGO_PROPIO));
+        acomodarPropioBoton.addActionListener(e -> ctrl.switchMenuBajar(ELECCION_ACOMODAR_JUEGO_PROPIO));
 
-        acomodarAjenoBoton.addActionListener(e -> ctrl.switchMenuBajar(ifVista.ELECCION_ACOMODAR_JUEGO_AJENO));
+        acomodarAjenoBoton.addActionListener(e -> ctrl.switchMenuBajar(ELECCION_ACOMODAR_JUEGO_AJENO));
 
-        ordenarBoton.addActionListener(e -> ctrl.switchMenuBajar(ifVista.ELECCION_ORDENAR_CARTAS));
+        ordenarBoton.addActionListener(e -> ctrl.switchMenuBajar(ELECCION_ORDENAR_CARTAS));
 
         guardarYSalir.addActionListener(e -> {
             ctrl.guardarPartida();
-            setGuardarYSalir();
-            ctrl.salirAlMenu();
+            salirAlMenu();
         });
 
         JPanel panelBotones = new JPanel();
@@ -246,7 +231,12 @@ public class GUI implements ifVista {
         buttonMap.put("ordenar", ordenarBoton);
         buttonMap.put("guardar", guardarYSalir);
 
+        panelMap.put("botones", panelBotones);
         panelMesa.add(panelBotones, BorderLayout.SOUTH);
+    }
+
+    String asociarRuta(String carta) {
+        return "src/vista/cartas/" + carta + ".png";
     }
 
     private JButton addPozo() {
@@ -279,7 +269,6 @@ public class GUI implements ifVista {
                 return;
             }
             boton.setEnabled(false);
-            buttonMap.get("guardar").setEnabled(false);
             robarCarta(origen);
         }
     }
@@ -297,11 +286,9 @@ public class GUI implements ifVista {
         activarBotonesBajar(true);
     }
 
-    //IMPLEMENTACIÓN DE IFVISTA ---------------------------------------------------
-
     @Override
     public void cambioTurno() {
-        if (!guardarYSalir && ctrl.isPartidaEnCurso()) {
+        if (ctrl.isPartidaEnCurso()) {
             String nombre = ctrl.getTurnoDe();
             if (nombre.equals(nombreVista)) {
                 buttonMap.get("cartaPozo").setEnabled(true);
@@ -359,21 +346,8 @@ public class GUI implements ifVista {
     }
 
     private void setImage(JButton cartaPozo, String rutaImagen) {
-        ImageIcon imagen = new ImageIcon(ifVista.asociarRuta(rutaImagen));
+        ImageIcon imagen = new ImageIcon(asociarRuta(rutaImagen));
         cartaPozo.setIcon(new ImageIcon(imagen.getImage().getScaledInstance(80, 120, Image.SCALE_SMOOTH)));
-    }
-
-    @Override
-    public void comienzoRonda(int ronda) {
-        this.ronda = ronda;
-        JLabel label = new JLabel(ifVista.mostrarCombinacionRequerida(ronda));
-        JPanel panelInfoRonda = panelMap.get("infoRonda");
-        panelInfoRonda.removeAll();
-        panelInfoRonda.add(label);
-        panelInfoRonda.revalidate();
-        panelInfoRonda.repaint();
-        JButton guardarYSalir = buttonMap.get("guardar");
-        guardarYSalir.setEnabled(true);
     }
 
     @Override
@@ -386,12 +360,8 @@ public class GUI implements ifVista {
         panelJuegos.repaint();
     }
 
-    private void setGuardarYSalir() {
-        this.guardarYSalir = true;
-    }
-
     private JButton getImageButton(String carta) {
-        ImageIcon imagen = new ImageIcon(ifVista.asociarRuta(carta));
+        ImageIcon imagen = new ImageIcon(asociarRuta(carta));
 
         MediaTracker tracker = new MediaTracker(new JLabel());
         tracker.addImage(imagen.getImage(), 0);
@@ -410,11 +380,6 @@ public class GUI implements ifVista {
     }
 
     @Override
-    public String preguntarInputRobar() {
-        return "1";
-    }
-
-    @Override
     public int menuBajar() {
         activarBotonesBajar(true);
         return 0;
@@ -426,18 +391,6 @@ public class GUI implements ifVista {
         buttonMap.get("acomodarPropio").setEnabled(activar);
         buttonMap.get("acomodarAjeno").setEnabled(activar);
         buttonMap.get("ordenar").setEnabled(activar);
-    }
-
-    @Override
-    public void actualizarRestricciones(boolean restriccion) {
-        JPanel panelRestricciones = panelMap.get("Restricciones");
-        panelRestricciones.removeAll();
-        if (restriccion) {
-            Label label = new Label("Ya no puede robar con castigo y sólo puede bajar para cortar");
-            panelRestricciones.add(label);
-        }
-        panelRestricciones.revalidate();
-        panelRestricciones.repaint();
     }
 
     private int seleccionarUnaCarta(String tituloDialogo) {
@@ -526,28 +479,6 @@ public class GUI implements ifVista {
         panelJuegos.add(panelJuegosJugador);
         panelJuegos.revalidate();
         panelJuegos.repaint();
-    }
-
-    @Override
-    public void setControlador(Controlador ctrl) {
-        this.ctrl = ctrl;
-    }
-
-    @Override
-    public String preguntarInput(String mensaje) {
-        String resp;
-        do {
-            resp = JOptionPane.showInputDialog(frame, mensaje, "Entrada", JOptionPane.QUESTION_MESSAGE);
-        } while (!validarEntrada(resp));
-        return resp;
-    }
-
-    private boolean validarEntrada(String resp) {
-        if (resp == null || resp.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(frame, "La entrada no puede estar vacía.", "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-        return true;
     }
 
     @Override
@@ -646,6 +577,32 @@ public class GUI implements ifVista {
         buttonMap.get("botonCargar").setEnabled(true);
     }
 
+    @Override
+    public void esperarRoboCastigo() {
+        SwingUtilities.invokeLater(()-> {
+            JPanel panel = panelMap.get("pozoYMazo");
+            JLabel label = new JLabel("Espere mientras los demás jugadores pueden robar con castigo");
+            panel.add(label);
+            panel.revalidate();
+            panel.repaint();
+            activarBotonesBajar(false);
+        });
+    }
+
+    @Override
+    public void terminaEsperaRoboCastigo() {
+        activarBotonesBajar(true);
+        JPanel panel = panelMap.get("pozoYMazo");
+        for (Component comp : panel.getComponents()) {
+            if (comp instanceof JLabel) {
+                panel.remove(comp);
+                panel.revalidate();
+                panel.repaint();
+                break;
+            }
+        }
+    }
+
     private int preguntarCantParaBajar() {
         JDialog dialogo = new JDialog((JFrame) SwingUtilities.getWindowAncestor(cardPanel), "Seleccionar cantidad de cartas", true);
         dialogo.setLayout(new FlowLayout());
@@ -673,7 +630,8 @@ public class GUI implements ifVista {
         panelBotones.add(botonTres);
         panelBotones.add(botonCuatro);
         if (manoSize<4) botonCuatro.setEnabled(false);
-        if (this.ronda == 3 || this.ronda == 7) botonTres.setEnabled(false);
+        int ronda = ctrl.getNumRonda();
+        if (ronda == 3 || ronda == 7) botonTres.setEnabled(false);
         dialogo.add(panelBotones, BorderLayout.CENTER);
 
         dialogo.setVisible(true);
@@ -681,42 +639,8 @@ public class GUI implements ifVista {
         return cantidadSeleccionada[0];
     }
 
-    @Override
-    public void mostrarPuntosRonda(Map<String, Integer> puntos) {
-        JPanel panelPuntuacion = panelMap.get("Puntos");
-        StringBuilder puntuacion = new StringBuilder("<html>Puntuación<br>");
-        for (Map.Entry<String, Integer> entry : puntos.entrySet()) {
-            puntuacion.append(entry.getKey()).append(": ").append(entry.getValue()).append("<br>");
-        }
-
-        JLabel labelPuntos = new JLabel(String.valueOf(puntuacion));
-        panelPuntuacion.removeAll();
-        panelPuntuacion.add(labelPuntos);
-        panelPuntuacion.revalidate();
-        panelPuntuacion.repaint();
-    }
-
-    @Override
-    public int getNumJugadorAcomodar() {
-        return Integer.parseInt(preguntarInput("Ingresa el número de jugador en cuyos" +
-                " juegos bajados quieres acomodar: "))-1;
-    }
-
-    @Override
-    public String getNombreVista() {
-        return nombreVista;
-    }
-
-    private void setNombreVista() {
-        nombreVista = preguntarInput("Indique su nombre: ");
-    }
 //        this.nombreVista = UUID.randomUUID().toString()
 //                .replace("-", "").substring(0, 10);//prueba
-
-    @Override
-    public String getCartasString(ArrayList<String> cartas) {
-        return String.join(", ", cartas);
-    }
 
     @Override
     public int[] preguntarParaOrdenarCartas() {
@@ -743,28 +667,6 @@ public class GUI implements ifVista {
     }
 
     @Override
-    public void mostrarAcomodoCarta(String nombre) {
-        mostrarInfo("Se acomodó la carta en el juego.");
-    }
-
-    @Override
-    public void mostrarInfo(String s) {
-        String titulo;
-        if (nombreVista!=null) {
-            titulo = "Jugador: " + nombreVista;
-        } else {
-            titulo = "";
-        }
-        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(frame, s, titulo, JOptionPane.INFORMATION_MESSAGE));
-    }
-
-
-    @Override
-    public String preguntarInputMenu(String s) {
-        return preguntarInput(s);
-    }
-
-    @Override
     public boolean preguntarSiQuiereSeguirBajandoJuegos() {
         int opcion = JOptionPane.showOptionDialog(
                 frame, //parent
@@ -778,11 +680,6 @@ public class GUI implements ifVista {
         );
 
         return opcion == JOptionPane.YES_OPTION;
-    }
-
-    @Override
-    public void setNumeroJugadorTitulo() {
-        frame.setTitle("El Continental - Jugador N°" + ctrl.getNumJugador(nombreVista) + ": " + nombreVista);
     }
 
     @Override

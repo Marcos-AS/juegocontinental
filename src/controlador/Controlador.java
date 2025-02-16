@@ -114,6 +114,14 @@ public class Controlador implements IControladorRemoto {
                     vista.finPartida();
                     break;
                 }
+                case NOTIFICACION_ESPERA: {
+                    vista.esperarRoboCastigo();
+                    break;
+                }
+                case NOTIFICACION_TERMINA_ESPERA: {
+                    vista.terminaEsperaRoboCastigo();
+                    break;
+                }
             }
         }
         else if (o instanceof Mano mano) {
@@ -218,7 +226,7 @@ public class Controlador implements IControladorRemoto {
             }
             if(partida.comprobarAcomodarCartaPropio(numJugador, cartaAcomodar, numJuego)) {
                 partida.acomodarPropio(numJugador,cartaAcomodar,numJuego);
-                vista.mostrarAcomodoCarta(partida.getNombreJugador(numJugador));
+                vista.mostrarAcomodoCarta();
                 partida.notificarObservadores(NOTIFICACION_BAJO_JUEGO);
                 partida.actualizarMano(numJugador);
             } else {
@@ -245,9 +253,10 @@ public class Controlador implements IControladorRemoto {
             if (juegos.size()>1) {
                 numJuego = Integer.parseInt(vista.preguntarInput(ifVista.PREGUNTA_NUMERO_JUEGO)) - 1;
             }
-            if (partida.comprobarAcomodarAjeno(numJugador,numJugadorAcomodar,iCartaAcomodar,numJuego)) {
+            if (partida.comprobarAcomodarAjeno(numJugador,numJugadorAcomodar,
+                    iCartaAcomodar,numJuego)) {
                 partida.acomodarAjeno(numJugador,numJugadorAcomodar,iCartaAcomodar,numJuego);
-                vista.mostrarAcomodoCarta(partida.getNombreJugador(numJugadorAcomodar));
+                vista.mostrarAcomodoCarta();
                 partida.notificarObservadores(NOTIFICACION_BAJO_JUEGO);
                 partida.actualizarMano(numJugador);
             } else {
@@ -453,6 +462,14 @@ public class Controlador implements IControladorRemoto {
             int obsIndex = partida.getObservadorIndex(this);
             partida.setNumeroJugador(partida.getNumJugador(vista.getNombreVista()),obsIndex);
             return partida.agregarNombreElegido(nombre);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int getNumRonda() {
+        try {
+            return partida.getNumRonda();
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

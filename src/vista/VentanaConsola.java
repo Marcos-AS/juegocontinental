@@ -1,27 +1,15 @@
 package vista;
 
-import controlador.Controlador;
 import javax.swing.*;
 import java.awt.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class VentanaConsola implements ifVista {
-    private Controlador ctrl;
-    private String nombreVista;
-    private final JFrame frame = new JFrame("El Continental");
-    private Map<String, JPanel> panelMap;
-    private Map<String, JButton> buttonMap;
-    private int manoSize;
-    private CardLayout cardLayout;
-    private JPanel cardPanel;
-    private int partidaIniciada = 0;
-    private final ExecutorService executor = Executors.newFixedThreadPool(1);
+public class VentanaConsola extends ifVista {
 
     @Override
     public void iniciar() {
@@ -45,13 +33,13 @@ public class VentanaConsola implements ifVista {
 
         JPanel panelMesa = new JPanel();
         panelMesa.setLayout(new BoxLayout(panelMesa, BoxLayout.Y_AXIS));
+        panelMesa.add(panelMano);
         panelMesa.add(panelTurno);
         panelMesa.add(panelPuntuacion);
         panelMesa.add(panelInfoRonda);
         panelMesa.add(panelPozo);
-        panelMesa.add(panelMano);
-        panelMesa.add(panelJuegos);
         panelMesa.add(panelRestricciones);
+        panelMesa.add(panelJuegos);
 
         cardPanel.add(panelMesa, "Mesa");
         cardPanel.add(panelMenu, "Menu");
@@ -66,7 +54,6 @@ public class VentanaConsola implements ifVista {
         panelMap.put("Restricciones", panelRestricciones);
         panelMap.put("Turno", panelTurno);
 
-        if (ctrl.isPartidaEnCurso()) partidaIniciada++;
         opcionesIniciales();
         frame.add(cardPanel);
         cardLayout.show(cardPanel, "Menu");
@@ -80,12 +67,10 @@ public class VentanaConsola implements ifVista {
         panelMenu.removeAll();
         panelMenu.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
         String mostrar = MENU_INICIAR;
-        if (partidaIniciada == 0) {
+        if (!ctrl.isPartidaEnCurso()) {
             mostrar += "Aún no hay una partida creada. Seleccione la opción 'Crear partida'";
-        } else if (partidaIniciada == 1) {
+        } else {
             mostrar += "\nYA HAY UNA PARTIDA INICIADA";
-        } else if (partidaIniciada > 1) {
-            mostrar += "\nYA HAY UNA PARTIDA INICIADA Y NO PUEDE CREARSE UNA NUEVA";
         }
         JLabel labelMenu = new JLabel(mostrar);
         panelMenu.add(labelMenu);
@@ -97,13 +82,11 @@ public class VentanaConsola implements ifVista {
 
     @Override
     public void nuevaPartida() {
-        partidaIniciada++;
         opcionesIniciales();
     }
 
     @Override
     public void finPartida() {
-        partidaIniciada = 0;
         opcionesIniciales(); //cambio a partidaIniciada antes para mostrar de vuelta
         JPanel panelMenu = panelMap.get("Menu");
         JButton botonJugar = new JButton("Jugar otra partida");
@@ -145,7 +128,6 @@ public class VentanaConsola implements ifVista {
                         }
                         ctrl.crearPartida(preguntarCantJugadoresPartida());
                     } else {
-                        partidaIniciada++;
                         opcionesIniciales();
                     }
                     break;
@@ -174,7 +156,7 @@ public class VentanaConsola implements ifVista {
                     break;
                 }
                 case ELECCION_REGLAS: {
-                    mostrarInfo(ifVista.REGLAS);
+                    mostrarInfo(REGLAS);
                     break;
                 }
                 case ELECCION_SALIR: {
@@ -202,12 +184,13 @@ public class VentanaConsola implements ifVista {
         //return 2;//prueba
     }
 
-    private void setNombreVista() {
-        nombreVista = preguntarInput("Indica tu nombre: ");
-        frame.setTitle("Mesa - " + nombreVista);
-    }
     //        nombreVista = UUID.randomUUID().toString()
     //                .replace("-", "").substring(0, 10);
+
+    boolean isRespAfirmativa(String eleccion) {
+        String e = eleccion.toLowerCase();
+        return e.equals("si") || eleccion.equals("s");
+    }
 
     @Override
     public void cambioTurno() {
@@ -223,13 +206,14 @@ public class VentanaConsola implements ifVista {
                 CountDownLatch latch = new CountDownLatch(1);
                 try {
                     SwingUtilities.invokeLater(() -> {
-                        ctrl.desarrolloRobo(preguntarInputRobar());
+                        ctrl.desarrolloRobo(preguntarInput(MENU_ROBAR));
                         latch.countDown();
                     });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
+                ExecutorService executor = Executors.newSingleThreadExecutor();
                 executor.submit(() -> {
                     try {
                         latch.await();
@@ -244,6 +228,7 @@ public class VentanaConsola implements ifVista {
                         ctrl.cambioTurno();
                     }
                 });
+                executor.shutdown();
             } else {
                 JPanel panelTurno = panelMap.get("Turno");
                 panelTurno.removeAll();
@@ -289,79 +274,6 @@ public class VentanaConsola implements ifVista {
         panelPozo.revalidate();
     }
 
-    @Override
-    public void comienzoRonda(int ronda) {
-        JPanel panelInfoRonda = panelMap.get("infoRonda");
-        JLabel label = new JLabel(ifVista.mostrarCombinacionRequerida(ronda));
-        panelInfoRonda.removeAll();
-        panelInfoRonda.add(label);
-        panelInfoRonda.revalidate();
-        panelInfoRonda.repaint();
-    }
-
-    @Override
-    public void actualizarRestricciones(boolean restriccion) {
-        JPanel panelRestricciones = panelMap.get("Restricciones");
-        panelRestricciones.removeAll();
-        if (restriccion) {
-            Label label = new Label("Ya no puede robar con castigo y no puede volver a bajar en esta mano");
-            panelRestricciones.add(label);
-        }
-            panelRestricciones.revalidate();
-            panelRestricciones.repaint();
-    }
-
-    @Override
-    public void setNumeroJugadorTitulo() {
-        frame.setTitle("Mesa - Jugador N°" + ctrl.getNumJugador(nombreVista) + ": " + nombreVista);
-    }
-
-    @Override
-    public void salirAlMenu() {
-
-    }
-
-    @Override
-    public void elegirJugador(ArrayList<String> nombreJugadores) {
-    }
-
-    @Override
-    public void mostrarInfo(String s) {
-        String titulo = "Aviso";
-        if (nombreVista!= null) {
-            titulo += " - Jugador: " + nombreVista;
-        }
-        String finalTitulo = titulo;
-        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, s,
-                finalTitulo, JOptionPane.INFORMATION_MESSAGE)
-        );
-    }
-
-    @Override
-    public String preguntarInput(String s) {
-        String resp;
-        do
-            resp = JOptionPane.showInputDialog(null, s,nombreVista,JOptionPane.QUESTION_MESSAGE);
-        while (validarEntrada(resp));
-        return resp;
-    }
-
-    private boolean validarEntrada(String resp) {
-        boolean invalida = false;
-        // si el usuario cerró el diálogo o presionó "Cancelar"
-        if (resp == null) {
-            JOptionPane.showMessageDialog(null, "No se puede cancelar esta entrada. Por favor, ingresa un valor.", "Error", JOptionPane.ERROR_MESSAGE);
-            invalida = true;
-        }
-
-        // Validar si la entrada está vacía o solo contiene espacios en blanco
-        else if (resp.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "La entrada no puede estar vacía. Intenta de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
-            invalida = true;
-        }
-        return invalida;
-    }
-
     private String getRankingString(Object[] ranking) {
         StringBuilder s = new StringBuilder("Ranking de mejores jugadores: \n");
         int i = 1;
@@ -373,50 +285,15 @@ public class VentanaConsola implements ifVista {
     }
 
     @Override
-    public void setControlador(Controlador ctrl) {
-        this.ctrl = ctrl;
-    }
-
-    @Override
-    public int getNumJugadorAcomodar() {
-        return Integer.parseInt(preguntarInput("Ingresa el número de jugador en cuyos" +
-                        " juegos bajados quieres acomodar: "));
-    }
-
-    @Override
-    public String preguntarInputMenu(String s) {
-        String resp;
-        do
-            resp = JOptionPane.showInputDialog(null, s,nombreVista,JOptionPane.QUESTION_MESSAGE);
-        while (validarEntrada(resp));
-        return resp;
-    }
-
-    @Override
-    public String preguntarInputRobar() {
-        String resp;
-        do
-            resp = JOptionPane.showInputDialog(null, ifVista.MENU_ROBAR,nombreVista,JOptionPane.QUESTION_MESSAGE);
-        while (validarEntrada(resp));
-        return resp;
-    }
-
-    @Override
     public boolean preguntarInputRobarCastigo() {
         String resp;
         do
-            resp = JOptionPane.showInputDialog(null, ifVista.PREGUNTA_ROBAR_CASTIGO,nombreVista,JOptionPane.QUESTION_MESSAGE);
-        while (validarEntrada(resp));
-        return ifVista.isRespAfirmativa(resp);
+            resp = JOptionPane.showInputDialog(null, PREGUNTA_ROBAR_CASTIGO,nombreVista,JOptionPane.QUESTION_MESSAGE);
+        while (!entradaValida(resp));
+        return isRespAfirmativa(resp);
     }
 
-    @Override
-    public String getNombreVista() {
-        return nombreVista;
-    }
-
-    @Override
-    public String getCartasString(ArrayList<String> cartas) {
+    private String getCartasString(ArrayList<String> cartas) {
         int i = 1;
         StringBuilder s = new StringBuilder();
         for (String carta : cartas) {
@@ -442,14 +319,14 @@ public class VentanaConsola implements ifVista {
         int cantCartas = manoSize;
         while (cartaSeleccion < 0 || cartaSeleccion > cantCartas - 1) {
             cartaSeleccion = Integer.parseInt(
-                    preguntarInputMenu("Elije el número de carta que quieres mover: "))-1;
+                    preguntarInput("Elije el número de carta que quieres mover: "))-1;
         }
         elecciones[0] = cartaSeleccion;
 
         cartaSeleccion = -1;
         while (cartaSeleccion < 0 || cartaSeleccion > cantCartas - 1) {
             cartaSeleccion = Integer.parseInt(
-                    preguntarInputMenu("Elije el número de destino al que quieres" +
+                    preguntarInput("Elije el número de destino al que quieres" +
                             " mover la carta: "))-1;
         }
         elecciones[1] = cartaSeleccion;
@@ -459,13 +336,8 @@ public class VentanaConsola implements ifVista {
     @Override
     public int preguntarCartaParaAcomodar() {
         return Integer.parseInt(
-                preguntarInputMenu("Indica el número de carta que quieres acomodar" +
+                preguntarInput("Indica el número de carta que quieres acomodar" +
                         " en un juego"));
-    }
-
-    @Override
-    public void mostrarAcomodoCarta(String nombre) {
-        mostrarInfo("Se acomodó la carta en el juego.");
     }
 
     @Override
@@ -478,7 +350,8 @@ public class VentanaConsola implements ifVista {
         }
         else {
             for (ArrayList<String> juego : juegos) {
-                mostrar.append("Juego N° ").append(numJuego).append(": <br>").append(getCartasString(juego)).append("<br>");
+                mostrar.append("Juego N° ").append(numJuego).append(": <br>")
+                    .append(getCartasString(juego)).append("<br>");
                 numJuego++;
             }
         }
@@ -500,8 +373,8 @@ public class VentanaConsola implements ifVista {
 
     @Override
     public boolean preguntarSiQuiereSeguirBajandoJuegos() {
-        String resp = preguntarInputMenu("Deseas bajar un juego? (Si/No)");
-        return ifVista.isRespAfirmativa(resp);
+        String resp = preguntarInput("Deseas bajar un juego? (Si/No)");
+        return isRespAfirmativa(resp);
     }
 
     @Override
@@ -510,7 +383,7 @@ public class VentanaConsola implements ifVista {
         int iCarta;
         for (int i = 0; i < cartasABajar.length; i++) {
             do {
-                iCarta = Integer.parseInt(preguntarInputMenu("Carta " + (i + 1) +
+                iCarta = Integer.parseInt(preguntarInput("Carta " + (i + 1) +
                         ":\nIndica el índice de la carta que quieres bajar: "))-1;
             } while (iCarta < 0 || iCarta >= manoSize);
             cartasABajar[i] = iCarta;
@@ -522,7 +395,7 @@ public class VentanaConsola implements ifVista {
         int numCartas = 0;
         while (numCartas > 4 || numCartas < 3) {
             numCartas = Integer.parseInt(
-                    preguntarInputMenu("Cuantas cartas quieres bajar para el juego? (3 o 4)"));
+                    preguntarInput("Cuantas cartas quieres bajar para el juego? (3 o 4)"));
         }
         return numCartas;
     }
@@ -530,25 +403,11 @@ public class VentanaConsola implements ifVista {
     @Override
     public int preguntarQueBajarParaPozo() {
         int eleccion = Integer.parseInt(
-                preguntarInputMenu("Indica el índice de carta para tirar al pozo: "))-1;
+                preguntarInput("Indica el índice de carta para tirar al pozo: "))-1;
         while (eleccion < 0 || eleccion >= manoSize) {
-            eleccion = Integer.parseInt(preguntarInputMenu("Ese índice es inválido." +
+            eleccion = Integer.parseInt(preguntarInput("Ese índice es inválido." +
                     " Vuelve a ingresar un índice de carta"))-1;
         }
         return eleccion;
-    }
-
-    @Override
-    public void mostrarPuntosRonda(Map<String, Integer> puntos) throws RemoteException {
-        StringBuilder s = new StringBuilder("<html>Puntuación<br>");
-        for (Map.Entry<String, Integer> entry : puntos.entrySet()) {
-            s.append(entry.getKey()).append(": ").append(entry.getValue()).append("<br>");
-        }
-        JLabel labelPuntos = new JLabel(String.valueOf(s));
-        JPanel panelPuntuacion = panelMap.get("Puntuacion");
-        panelPuntuacion.removeAll();
-        panelPuntuacion.add(labelPuntos);
-        panelPuntuacion.revalidate();
-        panelPuntuacion.repaint();
     }
  }
