@@ -591,16 +591,18 @@ public class GUI extends ifVista {
 
     @Override
     public void terminaEsperaRoboCastigo() {
-        activarBotonesBajar(true);
-        JPanel panel = panelMap.get("pozoYMazo");
-        for (Component comp : panel.getComponents()) {
-            if (comp instanceof JLabel) {
-                panel.remove(comp);
-                panel.revalidate();
-                panel.repaint();
-                break;
+        SwingUtilities.invokeLater(()-> {
+            activarBotonesBajar(true);
+            JPanel panel = panelMap.get("pozoYMazo");
+            for (Component comp : panel.getComponents()) {
+                if (comp instanceof JLabel) {
+                    panel.remove(comp);
+                    panel.revalidate();
+                    panel.repaint();
+                    break;
+                }
             }
-        }
+        });
     }
 
     private int preguntarCantParaBajar() {

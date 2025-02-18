@@ -8,7 +8,6 @@ import java.rmi.RemoteException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import static modelo.Eventos.*;
 import static modelo.TipoJuego.ESCALERA;
 import static modelo.TipoJuego.TRIO;
@@ -188,7 +187,8 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
         return puedeBajarse;
     }
 
-    private TipoJuego comprobarJuego(ArrayList<Carta> juego, int ronda) throws RemoteException{
+    private TipoJuego comprobarJuego(ArrayList<Carta> juego, int ronda)
+            throws RemoteException{
         TipoJuego tipoJuego = TipoJuego.JUEGO_INVALIDO;
         switch (ronda) {
             case 1:
@@ -287,17 +287,7 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
         jugadores.get(numTurno).getMano().agregarCarta(mazo.sacarPrimeraDelMazo()); //robo del mazo
         actualizarMano(numTurno);
         if (pozo!=null) {
-            notificarObservador(numTurno, NOTIFICACION_ESPERA);
-            ExecutorService executorService = Executors.newSingleThreadExecutor();
-            executorService.execute(() -> {
-                try {
-                    notificarRoboConCastigo(numTurno);
-                    notificarObservador(numTurno, NOTIFICACION_TERMINA_ESPERA);
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-            executorService.shutdown();
+            notificarRoboConCastigo(numTurno);
         }
     }
 
@@ -319,14 +309,27 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
                 jugadoresQueNoPuedenRobarConCastigo.add(numJugador);
             }
         }
-        notificarObservadores(jugadoresQueNoPuedenRobarConCastigo,
-                NOTIFICACION_NO_PUEDE_ROBO_CASTIGO);
-        notificarObservadores(RoboCastigo.getInstancia().getJugadores(),
-                NOTIFICACION_ROBO_CASTIGO);
-        RoboCastigo.getInstancia().setJugadoresQuePuedenRobarConCastigo(); //se termina de borrar si no se borró desde el ctrl
+        if (!jugadoresQueNoPuedenRobarConCastigo.isEmpty()) {
+            notificarObservadores(jugadoresQueNoPuedenRobarConCastigo,
+                    NOTIFICACION_NO_PUEDE_ROBO_CASTIGO);
+        }
+
+        if (!RoboCastigo.getInstancia().getJugadores().isEmpty()) {
+            notificarObservador(numTurno, NOTIFICACION_ESPERA);
+            ExecutorService executorService = Executors.newSingleThreadExecutor();
+            executorService.execute(() -> {
+                try {
+                    notificarObservadores(RoboCastigo.getInstancia().getJugadores(),
+                            NOTIFICACION_ROBO_CASTIGO);
+                    RoboCastigo.getInstancia().setJugadoresQuePuedenRobarConCastigo(); //se termina de borrar si no se borró desde el ctrl
+                    notificarObservador(numTurno, NOTIFICACION_TERMINA_ESPERA);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            executorService.shutdown();
+        }
     }
-
-
 
     @Override
     public int getCantJuegos(int numJugador) throws RemoteException {
@@ -393,8 +396,8 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
     public void empezarRonda() throws RemoteException {
         mazo = new Mazo();
         mazo.iniciarMazo(jugadores.size());
-        mazo.repartirCartasPrueba(jugadores,numRonda); //prueba
-        //mazo.repartirCartas(jugadores,numRonda);
+        //mazo.repartirCartasPrueba(jugadores,numRonda); //prueba
+        mazo.repartirCartas(jugadores,numRonda);
         pozo = mazo.sacarPrimeraDelMazo();
         numTurno = numJugadorQueEmpiezaRonda;
         notificacionesComienzoRonda();
