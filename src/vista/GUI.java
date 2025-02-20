@@ -75,7 +75,8 @@ public class GUI extends ifVista {
         frame.setVisible(true);
     }
 
-    private void inicializarMenu() {
+    @Override
+    public void inicializarMenu() {
         JPanel panelMenu = panelMap.get("Menu");
         panelMenu.removeAll();
         panelMenu.repaint();
@@ -229,7 +230,7 @@ public class GUI extends ifVista {
         panelMesa.add(panelBotones, BorderLayout.SOUTH);
     }
 
-    String asociarRuta(String carta) {
+    private String asociarRuta(String carta) {
         return "src/vista/cartas/" + carta + ".png";
     }
 
@@ -373,12 +374,6 @@ public class GUI extends ifVista {
                 imagen.getImage().getScaledInstance(80,120, Image.SCALE_SMOOTH);
         ImageIcon iconRedimensionado = new ImageIcon(imagenRedimensionada);
         return new JButton(iconRedimensionado);
-    }
-
-    @Override
-    public int menuBajar() {
-        activarBotonesBajar(true);
-        return 0;
     }
 
     private void activarBotonesBajar(boolean activar) {
@@ -543,11 +538,7 @@ public class GUI extends ifVista {
             JButton botonJugador = new JButton(nombre);
             botonJugador.addActionListener(e -> {
                 nombreVista = nombre;
-                if (ctrl.agregarNombreElegido(nombre)) {
-                    activa = true; //activa se pone en false al guardar la partida, y puede quedar la vista abierta por eso importa cambiarla
-                    inicializarMenu();
-                }
-                else {
+                if (!ctrl.agregarNombreElegido(nombre)) {
                     mostrarInfo("Jugador ya elegido.");
                 }
             });

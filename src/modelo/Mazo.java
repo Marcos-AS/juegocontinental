@@ -147,5 +147,4 @@ class Mazo implements Serializable {
             }
         }
     }
-
 }

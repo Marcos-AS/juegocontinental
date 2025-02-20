@@ -64,4 +64,5 @@ public interface ifPartida extends IObservableRemoto {
     void setEjecutarFinTurno(boolean ejecutarFinTurno)
             throws RemoteException;
     void incNumJugadorRoboCastigo() throws RemoteException;
+    void comprobarEmpezarPartida() throws RemoteException;
 }

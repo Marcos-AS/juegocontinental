@@ -4,12 +4,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class JuegoBajado implements Serializable {
-    public ArrayList<Carta> juego;
-    public TipoJuego tipo;
+class JuegoBajado implements Serializable {
+    ArrayList<Carta> juego;
+    TipoJuego tipo;
     private final ReglaJuego MISMO_PALO = new ReglaMismoPalo();
 
-    public JuegoBajado(ArrayList<Carta> juego, TipoJuego tipo) {
+    JuegoBajado(ArrayList<Carta> juego, TipoJuego tipo) {
         ArrayList<Carta> juegoOrdenado = juego;
         if (tipo==TipoJuego.ESCALERA) {
             juegoOrdenado = ordenarJuego(juego);

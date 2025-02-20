@@ -273,7 +273,15 @@ public abstract class ifVista {
         return activa;
     }
 
-    public abstract int menuBajar();
+    public void setActiva(boolean activa) {
+        this.activa = activa;
+    }
+
+    public int menuBajar() {
+        return 0;
+    }
+
+    public void esperaRoboCastigo(){}
     public abstract int[] preguntarParaOrdenarCartas();
     public abstract int preguntarCartaParaAcomodar();
     public abstract void mostrarJuegos(String nombreJugador,
@@ -293,4 +301,5 @@ public abstract class ifVista {
     public abstract void finPartida();
     public void esperarRoboCastigo(){}
     public void terminaEsperaRoboCastigo(){}
+    public void inicializarMenu(){}
 }

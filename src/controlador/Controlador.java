@@ -207,6 +207,7 @@ public class Controlador implements IControladorRemoto {
         try {
             if (Objects.equals(eleccion, ifVista.ELECCION_ROBAR_DEL_MAZO)) {
                 if (vista.isActiva()) { //tengo que validar por si un jugador se desconectó, no se tiene que ejecutar robo castigo
+                    vista.esperaRoboCastigo();
                     partida.robarDelMazo();
                 } else {
                     vista.salirAlMenu();
@@ -479,11 +480,16 @@ public class Controlador implements IControladorRemoto {
             //ya están los jugadores creados, debo cambiar los nums de los jugadores
             //para que matcheen con el nombre que eligieron y el num de observador
             //para este momento ya se cargó una partida
-            int obsIndex = partida.getObservadorIndex(this);
-            int numJugador = partida.getNumJugador(vista.getNombreVista());
-            partida.setNumeroJugador(numJugador,obsIndex);
-            System.out.println(partida.getNumJugador(vista.getNombreVista()));
-            return partida.agregarNombreElegido(nombre);
+            boolean agregado = partida.agregarNombreElegido(nombre);
+            if (agregado) {
+                vista.setActiva(true); //activa se pone en false al guardar la partida, y puede quedar la vista abierta por eso importa cambiarla
+                vista.inicializarMenu();
+                int obsIndex = partida.getObservadorIndex(this);
+                int numJugador = partida.getNumJugador(vista.getNombreVista());
+                partida.setNumeroJugador(numJugador,obsIndex); //se cambia el atr. numJugador del jugador
+                partida.comprobarEmpezarPartida();
+            }
+            return agregado;
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

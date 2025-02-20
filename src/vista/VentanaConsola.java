@@ -305,6 +305,11 @@ public class VentanaConsola extends ifVista {
 
     @Override
     public int menuBajar() {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         int eleccion = 0;
         while (eleccion < ELECCION_BAJARSE || eleccion > ELECCION_ACOMODAR_JUEGO_AJENO) {
             eleccion = Integer.parseInt(preguntarInput(MENU_BAJAR));
@@ -410,4 +415,11 @@ public class VentanaConsola extends ifVista {
         }
         return eleccion;
     }
- }
+
+    public void esperaRoboCastigo() {
+        JOptionPane.showMessageDialog(frame,
+        "Atención: Otros jugadores pueden robar con castigo.",
+        "Aviso", JOptionPane.WARNING_MESSAGE);
+    }
+
+}
