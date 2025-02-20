@@ -24,6 +24,7 @@ public abstract class ifVista {
     public static final int ELECCION_ORDENAR_CARTAS = 3;
     public static final int ELECCION_ACOMODAR_JUEGO_PROPIO = 4;
     public static final int ELECCION_ACOMODAR_JUEGO_AJENO = 5;
+    boolean activa = true;
     final int ELECCION_CREAR_PARTIDA = 1;
     final int ELECCION_JUGAR_PARTIDA = 2;
     final int ELECCION_RANKING = 3;
@@ -261,7 +262,15 @@ public abstract class ifVista {
     }
 
     public void setNumeroJugadorTitulo() {
-        frame.setTitle("Mesa - Jugador N°" + ctrl.getNumJugador(nombreVista) + ": " + nombreVista);
+        frame.setTitle("Mesa - Jugador N°" + (ctrl.getNumJugador(nombreVista)+1) + ": " + nombreVista);
+    }
+
+    public void setSalir() {
+        activa = false;
+    }
+
+    public boolean isActiva() {
+        return activa;
     }
 
     public abstract int menuBajar();

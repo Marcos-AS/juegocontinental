@@ -1,9 +1,10 @@
 package modelo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
-class Mazo {
+class Mazo implements Serializable {
     private ArrayList<Carta> mazo;
 
     void iniciarMazo(int cantJugadores) {

@@ -179,7 +179,7 @@ public class GUI extends ifVista {
 
         bajarJuegoBoton.addActionListener(e -> {
             ctrl.switchMenuBajar(ELECCION_BAJARSE);
-            if (!ctrl.isTurnoActual()) {
+            if (!ctrl.isTurnoActual()) { //si cortó despues de bajar juegos, entonces el turno se hizo false
                 activarBotonesBajar(false);
                 ctrl.finTurno();
                 ctrl.cambioTurno();
@@ -206,15 +206,9 @@ public class GUI extends ifVista {
         });
 
         acomodarPropioBoton.addActionListener(e -> ctrl.switchMenuBajar(ELECCION_ACOMODAR_JUEGO_PROPIO));
-
         acomodarAjenoBoton.addActionListener(e -> ctrl.switchMenuBajar(ELECCION_ACOMODAR_JUEGO_AJENO));
-
         ordenarBoton.addActionListener(e -> ctrl.switchMenuBajar(ELECCION_ORDENAR_CARTAS));
-
-        guardarYSalir.addActionListener(e -> {
-            ctrl.guardarPartida();
-            salirAlMenu();
-        });
+        guardarYSalir.addActionListener(e -> ctrl.guardarPartida());
 
         JPanel panelBotones = new JPanel();
         panelBotones.add(bajarJuegoBoton);
@@ -283,6 +277,7 @@ public class GUI extends ifVista {
             buttonMap.get("cartaPozo").setEnabled(false);
         }
         ctrl.desarrolloRobo(eleccion);
+        buttonMap.get("guardar").setEnabled(false);
         activarBotonesBajar(true);
     }
 
@@ -290,6 +285,7 @@ public class GUI extends ifVista {
     public void cambioTurno() {
         if (ctrl.isPartidaEnCurso()) {
             String nombre = ctrl.getTurnoDe();
+            buttonMap.get("guardar").setEnabled(true);
             if (nombre.equals(nombreVista)) {
                 buttonMap.get("cartaPozo").setEnabled(true);
                 buttonMap.get("cartaMazo").setEnabled(true);
@@ -460,7 +456,7 @@ public class GUI extends ifVista {
     public void mostrarJuegos(String nombreJugador, ArrayList<ArrayList<String>> juegos) {
         JPanel panelJuegos = panelMap.get("Juegos");
         JPanel panelJuegosJugador = new JPanel();
-        panelJuegosJugador.setBorder(BorderFactory.createTitledBorder("Juegos de " + nombreJugador + " jugador N° " + ctrl.getNumJugador(nombreJugador)));
+        panelJuegosJugador.setBorder(BorderFactory.createTitledBorder("Juegos de " + nombreJugador + " jugador N° " + (ctrl.getNumJugador(nombreJugador)+1)));
         // Iterar sobre los juegos y crear subpaneles para cada uno
         for (int i = 0; i < juegos.size(); i++) {
             ArrayList<String> juego = juegos.get(i);
@@ -548,6 +544,7 @@ public class GUI extends ifVista {
             botonJugador.addActionListener(e -> {
                 nombreVista = nombre;
                 if (ctrl.agregarNombreElegido(nombre)) {
+                    activa = true; //activa se pone en false al guardar la partida, y puede quedar la vista abierta por eso importa cambiarla
                     inicializarMenu();
                 }
                 else {
@@ -687,5 +684,11 @@ public class GUI extends ifVista {
     @Override
     public void salirAlMenu() {
         cardLayout.show(cardPanel, "Menu");
+        JPanel menu = panelMap.get("Menu");
+        buttonMap.get("botonCargar").setEnabled(true);
+        JLabel label = new JLabel("Un jugador se desconectó. Se guardó la partida.");
+        menu.add(label);
+        menu.revalidate();
+        menu.repaint();
     }
 }

@@ -102,6 +102,10 @@ public class Controlador implements IControladorRemoto {
                     break;
                 }
                 case NOTIFICACION_SALIR: {
+                    vista.setSalir();
+                    break;
+                }
+                case NOTIFICACION_SALIR_MENU: {
                     vista.salirAlMenu();
                     break;
                 }
@@ -168,7 +172,12 @@ public class Controlador implements IControladorRemoto {
 
     public void finTurno() {
         try {
-            partida.finTurno();
+            if (vista.isActiva()) {
+                partida.finTurno();
+            } else {
+                partida.setEjecutarFinTurno(true);
+                partida.guardar();
+            }
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -184,7 +193,11 @@ public class Controlador implements IControladorRemoto {
 
     public void cambioTurno() {
         try {
-            partida.notificarObservadores(NOTIFICACION_CAMBIO_TURNO);
+            if (vista.isActiva()) {
+                partida.notificarObservadores(NOTIFICACION_CAMBIO_TURNO);
+            } else {
+                vista.salirAlMenu();
+            }
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -193,7 +206,11 @@ public class Controlador implements IControladorRemoto {
     public void desarrolloRobo(String eleccion) {
         try {
             if (Objects.equals(eleccion, ifVista.ELECCION_ROBAR_DEL_MAZO)) {
-                partida.robarDelMazo();
+                if (vista.isActiva()) { //tengo que validar por si un jugador se desconectó, no se tiene que ejecutar robo castigo
+                    partida.robarDelMazo();
+                } else {
+                    vista.salirAlMenu();
+                }
             } else if (Objects.equals(eleccion, ifVista.ELECCION_ROBAR_DEL_POZO)) {
                 partida.robarDelPozo();
             }
@@ -269,6 +286,7 @@ public class Controlador implements IControladorRemoto {
 
     private void mostrarJuegosEnMesa() throws RemoteException {
         vista.actualizarJuegos();
+        //cada vista tiene que mostrar los juegos de cada jugador
         for (int j = 0; j < getCantJugActuales(); j++) {
             vista.mostrarJuegos(partida.getNombreJugador(j),
                     enviarJuegosJugador(j));
@@ -277,7 +295,7 @@ public class Controlador implements IControladorRemoto {
 
     public int getNumJugador(String nombreJugador) {
         try {
-            return partida.getNumJugador(nombreJugador)+1;
+            return partida.getNumJugador(nombreJugador);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -350,6 +368,8 @@ public class Controlador implements IControladorRemoto {
             if (vista.preguntarInputRobarCastigo()) {
                 partida.robarConCastigo();
                 partida.setJugadoresQuePuedenRobarConCastigo(); //se resetea así no continua el robo castigo
+            } else {
+                partida.incNumJugadorRoboCastigo();
             }
         }
     }
@@ -428,7 +448,14 @@ public class Controlador implements IControladorRemoto {
 
     public void guardarPartida() {
         try {
-            partida.guardarPartida();
+            partida.guardar();
+            int numJugadorQueLlamo = getNumJugador(vista.getNombreVista());
+            if (numJugadorQueLlamo!=partida.getNumTurno()) {
+                partida.notificarSalir(); //sale al menu para todas las vistas menos la del turno actual
+                partida.notificarObservador(partida.getNumTurno(), NOTIFICACION_SALIR);
+            } else {
+                partida.notificarObservadores(NOTIFICACION_SALIR_MENU);
+            }
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -447,20 +474,15 @@ public class Controlador implements IControladorRemoto {
         return true;
     }
 
-    public void salirAlMenu() {
-        try {
-            partida.notificarObservadores(NOTIFICACION_SALIR);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public boolean agregarNombreElegido(String nombre) {
         try {
             //ya están los jugadores creados, debo cambiar los nums de los jugadores
             //para que matcheen con el nombre que eligieron y el num de observador
+            //para este momento ya se cargó una partida
             int obsIndex = partida.getObservadorIndex(this);
-            partida.setNumeroJugador(partida.getNumJugador(vista.getNombreVista()),obsIndex);
+            int numJugador = partida.getNumJugador(vista.getNombreVista());
+            partida.setNumeroJugador(numJugador,obsIndex);
+            System.out.println(partida.getNumJugador(vista.getNombreVista()));
             return partida.agregarNombreElegido(nombre);
         } catch (RemoteException e) {
             throw new RuntimeException(e);

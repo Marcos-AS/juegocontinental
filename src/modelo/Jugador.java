@@ -6,7 +6,7 @@ import java.util.ArrayList;
 class Jugador implements Serializable {
     String nombre;
     private int numeroJugador;
-    private final ArrayList<Partida> partidas = new ArrayList<>();
+    //private final ArrayList<Partida> partidas = new ArrayList<>();
     private boolean turnoActual = false;
     private Mano mano = new Mano();
     ArrayList<JuegoBajado> juegos = new ArrayList<>();
@@ -98,10 +98,6 @@ class Jugador implements Serializable {
                 break;
         }
         return puedeCortar;
-    }
-
-    void sumarPartida(Partida p) {
-        partidas.add(p);
     }
 
     void resetFinRonda() {

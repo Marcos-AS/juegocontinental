@@ -1,11 +1,12 @@
 package modelo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-class Puntuacion {
+class Puntuacion implements Serializable {
     Map<Jugador, Integer> puntuacion;
     Jugador ganador = null;
 
@@ -31,13 +32,17 @@ class Puntuacion {
                 .orElse(null);
     }
 
-    Map<String, Integer> getPuntosJugadores() {
-        return puntuacion.entrySet().stream()
-                .collect(Collectors.toMap(
-                        entry -> entry.getKey().getNombre(),
-                        Map.Entry::getValue
-                ));
-    }
+//            System.out.println("Contenido del mapa 'puntuacion' antes de la conversión:");
+//            puntuacion.forEach((key, value) -> {
+//                System.out.println("Clave: " + key.getNombre() + ", Valor: " + value);
+//            });
+        Map<String, Integer> getPuntosJugadores() {
+            return puntuacion.entrySet().stream()
+                    .collect(Collectors.toMap(
+                            entry -> entry.getKey().getNombre(),
+                            Map.Entry::getValue
+                    ));
+        }
 
     void sumarPuntos(Jugador j) {
         final int PUNTOS_FIGURA = 10;

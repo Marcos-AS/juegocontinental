@@ -5,23 +5,34 @@ import java.util.ArrayList;
 
 public class RoboCastigo implements Serializable {
     private ArrayList<Integer> jugadoresQuePuedenRobarConCastigo = new ArrayList<>();
+    private int numJugadorRoboCastigo;
     private static RoboCastigo instancia;
     private RoboCastigo(){}
 
-    public static RoboCastigo getInstancia() {
+    static RoboCastigo getInstancia() {
         if (instancia==null) instancia = new RoboCastigo();
         return instancia;
     }
 
-    public ArrayList<Integer> getJugadores() {
+    ArrayList<Integer> getJugadores() {
         return jugadoresQuePuedenRobarConCastigo;
     }
 
-    public int getNumJugadorRoboCastigo() {
-        return jugadoresQuePuedenRobarConCastigo.get(0);
+    int getNumJugadorRoboCastigo() {
+        return numJugadorRoboCastigo;
     }
 
-    public void setJugadoresQuePuedenRobarConCastigo() {
+    void setNumJugadorRoboCastigo(int numJugadorRoboCastigo) {
+        this.numJugadorRoboCastigo = numJugadorRoboCastigo;
+    }
+
+    void incNumJugadorRoboCastigo() {
+        numJugadorRoboCastigo++;
+        if (numJugadorRoboCastigo>=jugadoresQuePuedenRobarConCastigo.size())
+            numJugadorRoboCastigo = 0;
+    }
+
+    void setJugadoresQuePuedenRobarConCastigo() {
         jugadoresQuePuedenRobarConCastigo = new ArrayList<>();
     }
 

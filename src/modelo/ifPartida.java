@@ -48,7 +48,7 @@ public interface ifPartida extends IObservableRemoto {
     void tirarAlPozo(int numJugador, int cartaATirar) throws RemoteException;
     void moverCartaEnMano(int numJugador, int i, int i1) throws RemoteException;
     String getNombreJugador(int numJugador) throws RemoteException;
-    void guardarPartida() throws RemoteException;
+    void guardar() throws RemoteException;
     int getNumJugador(String nombreJugador) throws RemoteException;
     void acomodarPropio(int numJugador,
                         int iCarta, int numJuego) throws RemoteException;
@@ -60,4 +60,8 @@ public interface ifPartida extends IObservableRemoto {
     int getCantJuegos(int numJugador) throws RemoteException;
     void setJugadoresQuePuedenRobarConCastigo() throws RemoteException;
     void iniciarPuntuacion() throws RemoteException;
+    void notificarSalir() throws RemoteException;
+    void setEjecutarFinTurno(boolean ejecutarFinTurno)
+            throws RemoteException;
+    void incNumJugadorRoboCastigo() throws RemoteException;
 }
