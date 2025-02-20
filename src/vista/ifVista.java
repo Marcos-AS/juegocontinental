@@ -25,36 +25,13 @@ public abstract class ifVista {
     public static final int ELECCION_ACOMODAR_JUEGO_PROPIO = 4;
     public static final int ELECCION_ACOMODAR_JUEGO_AJENO = 5;
     boolean activa = true;
-    final int ELECCION_CREAR_PARTIDA = 1;
-    final int ELECCION_JUGAR_PARTIDA = 2;
-    final int ELECCION_RANKING = 3;
-    final int ELECCION_REGLAS = 4;
-    final int ELECCION_SALIR = -1;
     int FALTAN_JUGADORES = 0;
     int INICIAR_PARTIDA = 1;
     public static String NO_PUEDE_ACOMODAR = "No puede acomodar porque no tienes o no hay juegos bajados o porque la carta que deseas acomodar no hace juego con el juego elegido.";
     public static String YA_NO_PUEDE_BAJAR = "No puedes volver a bajar juegos en esta ronda.";
     public static String MOSTRAR_JUEGO_INVALIDO = "No puedes bajar porque la combinacion elegida no forma un juego valido para la ronda\n";
     public static String PREGUNTA_NUMERO_JUEGO = "En qué número de juego quieres acomodar tu carta?";
-    String PREGUNTA_ROBAR_CASTIGO = "Quieres robar con castigo? (robar del pozo y robar del mazo)\n(Si/No)";
-    String MENU_ROBAR = "1 - Robar del mazo\n2 - Robar del pozo\nElige una opción: ";
-    String MENU_BAJAR = """
-        Elije una opción:
-        1 - Bajar uno o más juegos
-        2 - Tirar al pozo
-        3 - Ordenar cartas
-        4 - Acomodar en un juego bajado propio
-        5 - Acomodar en un juego bajado ajeno""";
-    String MENU_INICIAR = """
-        <html><head><title>El Continental.</title></head>
-        <h1>Bienvenido al juego El Continental</h1>
-        Elije una opción:<br>
-        1 - Crear partida<br>
-        2 - Jugar partida recién creada<br>
-        3 - Ver ranking mejores jugadores<br>
-        4 - Ver reglas de juego<br>
-        -1 - Salir del juego<br>
-        """;
+
 
     static String REGLAS =
     """

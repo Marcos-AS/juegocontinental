@@ -66,7 +66,16 @@ public class VentanaConsola extends ifVista {
         JPanel panelMenu = panelMap.get("Menu");
         panelMenu.removeAll();
         panelMenu.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        String mostrar = MENU_INICIAR;
+        String mostrar = """
+        <html><head><title>El Continental.</title></head>
+        <h1>Bienvenido al juego El Continental</h1>
+        Elije una opción:<br>
+        1 - Crear partida<br>
+        2 - Jugar partida recién creada<br>
+        3 - Ver ranking mejores jugadores<br>
+        4 - Ver reglas de juego<br>
+        -1 - Salir del juego<br>
+        """;
         if (!ctrl.isPartidaEnCurso()) {
             mostrar += "Aún no hay una partida creada. Seleccione la opción 'Crear partida'";
         } else {
@@ -113,6 +122,11 @@ public class VentanaConsola extends ifVista {
     }
 
     private void switchInicial() {
+        final int ELECCION_CREAR_PARTIDA = 1;
+        final int ELECCION_JUGAR_PARTIDA = 2;
+        final int ELECCION_RANKING = 3;
+        final int ELECCION_REGLAS = 4;
+        final int ELECCION_SALIR = -1;
         int eleccion;
         String input = "";
         int inicioPartida = 0;
@@ -187,7 +201,7 @@ public class VentanaConsola extends ifVista {
     //        nombreVista = UUID.randomUUID().toString()
     //                .replace("-", "").substring(0, 10);
 
-    boolean isRespAfirmativa(String eleccion) {
+    private boolean isRespAfirmativa(String eleccion) {
         String e = eleccion.toLowerCase();
         return e.equals("si") || eleccion.equals("s");
     }
@@ -206,7 +220,7 @@ public class VentanaConsola extends ifVista {
                 CountDownLatch latch = new CountDownLatch(1);
                 try {
                     SwingUtilities.invokeLater(() -> {
-                        ctrl.desarrolloRobo(preguntarInput(MENU_ROBAR));
+                        ctrl.desarrolloRobo(preguntarInput("1 - Robar del mazo\n2 - Robar del pozo\nElige una opción: "));
                         latch.countDown();
                     });
                 } catch (Exception e) {
@@ -286,6 +300,7 @@ public class VentanaConsola extends ifVista {
 
     @Override
     public boolean preguntarInputRobarCastigo() {
+        String PREGUNTA_ROBAR_CASTIGO = "Quieres robar con castigo? (robar del pozo y robar del mazo)\n(Si/No)";
         String resp;
         do
             resp = JOptionPane.showInputDialog(null, PREGUNTA_ROBAR_CASTIGO,nombreVista,JOptionPane.QUESTION_MESSAGE);
@@ -305,6 +320,13 @@ public class VentanaConsola extends ifVista {
 
     @Override
     public int menuBajar() {
+        String MENU_BAJAR = """
+        Elije una opción:
+        1 - Bajar uno o más juegos
+        2 - Tirar al pozo
+        3 - Ordenar cartas
+        4 - Acomodar en un juego bajado propio
+        5 - Acomodar en un juego bajado ajeno""";
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
