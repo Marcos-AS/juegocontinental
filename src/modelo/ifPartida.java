@@ -9,10 +9,6 @@ import java.util.Map;
 
 public interface ifPartida extends IObservableRemoto {
     ArrayList<ArrayList<Carta>> getJuegos(int numJugador) throws RemoteException;
-    boolean comprobarAcomodarAjeno(int numJugador, int numJugadorAcomodar,
-                                   int numCarta, int numJuego) throws RemoteException;
-    boolean comprobarAcomodarCartaPropio(int numJugador, int numCarta, int numJuego)
-            throws RemoteException;
     void setNumeroJugador(int numJugador, int nuevoNumero) throws RemoteException;
     void finTurno() throws RemoteException;
     boolean isTurnoActual(int numJugador) throws RemoteException;
@@ -28,14 +24,11 @@ public interface ifPartida extends IObservableRemoto {
     Map<String, Integer> getPuntosJugadores() throws RemoteException;
     void actualizarMano(int numJugador) throws RemoteException;
     String getGanador() throws RemoteException;
-    void crearYAgregarJugador(String nombre, int numObservador)
-            throws RemoteException;
-    boolean comprobarBajarse(int numJugador, int[] cartasABajar)
+    boolean jugarPartida() throws RemoteException;
+    void crearJugador(String nombre, int numObservador)
             throws RemoteException;
     boolean cortar(int numJugador) throws RemoteException;
     void crearPartida(int observadorIndex,int cantJugadoresDeseada)
-            throws RemoteException;
-    void acomodarAjeno(int numJugador,int numJugadorAcomodar, int iCarta, int numJuego)
             throws RemoteException;
     int getCantJugadoresDeseada() throws RemoteException;
     void ponerJugadoresEnOrden() throws RemoteException;
@@ -45,13 +38,11 @@ public interface ifPartida extends IObservableRemoto {
     void robarConCastigo() throws RemoteException;
     void empezarRonda() throws RemoteException;
     void setTurnoJugador(int numJugador, boolean valor) throws RemoteException;
-    void tirarAlPozo(int numJugador, int cartaATirar) throws RemoteException;
-    void moverCartaEnMano(int numJugador, int i, int i1) throws RemoteException;
+    void tirarAlPozo(int cartaATirar) throws RemoteException;
+    void moverCartaEnMano(int i, int i1) throws RemoteException;
     String getNombreJugador(int numJugador) throws RemoteException;
     void guardar() throws RemoteException;
     int getNumJugador(String nombreJugador) throws RemoteException;
-    void acomodarPropio(int numJugador,
-                        int iCarta, int numJuego) throws RemoteException;
     ArrayList<Integer> getJugadoresQuePuedenRobarConCastigo() throws RemoteException;
     Eventos comprobarPosibleCorte(int numJugador) throws RemoteException;
     boolean cargarPartida() throws RemoteException;
@@ -59,10 +50,12 @@ public interface ifPartida extends IObservableRemoto {
     boolean agregarNombreElegido(String nombre) throws RemoteException;
     int getCantJuegos(int numJugador) throws RemoteException;
     void setJugadoresQuePuedenRobarConCastigo() throws RemoteException;
-    void iniciarPuntuacion() throws RemoteException;
     void notificarSalir() throws RemoteException;
     void setEjecutarFinTurno(boolean ejecutarFinTurno)
             throws RemoteException;
     void incNumJugadorRoboCastigo() throws RemoteException;
     void comprobarEmpezarPartida() throws RemoteException;
+    void desarrolloRobo(String eleccion) throws RemoteException;
+    boolean hayRepetidos(int[] array) throws RemoteException;
+    boolean acomodar(int cartaAcomodar, int iJuego, int numJugador) throws RemoteException;
 }

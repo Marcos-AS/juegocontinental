@@ -1,15 +1,18 @@
 package modelo;
 
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import static modelo.TipoJuego.*;
 
 class JuegoBajado implements Serializable {
     ArrayList<Carta> juego;
     TipoJuego tipo;
     private final ReglaJuego MISMO_PALO = new ReglaMismoPalo();
 
-    JuegoBajado(ArrayList<Carta> juego, TipoJuego tipo) {
+    private JuegoBajado(ArrayList<Carta> juego) {
         ArrayList<Carta> juegoOrdenado = juego;
         if (tipo==TipoJuego.ESCALERA) {
             juegoOrdenado = ordenarJuego(juego);
@@ -17,6 +20,44 @@ class JuegoBajado implements Serializable {
         this.juego = juegoOrdenado;
         this.tipo = tipo;
     }
+
+    public static JuegoBajado crearInstancia(ArrayList<Carta> juego) throws RemoteException {
+        if (comprobarJuego(juego, Partida.getInstancia().getNumRonda())
+        != JUEGO_INVALIDO) {
+            return new JuegoBajado(juego);
+        }
+        return null;
+    }
+
+    private static TipoJuego comprobarJuego(ArrayList<Carta> juego, int ronda)
+            throws RemoteException {
+        TipoJuego tipoJuego = TipoJuego.JUEGO_INVALIDO;
+        switch (ronda) {
+            case 1:
+            case 4:
+                if (getRegla("trio").esValido(juego)) tipoJuego = TRIO;
+                break;
+            case 2:
+            case 5:
+            case 6:
+                if (getRegla("trio").esValido(juego)) {
+                    tipoJuego = TRIO;
+                } else {
+                    if (getRegla("escalera").esValido(juego)) {
+                        tipoJuego = ESCALERA;
+                    }
+                }
+                break;
+            case 3:
+            case 7:
+                if (getRegla("escalera").esValido(juego)) {
+                    tipoJuego = ESCALERA;
+                }
+                break;
+        }
+        return tipoJuego;
+    }
+
 
     boolean acomodarCarta(Carta carta) {
         boolean acomodo;

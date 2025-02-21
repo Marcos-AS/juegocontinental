@@ -17,13 +17,6 @@ public abstract class ifVista {
     JPanel cardPanel;
     Map<String, JPanel> panelMap;
     Map<String, JButton> buttonMap;
-    public static String ELECCION_ROBAR_DEL_MAZO = "1";
-    public static String ELECCION_ROBAR_DEL_POZO = "2";
-    public static final int ELECCION_BAJARSE = 1;
-    public static final int ELECCION_TIRAR_AL_POZO = 2;
-    public static final int ELECCION_ORDENAR_CARTAS = 3;
-    public static final int ELECCION_ACOMODAR_JUEGO_PROPIO = 4;
-    public static final int ELECCION_ACOMODAR_JUEGO_AJENO = 5;
     boolean activa = true;
     int FALTAN_JUGADORES = 0;
     int INICIAR_PARTIDA = 1;
@@ -31,7 +24,10 @@ public abstract class ifVista {
     public static String YA_NO_PUEDE_BAJAR = "No puedes volver a bajar juegos en esta ronda.";
     public static String MOSTRAR_JUEGO_INVALIDO = "No puedes bajar porque la combinacion elegida no forma un juego valido para la ronda\n";
     public static String PREGUNTA_NUMERO_JUEGO = "En qué número de juego quieres acomodar tu carta?";
-
+    public static final String BAJARSE = "1";
+    public static final String TIRAR = "2";
+    public static final String ORDENAR = "3";
+    public static final String ACOMODAR = "4";
 
     static String REGLAS =
     """
