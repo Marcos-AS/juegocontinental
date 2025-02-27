@@ -97,7 +97,6 @@ public class GUI extends ifVista {
             ctrl.crearPartida();
         });
 
-
         botonCargar.addActionListener(e -> {
             if (!ctrl.cargarPartida()) {
                 mostrarInfo("No hay una partida para cargar.");
@@ -140,10 +139,10 @@ public class GUI extends ifVista {
         acomodarBoton.setEnabled(false);
         ordenarBoton.setEnabled(false);
 
-        bajarJuegoBoton.addActionListener(e -> ctrl.switchMenuBajar(BAJARSE));
-        tirarAlPozoBoton.addActionListener(e -> ctrl.switchMenuBajar(TIRAR));
-        acomodarBoton.addActionListener(e -> ctrl.switchMenuBajar(ACOMODAR));
-        ordenarBoton.addActionListener(e -> ctrl.switchMenuBajar(ORDENAR));
+        bajarJuegoBoton.addActionListener(e -> ctrl.switchMenuBajar("1"));
+        tirarAlPozoBoton.addActionListener(e -> ctrl.switchMenuBajar("2"));
+        acomodarBoton.addActionListener(e -> ctrl.switchMenuBajar("3"));
+        ordenarBoton.addActionListener(e -> ctrl.switchMenuBajar("4"));
         guardarYSalir.addActionListener(e -> ctrl.guardarPartida());
 
         JPanel panelBotones = new JPanel();

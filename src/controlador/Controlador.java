@@ -3,9 +3,10 @@ package controlador;
 import excepciones.FaltanJugadoresException;
 import modelo.ifPartida;
 import modelo.ifCarta;
-import modelo.Eventos;
-import modelo.Mano;
 import modelo.Carta;
+import modelo.EntradasUsuario;
+import modelo.Mano;
+import modelo.Eventos;
 import static modelo.Eventos.*;
 import vista.ifVista;
 import rmimvc.src.cliente.IControladorRemoto;
@@ -137,7 +138,7 @@ public class Controlador implements IControladorRemoto {
     public void switchMenuBajar(String eleccion) {
         try {
             switch (eleccion) {
-                case ifVista.BAJARSE -> {
+                case EntradasUsuario.BAJARSE -> {
                     if(vista.preguntarSiQuiereSeguirBajandoJuegos()) {
                         int[] indicesCartas;
                         do {
@@ -148,12 +149,12 @@ public class Controlador implements IControladorRemoto {
                         }
                     }
                 }
-                case ifVista.TIRAR -> partida.tirarAlPozo(vista.preguntarQueBajarParaPozo());
-                case ifVista.ORDENAR -> {
+                case EntradasUsuario.TIRAR -> partida.tirarAlPozo(vista.preguntarQueBajarParaPozo());
+                case EntradasUsuario.ORDENAR -> {
                     int[] cartasOrdenacion = vista.preguntarParaOrdenarCartas();
                     partida.moverCartaEnMano(cartasOrdenacion[0], cartasOrdenacion[1]);
                 }
-                case ifVista.ACOMODAR -> {
+                case EntradasUsuario.ACOMODAR -> {
                     int cartaAcomodar = vista.preguntarCartaParaAcomodar();
                     int[] seleccion = vista.seleccionarJuego(juegosMesaToString());
                     int iJuego = seleccion[0];

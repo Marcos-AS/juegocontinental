@@ -2,8 +2,11 @@ package vista;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,86 +19,77 @@ public class VentanaConsola extends ifVista {
     public void iniciar() {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(600,800);
-        cardLayout = new CardLayout();
-        frame.setLayout(cardLayout);
-        cardPanel = new JPanel(cardLayout);
         panelMap = new HashMap<>();
         buttonMap = new HashMap<>();
 
+        JPanel panelChat = new JPanel(new BorderLayout());
+        panelChat.setPreferredSize(new Dimension(600, 150)); // Altura fija para el chat
+        panelChat.setBorder(BorderFactory.createTitledBorder("Chat"));
+
         textChat = new JTextPane();
         textChat.setEditable(false);
-        textMensaje = new JTextField(10);
+        JScrollPane scrollPane = new JScrollPane(textChat);
+
+        JPanel panelInput = new JPanel(new BorderLayout());
+        textMensaje = new JTextField();
         JButton botonEnviar = new JButton("Enviar");
-        buttonMap.put("enviar",botonEnviar);
+        buttonMap.put("enviar", botonEnviar);
 
+        panelInput.add(textMensaje, BorderLayout.CENTER);
+        panelInput.add(botonEnviar, BorderLayout.EAST);
 
-        JPanel panelMenu = new JPanel();
-        JPanel panelPozo = new JPanel();
-        JPanel panelMano = new JPanel();
-        JPanel panelInfoRonda = new JPanel();
-        JPanel panelPuntuacion = new JPanel();
-        JPanel panelJuegos = new JPanel();
-        panelJuegos.setLayout(new BoxLayout(panelJuegos, BoxLayout.Y_AXIS));
-        JPanel panelTurno = new JPanel();
+        panelChat.add(scrollPane, BorderLayout.CENTER);
+        panelChat.add(panelInput, BorderLayout.SOUTH);
 
-        JPanel panelMesa = new JPanel();
-        panelMesa.setLayout(new BoxLayout(panelMesa, BoxLayout.Y_AXIS));
-        panelMesa.add(panelMano);
-        panelMesa.add(panelTurno);
-        panelMesa.add(panelPuntuacion);
-        panelMesa.add(panelInfoRonda);
-        panelMesa.add(panelPozo);
-        panelMesa.add(panelJuegos);
-        panelMesa.add(textChat);
-        panelMesa.add(textMensaje);
-        panelMesa.add(botonEnviar);
-
-
-        cardPanel.add(panelMesa, "Mesa");
-        cardPanel.add(panelMenu, "Menu");
-
-        panelMap.put("Menu", panelMenu);
-        panelMap.put("Mesa", panelMesa);
-        panelMap.put("Pozo", panelPozo);
-        panelMap.put("Mano", panelMano);
-        panelMap.put("infoRonda", panelInfoRonda);
-        panelMap.put("Puntuacion", panelPuntuacion);
-        panelMap.put("Juegos", panelJuegos);
-        panelMap.put("Turno", panelTurno);
+        panelMap.put("Mesa", panelChat);
 
         opcionesIniciales();
-        frame.add(cardPanel);
-        cardLayout.show(cardPanel, "Menu");
+        frame.add(panelChat);
         frame.setVisible(true);
 
         switchInicial();
     }
 
-    private void opcionesIniciales() {
-        JPanel panelMenu = panelMap.get("Menu");
-        panelMenu.removeAll();
-        panelMenu.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        String mostrar = """
-        <html><head><title>El Continental.</title></head>
-        <h1>Bienvenido al juego El Continental</h1>
-        Elije una opción:<br>
-        1 - Crear partida<br>
-        2 - Jugar partida recién creada<br>
-        3 - Ver ranking mejores jugadores<br>
-        4 - Ver reglas de juego<br>
-        -1 - Salir del juego<br>
-        """;
-        if (!ctrl.isPartidaEnCurso()) {
-            mostrar += "Aún no hay una partida creada. Seleccione la opción 'Crear partida'";
-        } else {
-            mostrar += "\nYA HAY UNA PARTIDA INICIADA";
+    public void mostrarPuntosRonda(Map<String, Integer> puntos) {
+        StringBuilder puntuacion = new StringBuilder("Puntuación:\n");
+        for (Map.Entry<String, Integer> entry : puntos.entrySet()) {
+            puntuacion.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
         }
-        JLabel labelMenu = new JLabel(mostrar);
-        panelMenu.add(labelMenu);
+        textChat.setText(puntuacion.toString());
+    }
+
+    private void opcionesIniciales() {
+        // Limpiamos el contenido previo del JTextPane
+        textChat.setText("");
+
+        // Construimos el mensaje a mostrar
+        StringBuilder mostrar = new StringBuilder();
+        mostrar.append("Bienvenido al juego El Continental\n\n");
+        mostrar.append("Elije una opción:\n");
+        mostrar.append("1 - Jugar\n");
+        mostrar.append("2 - Ver ranking mejores jugadores\n");
+        mostrar.append("3 - Ver reglas de juego\n");
+        mostrar.append("-1 - Salir del juego\n\n");
+
+        // Verificamos si hay una partida en curso
+        if (!ctrl.isPartidaEnCurso()) {
+            mostrar.append("Aún no hay una partida creada. Seleccione la opción 'Crear partida'.\n");
+        } else {
+            mostrar.append("YA HAY UNA PARTIDA INICIADA\n");
+        }
+
+        // Mostramos el mensaje en el JTextPane
+        textChat.setText(mostrar.toString());
+
+        // Si hay un botón de jugar, lo agregamos al panel de entrada (opcional)
         JButton botonJugar = buttonMap.get("botonJugar");
-        if (botonJugar!=null) panelMenu.add(botonJugar);
-        panelMenu.revalidate();
-        panelMenu.repaint();
+        JPanel panelChat = panelMap.get("Mesa");
+        if (botonJugar != null) {
+            JPanel panelInput = (JPanel) panelChat.getComponent(1); // Asumiendo que panelInput es el segundo componente
+            panelInput.add(botonJugar, BorderLayout.WEST); // Lo agregamos al panel de entrada
+            panelInput.revalidate();
+            panelInput.repaint();
+        }
     }
 
     @Override
@@ -124,23 +118,57 @@ public class VentanaConsola extends ifVista {
         int[] resp = new int[2];
         resp[0] = Integer.parseInt(preguntarInput("Ingresa el número de jugador en cuyos" +
                 " juegos bajados quieres acomodar: "))-1;
-        resp[1] = Integer.parseInt(preguntarInput(PREGUNTA_NUMERO_JUEGO)) - 1;
+        resp[1] = Integer.parseInt(preguntarInput("En qué número de juego quieres acomodar tu carta?")) - 1;
         return resp;
     }
 
     private int preguntarInputInicial(String input) {
-        UIManager.put("OptionPane.messageFont", new Font("Arial", Font.PLAIN, 18));
-        UIManager.put("TextField.font", new Font("Arial", Font.PLAIN, 16));
-        String mostrar = input + "\nIngrese el número de opción que desee: ";
-        String titulo = "Menú inicial";
-        if (nombreVista != null) {
-            titulo += " - " + nombreVista;
+        // Mostrar el mensaje en el JTextPane
+        textChat.setText(textChat.getText()+"\n"+input + "\nIngrese el número de opción que desee: ");
+        textChat.setCaretPosition(textChat.getDocument().getLength());
+
+        // Cambiar el foco al JTextField para que el usuario pueda escribir
+        textMensaje.requestFocusInWindow();
+
+        // Crear un semáforo para esperar la entrada del usuario
+        final int[] respuesta = { -1 }; // Valor por defecto en caso de error
+        final Object lock = new Object(); // Objeto para sincronización
+        JButton botonEnviar = buttonMap.get("enviar");
+        // Agregar un ActionListener al botón de enviar
+        botonEnviar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    // Leer el valor ingresado por el usuario
+                    String texto = textMensaje.getText().trim();
+                    respuesta[0] = Integer.parseInt(texto); // Convertir a entero
+                    textMensaje.setText(""); // Limpiar el campo de texto
+                    synchronized (lock) {
+                        lock.notify(); // Notificar que se ha recibido la entrada
+                    }
+                } catch (NumberFormatException ex) {
+                    // Si el usuario ingresa algo que no es un número, mostrar un mensaje de error
+                    textChat.setText(textChat.getText()+"\nError: Debe ingresar un número válido.\n" + input + "\nIngrese el número de opción que desee: ");
+                    textMensaje.setText(""); // Limpiar el campo de texto
+                }
+            }
+        });
+
+        // Esperar a que el usuario ingrese un valor
+        synchronized (lock) {
+            try {
+                lock.wait(); // Esperar hasta que se reciba la entrada
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
-        return Integer.parseInt(JOptionPane.showInputDialog(null, mostrar,titulo,JOptionPane.QUESTION_MESSAGE));
+
+        // Retornar la respuesta del usuario
+        return respuesta[0];
     }
 
     private void switchInicial() {
-        final int ELECCION_CREAR_PARTIDA = 1;
+        final int ELECCION_JUGAR = 1;
         final int ELECCION_RANKING = 2;
         final int ELECCION_REGLAS = 3;
         final int ELECCION_SALIR = -1;
@@ -152,15 +180,11 @@ public class VentanaConsola extends ifVista {
             eleccion = preguntarInputInicial(input);
             input = "";
             switch (eleccion) {
-                case ELECCION_CREAR_PARTIDA: {
-                    if (!ctrl.isPartidaEnCurso()) {
-                        if (nombreVista == null) {
-                            setNombreVista();
-                        }
-                        ctrl.crearPartida();
-                    } else {
-                        opcionesIniciales();
+                case ELECCION_JUGAR: {
+                    if (nombreVista == null) {
+                        setNombreVista();
                     }
+                    ctrl.crearPartida();
                     break;
                 }
                 case ELECCION_RANKING: {
@@ -178,9 +202,9 @@ public class VentanaConsola extends ifVista {
                 }
             }
         } while (!iniciada);
-        if (inicioPartida == FALTAN_JUGADORES) {
+        if (inicioPartida == 0) {
             mostrarInfo(input);
-        } else if (inicioPartida == INICIAR_PARTIDA) {
+        } else if (inicioPartida == 1) {
             ctrl.empezarRonda();
             ctrl.cambioTurno();
         }

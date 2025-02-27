@@ -19,18 +19,8 @@ public abstract class ifVista {
     Map<String, JPanel> panelMap;
     Map<String, JButton> buttonMap;
     boolean activa = true;
-    int FALTAN_JUGADORES = 0;
-    int INICIAR_PARTIDA = 1;
     public static String NO_PUEDE_ACOMODAR = "No puede acomodar porque no tienes o no hay juegos bajados o porque la carta que deseas acomodar no hace juego con el juego elegido.";
-    public static String YA_NO_PUEDE_BAJAR = "No puedes volver a bajar juegos en esta ronda.";
     public static String MOSTRAR_JUEGO_INVALIDO = "No puedes bajar porque la combinacion elegida no forma un juego valido para la ronda\n";
-    public static String PREGUNTA_NUMERO_JUEGO = "En qué número de juego quieres acomodar tu carta?";
-    public static final String BAJARSE = "1";
-    public static final String TIRAR = "2";
-    public static final String ORDENAR = "3";
-    public static final String ACOMODAR = "4";
-
-
     static String REGLAS =
     """
         OBJETIVO
