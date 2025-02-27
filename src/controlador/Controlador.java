@@ -1,5 +1,6 @@
 package controlador;
 
+import excepciones.FaltanJugadoresException;
 import modelo.ifPartida;
 import modelo.ifCarta;
 import modelo.Eventos;
@@ -11,7 +12,6 @@ import rmimvc.src.cliente.IControladorRemoto;
 import rmimvc.src.observer.IObservableRemoto;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class Controlador implements IControladorRemoto {
     private ifVista vista;
@@ -147,7 +147,36 @@ public class Controlador implements IControladorRemoto {
 
     public void switchMenuBajar(String eleccion) {
         try {
-            partida.switchMenuBajar(eleccion);
+            switch (eleccion) {
+                case ifVista.BAJARSE -> {
+                    if(vista.preguntarSiQuiereSeguirBajandoJuegos()) {
+                        int[] indicesCartas;
+                        do {
+                            indicesCartas = vista.preguntarQueBajarParaJuego();
+                        } while (partida.hayRepetidos(indicesCartas));
+                        if (!partida.bajarse(indicesCartas)) {
+                            vista.mostrarInfo(ifVista.MOSTRAR_JUEGO_INVALIDO);
+                        }
+                    }
+                }
+                case ifVista.TIRAR -> partida.tirarAlPozo(vista.preguntarQueBajarParaPozo());
+                case ifVista.ORDENAR -> {
+                    int[] cartasOrdenacion = vista.preguntarParaOrdenarCartas();
+                    partida.moverCartaEnMano(cartasOrdenacion[0], cartasOrdenacion[1]);
+                }
+                case ifVista.ACOMODAR -> {
+                    int cartaAcomodar = vista.preguntarCartaParaAcomodar();
+                    int[] seleccion = vista.seleccionarJuego(juegosMesaToString());
+                    int iJuego = seleccion[0];
+                    int numJugador = seleccion[1];
+                    boolean acomodar = partida.acomodar(cartaAcomodar, iJuego, numJugador);
+                    if (acomodar) {
+                        vista.mostrarAcomodoCarta();
+                    } else {
+                        vista.mostrarInfo(ifVista.NO_PUEDE_ACOMODAR);
+                    }
+                }
+            }
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -176,11 +205,7 @@ public class Controlador implements IControladorRemoto {
 
     public void cambioTurno() {
         try {
-            if (vista.isActiva()) {
-                partida.notificarObservadores(NOTIFICACION_CAMBIO_TURNO);
-            } else {
-                vista.salirAlMenu();
-            }
+            partida.notificarObservadores(NOTIFICACION_CAMBIO_TURNO);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -191,62 +216,6 @@ public class Controlador implements IControladorRemoto {
             partida.desarrolloRobo(eleccion);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    private void ordenarCartas(int numJugador) throws RemoteException {
-        int[] cartasOrdenacion = vista.preguntarParaOrdenarCartas();
-        partida.moverCartaEnMano(numJugador, cartasOrdenacion[0], cartasOrdenacion[1]);
-    }
-
-    private void acomodarPropio(int numJugador) throws RemoteException {
-        ArrayList<ArrayList<String>> juegos = enviarJuegosJugador(numJugador);
-        if (!juegos.isEmpty()) {
-            int cartaAcomodar = vista.preguntarCartaParaAcomodar();
-            int numJuego = 0;
-            if (juegos.size()>1) {
-                numJuego = Integer.parseInt(vista.preguntarInput(ifVista.PREGUNTA_NUMERO_JUEGO)) - 1;
-            }
-            if(partida.comprobarAcomodarCartaPropio(numJugador, cartaAcomodar, numJuego)) {
-                partida.acomodarPropio(numJugador,cartaAcomodar,numJuego);
-                vista.mostrarAcomodoCarta();
-                partida.notificarObservadores(NOTIFICACION_BAJO_JUEGO);
-                partida.actualizarMano(numJugador);
-            } else {
-                vista.mostrarInfo(ifVista.NO_PUEDE_ACOMODAR);
-            }
-        } else {
-            vista.mostrarInfo(ifVista.NO_PUEDE_ACOMODAR);
-        }
-    }
-
-    private void acomodarAjeno(int numJugador) throws RemoteException {
-        int numJugadorAcomodar;
-        if (getCantJugActuales()>2) {
-            numJugadorAcomodar = vista.getNumJugadorAcomodar();
-        } else {
-            if (numJugador==0) {
-                numJugadorAcomodar = 1;
-            } else numJugadorAcomodar = 0;
-        }
-        ArrayList<ArrayList<String>> juegos = enviarJuegosJugador(numJugadorAcomodar);
-        if (!juegos.isEmpty()) {
-            int iCartaAcomodar = vista.preguntarCartaParaAcomodar();
-            int numJuego = 0;
-            if (juegos.size()>1) {
-                numJuego = Integer.parseInt(vista.preguntarInput(ifVista.PREGUNTA_NUMERO_JUEGO)) - 1;
-            }
-            if (partida.comprobarAcomodarAjeno(numJugador,numJugadorAcomodar,
-                    iCartaAcomodar,numJuego)) {
-                partida.acomodarAjeno(numJugador,numJugadorAcomodar,iCartaAcomodar,numJuego);
-                vista.mostrarAcomodoCarta();
-                partida.notificarObservadores(NOTIFICACION_BAJO_JUEGO);
-                partida.actualizarMano(numJugador);
-            } else {
-                vista.mostrarInfo(ifVista.NO_PUEDE_ACOMODAR);
-            }
-        } else {
-            vista.mostrarInfo(ifVista.NO_PUEDE_ACOMODAR);
         }
     }
 
@@ -284,10 +253,22 @@ public class Controlador implements IControladorRemoto {
         return juegosString;
     }
 
-    private void tirarAlPozoTurno()
-            throws RemoteException {
-        int cartaATirar = vista.preguntarQueBajarParaPozo();
-        partida.tirarAlPozo(cartaATirar);
+    public ArrayList<ArrayList<ArrayList<String>>> juegosMesaToString() {
+        try {
+            ArrayList<ArrayList<ArrayList<Carta>>> juegosMesa = partida.enviarJuegosEnMesa();
+            ArrayList<ArrayList<ArrayList<String>>> juegosString = new ArrayList<>();
+            for (ArrayList<ArrayList<Carta>> juegoMesa : juegosMesa) {
+                ArrayList<ArrayList<String>> juegoString = new ArrayList<>();
+                for (ArrayList<Carta> juego : juegoMesa) {
+                    ArrayList<ifCarta> cs = new ArrayList<>(juego);
+                    juegoString.add(ifVista.cartasToStringArray(cs));
+                }
+                juegosString.add(juegoString);
+            }
+            return juegosString;
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void roboCastigo() throws RemoteException {
@@ -301,12 +282,35 @@ public class Controlador implements IControladorRemoto {
         }
     }
 
-    public void crearPartida(int cantJugadoresDeseada) {
-        int observadorIndex;
+    public void crearPartida() {
         try {
-            observadorIndex = partida.getObservadorIndex(this);
-            partida.crearJugador(vista.getNombreVista(), observadorIndex);
-            partida.crearPartida(observadorIndex, cantJugadoresDeseada);
+            boolean cantValida = false;
+            int observadorIndex = partida.getObservadorIndex(this);
+            partida.crearJugador(vista.getNombreVista(), observadorIndex);//valida si ya existe
+            while (!cantValida) {
+                try {
+                    if (partida.getCantJugadoresDeseada()==0) { //si no se estableció aún
+                        int cantJugadoresDeseada = vista.preguntarCantJugadoresPartida();
+                        try {
+                            partida.setCantJugadoresDeseada(cantJugadoresDeseada);
+                            cantValida = true; //si no lanza excepción el metodo anterior
+                            partida.inicializarPartida(observadorIndex);
+                        } catch (IllegalArgumentException e) {
+                            vista.mostrarInfo(e.getMessage());
+                        }
+                    }
+                    try {
+                        cantValida = true;
+                        partida.jugarPartida();
+                    } catch (FaltanJugadoresException e) {
+                        vista.mostrarInfo(e.getMessage());
+                    }
+                } catch (NumberFormatException e) {
+                    vista.mostrarInfo("Ingresa un número");
+                } catch (IllegalArgumentException e) {
+                    vista.mostrarInfo(e.getMessage());
+                }
+            }
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -318,38 +322,6 @@ public class Controlador implements IControladorRemoto {
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public Eventos jugarPartidaRecienIniciada() throws RemoteException {
-        int i = 0;
-        Eventos inicio;
-        boolean encontrado = false;
-        int cantJugadoresActuales = getCantJugActuales();
-        while (i < cantJugadoresActuales && !encontrado) {
-            String nombreJugador = partida.getNombreJugador(i);
-            String nombreVista = vista.getNombreVista();
-            if (nombreJugador.equals(nombreVista)) {
-                encontrado = true; //significa que el creó la partida, llamó a esta funcion
-            }
-            i++;
-        }
-        if (!encontrado) {
-        //significa que la vista llamó a esta funcion pero no creó la partida
-            partida.crearJugador(vista.getNombreVista(), partida.getObservadorIndex(this));
-        }
-        int cantActual = getCantJugActuales();
-        int cantDeseada = partida.getCantJugadoresDeseada();
-        if (cantActual == cantDeseada) {
-            inicio = INICIAR_PARTIDA;
-        } else {
-            inicio = FALTAN_JUGADORES;
-        }
-
-        if (inicio==INICIAR_PARTIDA) {
-            partida.notificarObservadores(NOTIFICACION_AGREGAR_OBSERVADOR);
-            partida.ponerJugadoresEnOrden();
-        }
-        return inicio;
     }
 
     public void empezarRonda() {

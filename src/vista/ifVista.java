@@ -5,6 +5,7 @@ import modelo.ifCarta;
 import javax.swing.*;
 import java.awt.*;
 import java.rmi.RemoteException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -28,6 +29,7 @@ public abstract class ifVista {
     public static final String TIRAR = "2";
     public static final String ORDENAR = "3";
     public static final String ACOMODAR = "4";
+
 
     static String REGLAS =
     """
@@ -203,6 +205,7 @@ public abstract class ifVista {
 
     public void comienzoRonda(int ronda) {
         JLabel label = new JLabel(mostrarCombinacionRequerida(ronda));
+        label.setFont(new Font("Arial", Font.PLAIN, 15));
         JPanel panelInfoRonda = panelMap.get("infoRonda");
         panelInfoRonda.removeAll();
         panelInfoRonda.add(label);
@@ -210,15 +213,12 @@ public abstract class ifVista {
         panelInfoRonda.repaint();
     }
 
-    public int getNumJugadorAcomodar() {
-        return Integer.parseInt(preguntarInput("Ingresa el número de jugador en cuyos" +
-                " juegos bajados quieres acomodar: "))-1;
-    }
-
     public void mostrarPuntosRonda(Map<String, Integer> puntos) {
         JPanel panelPuntuacion = panelMap.get("Puntuacion");
         panelPuntuacion.removeAll();
-        panelPuntuacion.add(getLabelPuntos(puntos));
+        JLabel label = getLabelPuntos(puntos);
+        label.setFont(new Font("Arial", Font.PLAIN, 15));
+        panelPuntuacion.add(label);
         panelPuntuacion.revalidate();
         panelPuntuacion.repaint();
     }
@@ -250,10 +250,7 @@ public abstract class ifVista {
         this.activa = activa;
     }
 
-    public int menuBajar() {
-        return 0;
-    }
-
+    public abstract int preguntarCantJugadoresPartida();
     public void esperaRoboCastigo(){}
     public abstract int[] preguntarParaOrdenarCartas();
     public abstract int preguntarCartaParaAcomodar();
@@ -275,4 +272,5 @@ public abstract class ifVista {
     public void esperarRoboCastigo(){}
     public void terminaEsperaRoboCastigo(){}
     public void inicializarMenu(){}
+    public abstract int[] seleccionarJuego(ArrayList<ArrayList<ArrayList<String>>> juegosMesa);
 }

@@ -1,5 +1,6 @@
 package modelo;
 
+import excepciones.FaltanJugadoresException;
 import rmimvc.src.observer.IObservableRemoto;
 import rmimvc.src.observer.IObservadorRemoto;
 import serializacion.Serializador;
@@ -24,14 +25,13 @@ public interface ifPartida extends IObservableRemoto {
     Map<String, Integer> getPuntosJugadores() throws RemoteException;
     void actualizarMano(int numJugador) throws RemoteException;
     String getGanador() throws RemoteException;
-    boolean jugarPartida() throws RemoteException;
+    void jugarPartida() throws RemoteException, FaltanJugadoresException;
     void crearJugador(String nombre, int numObservador)
             throws RemoteException;
     boolean cortar(int numJugador) throws RemoteException;
-    void crearPartida(int observadorIndex,int cantJugadoresDeseada)
+    void inicializarPartida(int observadorIndex)
             throws RemoteException;
     int getCantJugadoresDeseada() throws RemoteException;
-    void ponerJugadoresEnOrden() throws RemoteException;
     boolean isEnCurso() throws RemoteException;
     void robarDelMazo() throws RemoteException;
     void robarDelPozo() throws RemoteException;
@@ -55,7 +55,12 @@ public interface ifPartida extends IObservableRemoto {
             throws RemoteException;
     void incNumJugadorRoboCastigo() throws RemoteException;
     void comprobarEmpezarPartida() throws RemoteException;
-    void desarrolloRobo(String eleccion) throws RemoteException;
+    void desarrolloRobo(String eleccion)
+            throws RemoteException;
     boolean hayRepetidos(int[] array) throws RemoteException;
     boolean acomodar(int cartaAcomodar, int iJuego, int numJugador) throws RemoteException;
+    boolean bajarse(int[] indicesCartas) throws RemoteException;
+    void setCantJugadoresDeseada(int cant) throws RemoteException;
+    ArrayList<ArrayList<ArrayList<Carta>>> enviarJuegosEnMesa()
+            throws RemoteException;
 }

@@ -16,35 +16,35 @@ class Jugador implements Serializable {
     }
 
     int[] comprobarQueFaltaParaCortar(int ronda) {
-        int triosBajados = getTriosBajados();
-        int escalerasBajadas = getEscalerasBajadas();
+        int[] juegosBajados = new int[2];
+        getJuegosBajados(juegosBajados);
         int trios = 0;
         int escaleras = 0;
         int[] faltante = new int[2];
         switch (ronda) {
             case 1:
-                trios = 2 - triosBajados;
+                trios = 2 - juegosBajados[0];
                 break;
             case 2:
-                trios = 1 - triosBajados;
-                escaleras = 1 - escalerasBajadas;
+                trios = 1 - juegosBajados[0];
+                escaleras = 1 - juegosBajados[1];
                 break;
             case 3:
-                escaleras = 2 - escalerasBajadas;
+                escaleras = 2 - juegosBajados[1];
                 break;
             case 4:
-                trios = 3 - triosBajados;
+                trios = 3 - juegosBajados[0];
                 break;
             case 5:
-                trios = 2 - triosBajados;
-                escaleras = 1 - escalerasBajadas;
+                trios = 2 - juegosBajados[0];
+                escaleras = 1 - juegosBajados[1];
                 break;
             case 6:
-                trios = 1 - triosBajados;
-                escaleras = 2 - escalerasBajadas;
+                trios = 1 - juegosBajados[0];
+                escaleras = 2 - juegosBajados[1];
                 break;
             case 7:
-                escaleras = 3 - escalerasBajadas;
+                escaleras = 3 - juegosBajados[1];
                 break;
         }
         faltante[0] = trios;
@@ -52,47 +52,38 @@ class Jugador implements Serializable {
         return faltante;
     }
 
-    private int getTriosBajados() {
-        int trios = 0;
+    private void getJuegosBajados(int[] juegosBajados) {
         for (JuegoBajado j : juegos) {
-            if (j.tipo==TipoJuego.TRIO) trios++;
+            if (j instanceof TrioBajado) juegosBajados[0]++;
+            else if (j instanceof EscaleraBajada) juegosBajados[1]++;
         }
-        return trios;
-    }
-
-    private int getEscalerasBajadas() {
-        int escaleras = 0;
-        for (JuegoBajado j : juegos) {
-            if (j.tipo==TipoJuego.ESCALERA) escaleras++;
-        }
-        return escaleras;
     }
 
     boolean comprobarPosibleCorte(int ronda) {
-        int trios = getTriosBajados();
-        int escaleras = getEscalerasBajadas();
+        int[] juegosBajados = new int[2];
+        getJuegosBajados(juegosBajados);
         boolean puedeCortar = false;
         switch (ronda) {
             case 1:
-                puedeCortar = trios == 2;
+                puedeCortar = juegosBajados[0] == 2;
                 break;
             case 2:
-                puedeCortar = trios == 1 && escaleras == 1;
+                puedeCortar = juegosBajados[0] == 1 && juegosBajados[1] == 1;
                 break;
             case 3:
-                puedeCortar = escaleras == 2;
+                puedeCortar = juegosBajados[1] == 2;
                 break;
             case 4:
-                puedeCortar = trios == 3;
+                puedeCortar = juegosBajados[0] == 3;
                 break;
             case 5:
-                puedeCortar = trios == 2 && escaleras == 1;
+                puedeCortar = juegosBajados[0] == 2 && juegosBajados[1] == 1;
                 break;
             case 6:
-                puedeCortar = trios == 1 && escaleras == 2;
+                puedeCortar = juegosBajados[0] == 1 && juegosBajados[1] == 2;
                 break;
             case 7:
-                puedeCortar = escaleras == 3;
+                puedeCortar = juegosBajados[1] == 3;
                 break;
             default:
                 break;

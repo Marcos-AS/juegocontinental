@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +14,7 @@ public class GUI extends ifVista {
 
     @Override
     public void iniciar() {
-        frame.setSize(800,800);
+        frame.setSize(800, 800);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setIconImage(new ImageIcon(asociarRuta("cartas_inicio")).getImage());
 
@@ -83,7 +82,7 @@ public class GUI extends ifVista {
         panelMenu.revalidate();
 
         panelMenu.setLayout(new BoxLayout(panelMenu, BoxLayout.Y_AXIS));
-        panelMenu.setBorder(BorderFactory.createEmptyBorder(50,50,50,50));
+        panelMenu.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
         panelMenu.setBackground(new Color(85, 158, 196));
 
         JLabel label = new JLabel("¡Bienvenido al juego!");
@@ -91,41 +90,16 @@ public class GUI extends ifVista {
         label.setForeground(Color.WHITE);
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JButton botonIniciar = new JButton("Iniciar Partida");
         JButton botonJugar = new JButton("Jugar");
         JButton botonCargar = new JButton("Cargar partida");
 
-        botonJugar.setEnabled(false);
-
-        botonIniciar.addActionListener(e -> {
-            botonIniciar.setEnabled(false);
-            if (!ctrl.isPartidaEnCurso()) {
-                if (nombreVista == null) {
-                    setNombreVista();
-                }
-                ctrl.crearPartida(preguntarCantJugadoresPartida());
-            } else {
-                mostrarInfo("Ya hay una partida en curso");
-            }
-            botonJugar.setEnabled(true);
-        });
-
         botonJugar.addActionListener(e -> {
-            try {
-                botonCargar.setEnabled(false);
-                if (nombreVista == null)
-                    setNombreVista();
-                int inicioPartida = ctrl.jugarPartidaRecienIniciada().ordinal();
-                if (inicioPartida == FALTAN_JUGADORES) {
-                    mostrarInfo("Esperando que ingresen más jugadores...");
-                } else if (inicioPartida == INICIAR_PARTIDA) { //1 solo cli ejecuta esto
-                    ctrl.empezarRonda();
-                    ctrl.cambioTurno();
-                }
-            } catch (RemoteException ex) {
-                throw new RuntimeException(ex);
+            if (nombreVista == null) {
+                setNombreVista();
             }
+            ctrl.crearPartida();
         });
+
 
         botonCargar.addActionListener(e -> {
             if (!ctrl.cargarPartida()) {
@@ -133,14 +107,11 @@ public class GUI extends ifVista {
             }
         });
 
-        buttonMap.put("botonJugar",botonJugar);
-        buttonMap.put("botonIniciar",botonIniciar);
-        buttonMap.put("botonCargar",botonCargar);
+        buttonMap.put("botonJugar", botonJugar);
+        buttonMap.put("botonCargar", botonCargar);
 
         panelMenu.add(label);
         panelMenu.add(Box.createVerticalStrut(30));
-        panelMenu.add(botonIniciar);
-        panelMenu.add(Box.createVerticalStrut(20));
         panelMenu.add(botonJugar);
         panelMenu.add(Box.createVerticalStrut(20));
         panelMenu.add(botonCargar);
@@ -154,32 +125,26 @@ public class GUI extends ifVista {
         }
     }
 
-    private int preguntarCantJugadoresPartida() {
-        int cantJugadores = 0;
-        while (cantJugadores < 2) {
-            cantJugadores = Integer.parseInt(preguntarInput("Cuántos jugadores" +
-                    " deseas para la nueva partida?"));
-        }
-        return cantJugadores;
+    public int preguntarCantJugadoresPartida() {
+        return Integer.parseInt(preguntarInput("Cuántos jugadores" +
+                " deseas para la nueva partida?"));
         //return 2;//prueba
     }
 
     private void crearBotonesMenuBajar(JPanel panelMesa) {
         JButton bajarJuegoBoton = new JButton("Bajar Juego");
         JButton tirarAlPozoBoton = new JButton("Tirar al pozo");
-        JButton acomodarPropioBoton = new JButton("Acomodar en un juego propio");
-        JButton acomodarAjenoBoton = new JButton("Acomodar en un juego ajeno");
+        JButton acomodarBoton = new JButton("Acomodar carta en un juego");
         JButton ordenarBoton = new JButton("Ordenar mano");
         JButton guardarYSalir = new JButton("Guardar y salir");
 
         bajarJuegoBoton.setEnabled(false);
         tirarAlPozoBoton.setEnabled(false);
-        acomodarPropioBoton.setEnabled(false);
-        acomodarAjenoBoton.setEnabled(false);
+        acomodarBoton.setEnabled(false);
         ordenarBoton.setEnabled(false);
 
         bajarJuegoBoton.addActionListener(e -> {
-            ctrl.switchMenuBajar(ELECCION_BAJARSE);
+            ctrl.switchMenuBajar(BAJARSE);
             if (!ctrl.isTurnoActual()) { //si cortó despues de bajar juegos, entonces el turno se hizo false
                 activarBotonesBajar(false);
                 ctrl.finTurno();
@@ -188,7 +153,7 @@ public class GUI extends ifVista {
         });
 
         tirarAlPozoBoton.addActionListener(e -> {
-            ctrl.switchMenuBajar(ELECCION_TIRAR_AL_POZO);
+            ctrl.switchMenuBajar(TIRAR);
             new SwingWorker<Void, Void>() {
                 @Override
                 protected Void doInBackground() throws Exception {
@@ -206,23 +171,20 @@ public class GUI extends ifVista {
             }.execute();
         });
 
-        acomodarPropioBoton.addActionListener(e -> ctrl.switchMenuBajar(ELECCION_ACOMODAR_JUEGO_PROPIO));
-        acomodarAjenoBoton.addActionListener(e -> ctrl.switchMenuBajar(ELECCION_ACOMODAR_JUEGO_AJENO));
-        ordenarBoton.addActionListener(e -> ctrl.switchMenuBajar(ELECCION_ORDENAR_CARTAS));
+        acomodarBoton.addActionListener(e -> ctrl.switchMenuBajar(ACOMODAR));
+        ordenarBoton.addActionListener(e -> ctrl.switchMenuBajar(ORDENAR));
         guardarYSalir.addActionListener(e -> ctrl.guardarPartida());
 
         JPanel panelBotones = new JPanel();
         panelBotones.add(bajarJuegoBoton);
         panelBotones.add(tirarAlPozoBoton);
-        panelBotones.add(acomodarPropioBoton);
-        panelBotones.add(acomodarAjenoBoton);
+        panelBotones.add(acomodarBoton);
         panelBotones.add(ordenarBoton);
         panelBotones.add(guardarYSalir);
 
         buttonMap.put("bajarJuego", bajarJuegoBoton);
         buttonMap.put("tirarAlPozo", tirarAlPozoBoton);
-        buttonMap.put("acomodarPropio", acomodarPropioBoton);
-        buttonMap.put("acomodarAjeno", acomodarAjenoBoton);
+        buttonMap.put("acomodar", acomodarBoton);
         buttonMap.put("ordenar", ordenarBoton);
         buttonMap.put("guardar", guardarYSalir);
 
@@ -269,15 +231,7 @@ public class GUI extends ifVista {
     }
 
     private void robarCarta(String origen) {
-        String eleccion = "";
-        if ("pozo".equals(origen)) {
-            eleccion = ELECCION_ROBAR_DEL_POZO;
-            buttonMap.get("cartaMazo").setEnabled(false);
-        } else if ("mazo".equals(origen)) {
-            eleccion = ELECCION_ROBAR_DEL_MAZO;
-            buttonMap.get("cartaPozo").setEnabled(false);
-        }
-        ctrl.desarrolloRobo(eleccion);
+        ctrl.desarrolloRobo(origen);
         buttonMap.get("guardar").setEnabled(false);
         activarBotonesBajar(true);
     }
@@ -293,7 +247,9 @@ public class GUI extends ifVista {
                 buttonMap.get("ordenar").setEnabled(true);
                 JPanel panelTurno = panelMap.get("Turno");
                 panelTurno.removeAll();
-                panelTurno.add(new JLabel("Es tu turno."));
+                JLabel label = new JLabel("Es tu turno");
+                label.setFont(new Font("Arial", Font.BOLD, 16));
+                panelTurno.add(label);
                 panelTurno.revalidate();
                 panelTurno.repaint();
             } else {
@@ -320,12 +276,17 @@ public class GUI extends ifVista {
             for (int i = 0; i < manoSize; i++) {
                 String carta = cartas.get(i);
                 mano.add(carta);
-                JButton buttonCarta = getImageButton(carta);
-                buttonCarta.setBorder(BorderFactory.createTitledBorder(String.valueOf(i+1)));
-                panelMano.add(buttonCarta);
+                JLabel imgCarta = getImage(carta);
+                panelMano.add(imgCarta);
+                //buttonCarta.setBorder(BorderFactory.createTitledBorder(String.valueOf(i+1)));
             }
             cardLayout.show(cardPanel, "Mesa");
         });
+    }
+
+    private JLabel getImage(String carta) {
+        ImageIcon imagen = new ImageIcon(asociarRuta(carta));
+        return new JLabel(new ImageIcon(imagen.getImage().getScaledInstance(80, 120, Image.SCALE_SMOOTH)));
     }
 
     @Override
@@ -371,7 +332,7 @@ public class GUI extends ifVista {
 
         // Crear el ImageIcon con la imagen redimensionada
         Image imagenRedimensionada =
-                imagen.getImage().getScaledInstance(80,120, Image.SCALE_SMOOTH);
+                imagen.getImage().getScaledInstance(80, 120, Image.SCALE_SMOOTH);
         ImageIcon iconRedimensionado = new ImageIcon(imagenRedimensionada);
         return new JButton(iconRedimensionado);
     }
@@ -379,8 +340,7 @@ public class GUI extends ifVista {
     private void activarBotonesBajar(boolean activar) {
         buttonMap.get("bajarJuego").setEnabled(activar);
         buttonMap.get("tirarAlPozo").setEnabled(activar);
-        buttonMap.get("acomodarPropio").setEnabled(activar);
-        buttonMap.get("acomodarAjeno").setEnabled(activar);
+        buttonMap.get("acomodar").setEnabled(activar);
         buttonMap.get("ordenar").setEnabled(activar);
     }
 
@@ -396,13 +356,9 @@ public class GUI extends ifVista {
         JPanel panelCartas = new JPanel(new FlowLayout());
         dialogo.add(panelCartas, BorderLayout.CENTER);
 
-        // Botón para confirmar selección
-        JButton botonConfirmar = new JButton("Confirmar selección");
-        botonConfirmar.setEnabled(false);
-        dialogo.add(botonConfirmar, BorderLayout.SOUTH);
 
         // Variable para rastrear la carta seleccionada
-        final int[] cartaSeleccionada = { -1 };
+        final int[] cartaSeleccionada = {-1};
 
         // Crear botones para cada carta en la mano
         for (int i = 0; i < manoSize; i++) {
@@ -411,25 +367,12 @@ public class GUI extends ifVista {
             int index = i;
 
             botonCarta.addActionListener(e -> {
-                // Desmarcar la selección previa si existe
-                if (cartaSeleccionada[0] != -1) {
-                    Component prevButton = panelCartas.getComponent(cartaSeleccionada[0]);
-                    if (prevButton instanceof JButton) {
-                        ((JButton) prevButton).setBorder(BorderFactory.createEmptyBorder());
-                    }
-                }
-
-                // Seleccionar la nueva carta
                 cartaSeleccionada[0] = index;
-                botonCarta.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
-                botonConfirmar.setEnabled(true);
+                dialogo.dispose();
             });
 
             panelCartas.add(botonCarta);
         }
-
-        // Acción al confirmar
-        botonConfirmar.addActionListener(e -> dialogo.dispose());
 
         dialogo.setVisible(true);
 
@@ -451,14 +394,13 @@ public class GUI extends ifVista {
     public void mostrarJuegos(String nombreJugador, ArrayList<ArrayList<String>> juegos) {
         JPanel panelJuegos = panelMap.get("Juegos");
         JPanel panelJuegosJugador = new JPanel();
-        panelJuegosJugador.setBorder(BorderFactory.createTitledBorder("Juegos de " + nombreJugador + " jugador N° " + (ctrl.getNumJugador(nombreJugador)+1)));
+        panelJuegosJugador.setBorder(BorderFactory.createTitledBorder("Juegos de " + nombreJugador + " jugador N° " + (ctrl.getNumJugador(nombreJugador) + 1)));
         // Iterar sobre los juegos y crear subpaneles para cada uno
         for (int i = 0; i < juegos.size(); i++) {
             ArrayList<String> juego = juegos.get(i);
             JPanel panelJuego = new JPanel();
             panelJuego.setLayout(new BoxLayout(panelJuego, BoxLayout.X_AXIS)); // Espaciado entre cartas
             panelJuego.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2)); // Borde para cada juego
-            panelJuego.setBorder(BorderFactory.createTitledBorder("Juego N° " + (i + 1)));
             panelJuego.setBackground(new Color(200, 200, 255)); // Fondo azul claro para diferenciar
 
             for (String carta : juego) {
@@ -552,8 +494,6 @@ public class GUI extends ifVista {
 
     @Override
     public void nuevaPartida() {
-        buttonMap.get("botonIniciar").setEnabled(false);
-        buttonMap.get("botonJugar").setEnabled(true);
         mostrarInfo("Se ha creado una partida.");
     }
 
@@ -567,7 +507,7 @@ public class GUI extends ifVista {
 
     @Override
     public void esperarRoboCastigo() {
-        SwingUtilities.invokeLater(()-> {
+        SwingUtilities.invokeLater(() -> {
             JPanel panel = panelMap.get("pozoYMazo");
             JLabel label = new JLabel("Espere mientras los demás jugadores pueden robar con castigo");
             panel.add(label);
@@ -579,7 +519,7 @@ public class GUI extends ifVista {
 
     @Override
     public void terminaEsperaRoboCastigo() {
-        SwingUtilities.invokeLater(()-> {
+        SwingUtilities.invokeLater(() -> {
             activarBotonesBajar(true);
             JPanel panel = panelMap.get("pozoYMazo");
             for (Component comp : panel.getComponents()) {
@@ -619,7 +559,7 @@ public class GUI extends ifVista {
 
         panelBotones.add(botonTres);
         panelBotones.add(botonCuatro);
-        if (manoSize<4) botonCuatro.setEnabled(false);
+        if (manoSize < 4) botonCuatro.setEnabled(false);
         int ronda = ctrl.getNumRonda();
         if (ronda == 3 || ronda == 7) botonTres.setEnabled(false);
         dialogo.add(panelBotones, BorderLayout.CENTER);
@@ -649,7 +589,7 @@ public class GUI extends ifVista {
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
                 null,
-                new Object[] { "Sí", "No" }, // Etiquetas de los botones
+                new Object[]{"Sí", "No"}, // Etiquetas de los botones
                 "Sí" // Botón predeterminado
         );
 
@@ -665,7 +605,7 @@ public class GUI extends ifVista {
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
                 null, // Ícono personalizado (null usa el predeterminado)
-                new Object[] { "Sí", "No" }, // Etiquetas de los botones
+                new Object[]{"Sí", "No"}, // Etiquetas de los botones
                 "Sí" // Botón predeterminado
         );
 
@@ -681,5 +621,86 @@ public class GUI extends ifVista {
         menu.add(label);
         menu.revalidate();
         menu.repaint();
+    }
+
+    public int[] seleccionarJuego(ArrayList<ArrayList<ArrayList<String>>> juegosMesa) {
+        // Crear diálogo
+        JDialog dialogo = new JDialog((JFrame) null, "Seleccionar un juego", true);
+        dialogo.setLayout(new BorderLayout());
+        dialogo.setSize(600, 400);
+        dialogo.setLocationRelativeTo(null);
+
+        // Panel de jugadores y juegos
+        JPanel panelPrincipal = new JPanel();
+        panelPrincipal.setLayout(new BoxLayout(panelPrincipal, BoxLayout.Y_AXIS));
+        JScrollPane scrollPane = new JScrollPane(panelPrincipal);
+        dialogo.add(scrollPane, BorderLayout.CENTER);
+
+        // Botón para confirmar selección
+        JButton botonConfirmar = new JButton("Confirmar selección");
+        botonConfirmar.setEnabled(false);
+        dialogo.add(botonConfirmar, BorderLayout.SOUTH);
+
+        // Variables de selección
+        final int[] jugadorSeleccionado = {-1};
+        final int[] juegoSeleccionado = {-1};
+
+        // Recorre los jugadores y sus juegos
+        for (int i = 0; i < juegosMesa.size(); i++) {
+            ArrayList<ArrayList<String>> juegosJugador = juegosMesa.get(i);
+
+            JPanel panelJugador = new JPanel();
+            panelJugador.setLayout(new BoxLayout(panelJugador, BoxLayout.Y_AXIS));
+            panelJugador.setBorder(BorderFactory.createTitledBorder("Jugador " + (i + 1)));
+
+            for (int j = 0; j < juegosJugador.size(); j++) {
+                JPanel panelJuego = new JPanel();
+                panelJuego.setLayout(new BorderLayout());
+
+                // Panel de cartas del juego
+                JPanel panelCartas = new JPanel(new FlowLayout());
+                for (String carta : juegosJugador.get(j)) {
+                    panelCartas.add(getImage(carta));
+                }
+                panelJuego.add(panelCartas, BorderLayout.CENTER);
+
+                // Botón para seleccionar el juego
+                JButton botonJuego = new JButton("Juego " + (j + 1));
+                int finalI = i;
+                int finalJ = j;
+
+                botonJuego.addActionListener(e -> {
+                    jugadorSeleccionado[0] = finalI;
+                    juegoSeleccionado[0] = finalJ;
+
+                    // Resaltar el botón seleccionado
+                    for (Component comp : panelJugador.getComponents()) {
+                        if (comp instanceof JPanel) {
+                            for (Component btn : ((JPanel) comp).getComponents()) {
+                                if (btn instanceof JButton) {
+                                    ((JButton) btn).setBorder(BorderFactory.createEmptyBorder());
+                                }
+                            }
+                        }
+                    }
+                    botonJuego.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
+
+                    botonConfirmar.setEnabled(true);
+                });
+
+                panelJuego.add(botonJuego, BorderLayout.SOUTH);
+                panelJugador.add(panelJuego);
+            }
+
+            panelPrincipal.add(panelJugador);
+        }
+
+        // Acción al confirmar
+        botonConfirmar.addActionListener(e -> dialogo.dispose());
+
+        dialogo.setVisible(true);
+
+        // Retorna el número de jugador y el índice del juego seleccionado (-1 si no selecciona)
+        return new int[]{juegoSeleccionado[0],jugadorSeleccionado[0]};
     }
 }

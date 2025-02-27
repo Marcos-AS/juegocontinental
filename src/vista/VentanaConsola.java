@@ -3,6 +3,7 @@ package vista;
 import javax.swing.*;
 import java.awt.*;
 import java.rmi.RemoteException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
@@ -10,6 +11,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class VentanaConsola extends ifVista {
+    private JTextPane textChat;
+    private JTextField textMensaje;
 
     @Override
     public void iniciar() {
@@ -20,6 +23,13 @@ public class VentanaConsola extends ifVista {
         cardPanel = new JPanel(cardLayout);
         panelMap = new HashMap<>();
         buttonMap = new HashMap<>();
+
+        textChat = new JTextPane();
+        textChat.setEditable(false);
+        textMensaje = new JTextField(10);
+        JButton botonEnviar = new JButton("Enviar");
+        buttonMap.put("enviar",botonEnviar);
+
 
         JPanel panelMenu = new JPanel();
         JPanel panelPozo = new JPanel();
@@ -40,6 +50,10 @@ public class VentanaConsola extends ifVista {
         panelMesa.add(panelPozo);
         panelMesa.add(panelRestricciones);
         panelMesa.add(panelJuegos);
+        panelMesa.add(textChat);
+        panelMesa.add(textMensaje);
+        panelMesa.add(botonEnviar);
+
 
         cardPanel.add(panelMesa, "Mesa");
         cardPanel.add(panelMenu, "Menu");
@@ -110,6 +124,15 @@ public class VentanaConsola extends ifVista {
         cardLayout.show(cardPanel, "Menu");
     }
 
+    @Override
+    public int[] seleccionarJuego(ArrayList<ArrayList<ArrayList<String>>> juegosMesa) {
+        int[] resp = new int[2];
+        resp[0] = Integer.parseInt(preguntarInput("Ingresa el número de jugador en cuyos" +
+                " juegos bajados quieres acomodar: "))-1;
+        resp[1] = Integer.parseInt(preguntarInput(PREGUNTA_NUMERO_JUEGO)) - 1;
+        return resp;
+    }
+
     private int preguntarInputInicial(String input) {
         UIManager.put("OptionPane.messageFont", new Font("Arial", Font.PLAIN, 18));
         UIManager.put("TextField.font", new Font("Arial", Font.PLAIN, 16));
@@ -140,28 +163,9 @@ public class VentanaConsola extends ifVista {
                         if (nombreVista == null) {
                             setNombreVista();
                         }
-                        ctrl.crearPartida(preguntarCantJugadoresPartida());
+                        ctrl.crearPartida();
                     } else {
                         opcionesIniciales();
-                    }
-                    break;
-                }
-                case ELECCION_JUGAR_PARTIDA: {
-                    if (ctrl.isPartidaEnCurso()) {
-                        if (nombreVista == null) {
-                            setNombreVista();//prueba
-                        }
-                        try {
-                            inicioPartida = ctrl.jugarPartidaRecienIniciada().ordinal();
-                        } catch (RemoteException e) {
-                            throw new RuntimeException(e);
-                        }
-                        if (inicioPartida == FALTAN_JUGADORES) {
-                            input = "Esperando que ingresen más jugadores...";
-                        }
-                        iniciada = true;
-                    } else {
-                        input = "Primero tienes que crear una partida";
                     }
                     break;
                 }
@@ -188,7 +192,7 @@ public class VentanaConsola extends ifVista {
         }
     }
 
-    private int preguntarCantJugadoresPartida() {
+    public int preguntarCantJugadoresPartida() {
         int cantJugadores = 0;
         while (cantJugadores < 2) {
             cantJugadores = Integer.parseInt(preguntarInput("Cuántos jugadores" +
@@ -318,25 +322,20 @@ public class VentanaConsola extends ifVista {
         return s.toString();
     }
 
-    @Override
-    public int menuBajar() {
+    public String menuBajar() {
         String MENU_BAJAR = """
         Elije una opción:
         1 - Bajar uno o más juegos
         2 - Tirar al pozo
         3 - Ordenar cartas
-        4 - Acomodar en un juego bajado propio
-        5 - Acomodar en un juego bajado ajeno""";
+        4 - Acomodar una carta
+        """;
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        int eleccion = 0;
-        while (eleccion < ELECCION_BAJARSE || eleccion > ELECCION_ACOMODAR_JUEGO_AJENO) {
-            eleccion = Integer.parseInt(preguntarInput(MENU_BAJAR));
-        }
-        return eleccion;
+        return preguntarInput(MENU_BAJAR);
     }
 
     @Override
