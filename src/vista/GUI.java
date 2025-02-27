@@ -29,7 +29,6 @@ public class GUI extends ifVista {
         JPanel panelJuegos = new JPanel();
         JPanel panelMano = new JPanel(new FlowLayout());
         JPanel panelInfoRonda = new JPanel();
-        JPanel panelRestricciones = new JPanel();
         JPanel panelPuntos = new JPanel();
         JPanel panelTurno = new JPanel();
 
@@ -51,7 +50,6 @@ public class GUI extends ifVista {
         panelMesa.add(panelJuegos, BorderLayout.SOUTH);
         panelMesa.add(panelInfoRonda, BorderLayout.PAGE_START);
         panelMesa.add(panelPuntos, BorderLayout.EAST);
-        panelMesa.add(panelRestricciones, BorderLayout.PAGE_END);
         panelMesa.add(panelTurno, BorderLayout.PAGE_END);
         panelMesa.setBackground(new Color(81, 206, 81));
 
@@ -64,7 +62,6 @@ public class GUI extends ifVista {
         panelMap.put("Juegos", panelJuegos);
         panelMap.put("Mano", panelMano);
         panelMap.put("infoRonda", panelInfoRonda);
-        panelMap.put("Restricciones", panelRestricciones);
         panelMap.put("Puntuacion", panelPuntos);
         panelMap.put("Turno", panelTurno);
 
@@ -143,34 +140,8 @@ public class GUI extends ifVista {
         acomodarBoton.setEnabled(false);
         ordenarBoton.setEnabled(false);
 
-        bajarJuegoBoton.addActionListener(e -> {
-            ctrl.switchMenuBajar(BAJARSE);
-            if (!ctrl.isTurnoActual()) { //si cortó despues de bajar juegos, entonces el turno se hizo false
-                activarBotonesBajar(false);
-                ctrl.finTurno();
-                ctrl.cambioTurno();
-            }
-        });
-
-        tirarAlPozoBoton.addActionListener(e -> {
-            ctrl.switchMenuBajar(TIRAR);
-            new SwingWorker<Void, Void>() {
-                @Override
-                protected Void doInBackground() throws Exception {
-                    Thread.sleep(100); // Espera un momento para que la GUI se actualice
-                    return null;
-                }
-
-                @Override
-                protected void done() {
-                    //Actualiza la GUI después de la espera
-                    activarBotonesBajar(false);
-                    ctrl.finTurno();
-                    ctrl.cambioTurno();
-                }
-            }.execute();
-        });
-
+        bajarJuegoBoton.addActionListener(e -> ctrl.switchMenuBajar(BAJARSE));
+        tirarAlPozoBoton.addActionListener(e -> ctrl.switchMenuBajar(TIRAR));
         acomodarBoton.addActionListener(e -> ctrl.switchMenuBajar(ACOMODAR));
         ordenarBoton.addActionListener(e -> ctrl.switchMenuBajar(ORDENAR));
         guardarYSalir.addActionListener(e -> ctrl.guardarPartida());
@@ -225,7 +196,8 @@ public class GUI extends ifVista {
             if (!boton.isEnabled()) {
                 return;
             }
-            boton.setEnabled(false);
+            buttonMap.get("cartaPozo").setEnabled(false);
+            buttonMap.get("cartaMazo").setEnabled(false);
             robarCarta(origen);
         }
     }
@@ -238,6 +210,7 @@ public class GUI extends ifVista {
 
     @Override
     public void cambioTurno() {
+        Font font = new Font("Arial", Font.BOLD, 16);
         if (ctrl.isPartidaEnCurso()) {
             String nombre = ctrl.getTurnoDe();
             buttonMap.get("guardar").setEnabled(true);
@@ -248,16 +221,19 @@ public class GUI extends ifVista {
                 JPanel panelTurno = panelMap.get("Turno");
                 panelTurno.removeAll();
                 JLabel label = new JLabel("Es tu turno");
-                label.setFont(new Font("Arial", Font.BOLD, 16));
+                label.setFont(font);
                 panelTurno.add(label);
                 panelTurno.revalidate();
                 panelTurno.repaint();
             } else {
                 buttonMap.get("cartaPozo").setEnabled(false);
                 buttonMap.get("cartaMazo").setEnabled(false);
+                activarBotonesBajar(false);
                 JPanel panelTurno = panelMap.get("Turno");
                 panelTurno.removeAll();
-                panelTurno.add(new JLabel("Espera tu turno."));
+                JLabel label = new JLabel("Espera tu turno");
+                label.setFont(font);
+                panelTurno.add(label);
                 panelTurno.revalidate();
                 panelTurno.repaint();
             }
@@ -306,16 +282,6 @@ public class GUI extends ifVista {
     private void setImage(JButton cartaPozo, String rutaImagen) {
         ImageIcon imagen = new ImageIcon(asociarRuta(rutaImagen));
         cartaPozo.setIcon(new ImageIcon(imagen.getImage().getScaledInstance(80, 120, Image.SCALE_SMOOTH)));
-    }
-
-    @Override
-    public void actualizarJuegos() {
-        JPanel panelJuegos = panelMap.get("Juegos");
-        panelJuegos.removeAll();
-        panelJuegos.setLayout(new BoxLayout(panelJuegos, BoxLayout.Y_AXIS)); // Layout vertical (una carta debajo de otra)
-        panelJuegos.setBackground(Color.LIGHT_GRAY);
-        panelJuegos.revalidate();
-        panelJuegos.repaint();
     }
 
     private JButton getImageButton(String carta) {
@@ -393,11 +359,13 @@ public class GUI extends ifVista {
     @Override
     public void mostrarJuegos(String nombreJugador, ArrayList<ArrayList<String>> juegos) {
         JPanel panelJuegos = panelMap.get("Juegos");
+        panelJuegos.removeAll();
+        panelJuegos.setLayout(new BoxLayout(panelJuegos, BoxLayout.Y_AXIS)); // Layout vertical (una carta debajo de otra)
+        panelJuegos.setBackground(Color.LIGHT_GRAY);
         JPanel panelJuegosJugador = new JPanel();
         panelJuegosJugador.setBorder(BorderFactory.createTitledBorder("Juegos de " + nombreJugador + " jugador N° " + (ctrl.getNumJugador(nombreJugador) + 1)));
         // Iterar sobre los juegos y crear subpaneles para cada uno
-        for (int i = 0; i < juegos.size(); i++) {
-            ArrayList<String> juego = juegos.get(i);
+        for (ArrayList<String> juego : juegos) {
             JPanel panelJuego = new JPanel();
             panelJuego.setLayout(new BoxLayout(panelJuego, BoxLayout.X_AXIS)); // Espaciado entre cartas
             panelJuego.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2)); // Borde para cada juego

@@ -36,18 +36,13 @@ public class Controlador implements IControladorRemoto {
                     vista.cambioTurno();
                     break;
                 }
-                case NOTIFICACION_ACTUALIZAR_POZO: {
+                case NOTIFICACION_POZO: {
                     ifCarta pozo = partida.getPozo();
                     String actualizar = "";
                     if (pozo != null) {
                         actualizar = ifVista.cartaToString(pozo);
                     }
                     vista.actualizarPozo(actualizar);
-                    break;
-                }
-                case NOTIFICACION_ACTUALIZAR_JUEGOS: {
-                    vista.actualizarRestricciones(false);
-                    vista.actualizarJuegos();
                     break;
                 }
                 case NOTIFICACION_ROBO_CASTIGO: {
@@ -57,10 +52,6 @@ public class Controlador implements IControladorRemoto {
                 case NOTIFICACION_HUBO_ROBO_CASTIGO: {
                     String nom = partida.getNombreJugador(partida.getNumJugadorRoboCastigo());
                     vista.mostrarInfo(nom + " ha robado con castigo.");
-                    break;
-                }
-                case NOTIFICACION_NO_PUEDE_ROBO_CASTIGO: {
-                    vista.actualizarRestricciones(true);
                     break;
                 }
                 case NOTIFICACION_COMIENZO_RONDA:
@@ -137,9 +128,7 @@ public class Controlador implements IControladorRemoto {
 
     public String getTurnoDe() {
         try {
-            int numTurno = partida.getNumTurno();
-            partida.setTurnoJugador(numTurno,true);
-            return partida.getNombreJugador(numTurno);
+            return partida.getTurnoDe();
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -220,7 +209,6 @@ public class Controlador implements IControladorRemoto {
     }
 
     private void mostrarJuegosEnMesa() throws RemoteException {
-        vista.actualizarJuegos();
         //cada vista tiene que mostrar los juegos de cada jugador
         for (int j = 0; j < getCantJugActuales(); j++) {
             vista.mostrarJuegos(partida.getNombreJugador(j),

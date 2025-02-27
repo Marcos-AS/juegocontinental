@@ -28,7 +28,6 @@ public interface ifPartida extends IObservableRemoto {
     void jugarPartida() throws RemoteException, FaltanJugadoresException;
     void crearJugador(String nombre, int numObservador)
             throws RemoteException;
-    boolean cortar(int numJugador) throws RemoteException;
     void inicializarPartida(int observadorIndex)
             throws RemoteException;
     int getCantJugadoresDeseada() throws RemoteException;
@@ -37,14 +36,12 @@ public interface ifPartida extends IObservableRemoto {
     void robarDelPozo() throws RemoteException;
     void robarConCastigo() throws RemoteException;
     void empezarRonda() throws RemoteException;
-    void setTurnoJugador(int numJugador, boolean valor) throws RemoteException;
     void tirarAlPozo(int cartaATirar) throws RemoteException;
     void moverCartaEnMano(int i, int i1) throws RemoteException;
     String getNombreJugador(int numJugador) throws RemoteException;
     void guardar() throws RemoteException;
     int getNumJugador(String nombreJugador) throws RemoteException;
     ArrayList<Integer> getJugadoresQuePuedenRobarConCastigo() throws RemoteException;
-    Eventos comprobarPosibleCorte(int numJugador) throws RemoteException;
     boolean cargarPartida() throws RemoteException;
     ArrayList<String> getNombreJugadores() throws RemoteException;
     boolean agregarNombreElegido(String nombre) throws RemoteException;
@@ -63,4 +60,6 @@ public interface ifPartida extends IObservableRemoto {
     void setCantJugadoresDeseada(int cant) throws RemoteException;
     ArrayList<ArrayList<ArrayList<Carta>>> enviarJuegosEnMesa()
             throws RemoteException;
+
+    String getTurnoDe() throws RemoteException;
 }

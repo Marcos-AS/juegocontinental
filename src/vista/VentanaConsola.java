@@ -2,8 +2,6 @@ package vista;
 
 import javax.swing.*;
 import java.awt.*;
-import java.rmi.RemoteException;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
@@ -38,7 +36,6 @@ public class VentanaConsola extends ifVista {
         JPanel panelPuntuacion = new JPanel();
         JPanel panelJuegos = new JPanel();
         panelJuegos.setLayout(new BoxLayout(panelJuegos, BoxLayout.Y_AXIS));
-        JPanel panelRestricciones = new JPanel();
         JPanel panelTurno = new JPanel();
 
         JPanel panelMesa = new JPanel();
@@ -48,7 +45,6 @@ public class VentanaConsola extends ifVista {
         panelMesa.add(panelPuntuacion);
         panelMesa.add(panelInfoRonda);
         panelMesa.add(panelPozo);
-        panelMesa.add(panelRestricciones);
         panelMesa.add(panelJuegos);
         panelMesa.add(textChat);
         panelMesa.add(textMensaje);
@@ -65,7 +61,6 @@ public class VentanaConsola extends ifVista {
         panelMap.put("infoRonda", panelInfoRonda);
         panelMap.put("Puntuacion", panelPuntuacion);
         panelMap.put("Juegos", panelJuegos);
-        panelMap.put("Restricciones", panelRestricciones);
         panelMap.put("Turno", panelTurno);
 
         opcionesIniciales();
@@ -146,9 +141,8 @@ public class VentanaConsola extends ifVista {
 
     private void switchInicial() {
         final int ELECCION_CREAR_PARTIDA = 1;
-        final int ELECCION_JUGAR_PARTIDA = 2;
-        final int ELECCION_RANKING = 3;
-        final int ELECCION_REGLAS = 4;
+        final int ELECCION_RANKING = 2;
+        final int ELECCION_REGLAS = 3;
         final int ELECCION_SALIR = -1;
         int eleccion;
         String input = "";
@@ -384,15 +378,8 @@ public class VentanaConsola extends ifVista {
         mostrar.append("<br><br>");
         JLabel labelJuegos = new JLabel(String.valueOf(mostrar));
         JPanel panelJuegos = panelMap.get("Juegos");
-        panelJuegos.add(labelJuegos);
-        panelJuegos.revalidate();
-        panelJuegos.repaint();
-    }
-
-    @Override
-    public void actualizarJuegos() {
-        JPanel panelJuegos = panelMap.get("Juegos");
         panelJuegos.removeAll();
+        panelJuegos.add(labelJuegos);
         panelJuegos.revalidate();
         panelJuegos.repaint();
     }

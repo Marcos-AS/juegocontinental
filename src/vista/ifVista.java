@@ -223,17 +223,6 @@ public abstract class ifVista {
         panelPuntuacion.repaint();
     }
 
-    public void actualizarRestricciones(boolean restriccion) {
-        JPanel panelRestricciones = panelMap.get("Restricciones");
-        panelRestricciones.removeAll();
-        if (restriccion) {
-            Label label = new Label("Ya no puede robar con castigo y sólo puede bajar para cortar");
-            panelRestricciones.add(label);
-        }
-        panelRestricciones.revalidate();
-        panelRestricciones.repaint();
-    }
-
     public void setNumeroJugadorTitulo() {
         frame.setTitle("Mesa - Jugador N°" + (ctrl.getNumJugador(nombreVista)+1) + ": " + nombreVista);
     }
@@ -264,7 +253,6 @@ public abstract class ifVista {
     public abstract void cambioTurno();
     public abstract void actualizarManoJugador(ArrayList<String> cartas);
     public abstract void actualizarPozo(String cartaATirar);
-    public abstract void actualizarJuegos();
     public void salirAlMenu(){}
     public void elegirJugador(ArrayList<String> nombreJugadores){}
     public abstract void nuevaPartida();
