@@ -61,10 +61,10 @@ public class BarraMenu {
 
     private String mostrarRanking(Object[] ranking) {
         StringBuilder s = new StringBuilder("<html>Ranking de mejores jugadores: <br>");
-        int i = 1;
+        int i = ranking.length;
         for (Object o : ranking) {
             s.append(i).append(" - ").append(o).append("<br>");
-            i++;
+            i--;
         }
         s.append("</html>");
         return s.toString();

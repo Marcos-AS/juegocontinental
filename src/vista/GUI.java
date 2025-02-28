@@ -122,8 +122,12 @@ public class GUI extends ifVista {
     }
 
     public int preguntarCantJugadoresPartida() {
-        return Integer.parseInt(preguntarInput("Cuántos jugadores" +
-                " deseas para la nueva partida?"));
+        String resp;
+        do {
+            resp = JOptionPane.showInputDialog(frame, "Cuántos jugadores deseas para la nueva partida?", "Entrada",
+                    JOptionPane.QUESTION_MESSAGE);
+        } while (!entradaValida(resp));
+        return Integer.parseInt(resp);
         //return 2;//prueba
     }
 
@@ -141,8 +145,8 @@ public class GUI extends ifVista {
 
         bajarJuegoBoton.addActionListener(e -> ctrl.switchMenuBajar("1"));
         tirarAlPozoBoton.addActionListener(e -> ctrl.switchMenuBajar("2"));
-        acomodarBoton.addActionListener(e -> ctrl.switchMenuBajar("3"));
-        ordenarBoton.addActionListener(e -> ctrl.switchMenuBajar("4"));
+        ordenarBoton.addActionListener(e -> ctrl.switchMenuBajar("3"));
+        acomodarBoton.addActionListener(e -> ctrl.switchMenuBajar("4"));
         guardarYSalir.addActionListener(e -> ctrl.guardarPartida());
 
         JPanel panelBotones = new JPanel();
@@ -195,16 +199,20 @@ public class GUI extends ifVista {
             if (!boton.isEnabled()) {
                 return;
             }
-            buttonMap.get("cartaPozo").setEnabled(false);
-            buttonMap.get("cartaMazo").setEnabled(false);
             robarCarta(origen);
         }
     }
 
     private void robarCarta(String origen) {
-        ctrl.desarrolloRobo(origen);
-        buttonMap.get("guardar").setEnabled(false);
-        activarBotonesBajar(true);
+        boolean robo = ctrl.desarrolloRobo(origen);
+        if (robo) {
+            buttonMap.get("cartaPozo").setEnabled(false);
+            buttonMap.get("cartaMazo").setEnabled(false);
+            buttonMap.get("guardar").setEnabled(false);
+            activarBotonesBajar(true);
+        } else {
+            salirAlMenu();
+        }
     }
 
     @Override
@@ -255,7 +263,6 @@ public class GUI extends ifVista {
                 panelMano.add(imgCarta);
                 //buttonCarta.setBorder(BorderFactory.createTitledBorder(String.valueOf(i+1)));
             }
-            cardLayout.show(cardPanel, "Mesa");
         });
     }
 
@@ -358,7 +365,6 @@ public class GUI extends ifVista {
     @Override
     public void mostrarJuegos(String nombreJugador, ArrayList<ArrayList<String>> juegos) {
         JPanel panelJuegos = panelMap.get("Juegos");
-        panelJuegos.removeAll();
         panelJuegos.setLayout(new BoxLayout(panelJuegos, BoxLayout.Y_AXIS)); // Layout vertical (una carta debajo de otra)
         panelJuegos.setBackground(Color.LIGHT_GRAY);
         JPanel panelJuegosJugador = new JPanel();
@@ -371,12 +377,20 @@ public class GUI extends ifVista {
             panelJuego.setBackground(new Color(200, 200, 255)); // Fondo azul claro para diferenciar
 
             for (String carta : juego) {
-                panelJuego.add(getImageButton(carta));
+                panelJuego.add(getImage(carta));
             }
 
             panelJuegosJugador.add(panelJuego);
         }
         panelJuegos.add(panelJuegosJugador);
+        panelJuegos.revalidate();
+        panelJuegos.repaint();
+    }
+
+    @Override
+    public void removeJuegosAnteriores() {
+        JPanel panelJuegos = panelMap.get("Juegos");
+        panelJuegos.removeAll();
         panelJuegos.revalidate();
         panelJuegos.repaint();
     }
@@ -591,83 +605,135 @@ public class GUI extends ifVista {
     }
 
     public int[] seleccionarJuego(ArrayList<ArrayList<ArrayList<String>>> juegosMesa) {
-        // Crear diálogo
-        JDialog dialogo = new JDialog((JFrame) null, "Seleccionar un juego", true);
-        dialogo.setLayout(new BorderLayout());
-        dialogo.setSize(600, 400);
-        dialogo.setLocationRelativeTo(null);
+        if (juegosMesa.isEmpty()) {
+            mostrarInfo("No hay juegos para bajar");
+            return null;
+        } else {
 
-        // Panel de jugadores y juegos
-        JPanel panelPrincipal = new JPanel();
-        panelPrincipal.setLayout(new BoxLayout(panelPrincipal, BoxLayout.Y_AXIS));
-        JScrollPane scrollPane = new JScrollPane(panelPrincipal);
-        dialogo.add(scrollPane, BorderLayout.CENTER);
+            // Crear diálogo
+            JDialog dialogo = new JDialog((JFrame) null, "Seleccionar un juego", true);
+            dialogo.setLayout(new BorderLayout());
+            dialogo.setSize(600, 400);
+            dialogo.setLocationRelativeTo(null);
 
-        // Botón para confirmar selección
-        JButton botonConfirmar = new JButton("Confirmar selección");
-        botonConfirmar.setEnabled(false);
-        dialogo.add(botonConfirmar, BorderLayout.SOUTH);
+            // Panel de jugadores y juegos
+            JPanel panelPrincipal = new JPanel();
+            panelPrincipal.setLayout(new BoxLayout(panelPrincipal, BoxLayout.Y_AXIS));
+            JScrollPane scrollPane = new JScrollPane(panelPrincipal);
+            dialogo.add(scrollPane, BorderLayout.CENTER);
 
-        // Variables de selección
-        final int[] jugadorSeleccionado = {-1};
-        final int[] juegoSeleccionado = {-1};
+            // Botón para confirmar selección
+            JButton botonConfirmar = new JButton("Confirmar selección");
+            botonConfirmar.setEnabled(false);
+            dialogo.add(botonConfirmar, BorderLayout.SOUTH);
 
-        // Recorre los jugadores y sus juegos
-        for (int i = 0; i < juegosMesa.size(); i++) {
-            ArrayList<ArrayList<String>> juegosJugador = juegosMesa.get(i);
+            // Variables de selección
+            final int[] jugadorSeleccionado = {-1};
+            final int[] juegoSeleccionado = {-1};
 
-            JPanel panelJugador = new JPanel();
-            panelJugador.setLayout(new BoxLayout(panelJugador, BoxLayout.Y_AXIS));
-            panelJugador.setBorder(BorderFactory.createTitledBorder("Jugador " + (i + 1)));
+            // Recorre los jugadores y sus juegos
+            for (int i = 0; i < juegosMesa.size(); i++) {
+                ArrayList<ArrayList<String>> juegosJugador = juegosMesa.get(i);
 
-            for (int j = 0; j < juegosJugador.size(); j++) {
-                JPanel panelJuego = new JPanel();
-                panelJuego.setLayout(new BorderLayout());
+                JPanel panelJugador = new JPanel();
+                panelJugador.setLayout(new BoxLayout(panelJugador, BoxLayout.Y_AXIS));
+                panelJugador.setBorder(BorderFactory.createTitledBorder("Jugador " + (i + 1)));
 
-                // Panel de cartas del juego
-                JPanel panelCartas = new JPanel(new FlowLayout());
-                for (String carta : juegosJugador.get(j)) {
-                    panelCartas.add(getImage(carta));
-                }
-                panelJuego.add(panelCartas, BorderLayout.CENTER);
+                for (int j = 0; j < juegosJugador.size(); j++) {
+                    JPanel panelJuego = new JPanel();
+                    panelJuego.setLayout(new BorderLayout());
 
-                // Botón para seleccionar el juego
-                JButton botonJuego = new JButton("Juego " + (j + 1));
-                int finalI = i;
-                int finalJ = j;
+                    // Panel de cartas del juego
+                    JPanel panelCartas = new JPanel(new FlowLayout());
+                    for (String carta : juegosJugador.get(j)) {
+                        panelCartas.add(getImage(carta));
+                    }
+                    panelJuego.add(panelCartas, BorderLayout.CENTER);
 
-                botonJuego.addActionListener(e -> {
-                    jugadorSeleccionado[0] = finalI;
-                    juegoSeleccionado[0] = finalJ;
+                    // Botón para seleccionar el juego
+                    JButton botonJuego = new JButton("Juego " + (j + 1));
+                    int finalI = i;
+                    int finalJ = j;
 
-                    // Resaltar el botón seleccionado
-                    for (Component comp : panelJugador.getComponents()) {
-                        if (comp instanceof JPanel) {
-                            for (Component btn : ((JPanel) comp).getComponents()) {
-                                if (btn instanceof JButton) {
-                                    ((JButton) btn).setBorder(BorderFactory.createEmptyBorder());
+                    botonJuego.addActionListener(e -> {
+                        jugadorSeleccionado[0] = finalI;
+                        juegoSeleccionado[0] = finalJ;
+
+                        // Resaltar el botón seleccionado
+                        for (Component comp : panelJugador.getComponents()) {
+                            if (comp instanceof JPanel) {
+                                for (Component btn : ((JPanel) comp).getComponents()) {
+                                    if (btn instanceof JButton) {
+                                        ((JButton) btn).setBorder(BorderFactory.createEmptyBorder());
+                                    }
                                 }
                             }
                         }
-                    }
-                    botonJuego.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
+                        botonJuego.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
 
-                    botonConfirmar.setEnabled(true);
-                });
+                        botonConfirmar.setEnabled(true);
+                    });
 
-                panelJuego.add(botonJuego, BorderLayout.SOUTH);
-                panelJugador.add(panelJuego);
+                    panelJuego.add(botonJuego, BorderLayout.SOUTH);
+                    panelJugador.add(panelJuego);
+                }
+
+                panelPrincipal.add(panelJugador);
             }
 
-            panelPrincipal.add(panelJugador);
+            // Acción al confirmar
+            botonConfirmar.addActionListener(e -> dialogo.dispose());
+
+            dialogo.setVisible(true);
+
+            // Retorna el número de jugador y el índice del juego seleccionado (-1 si no selecciona)
+            return new int[]{juegoSeleccionado[0],jugadorSeleccionado[0]};
         }
-
-        // Acción al confirmar
-        botonConfirmar.addActionListener(e -> dialogo.dispose());
-
-        dialogo.setVisible(true);
-
-        // Retorna el número de jugador y el índice del juego seleccionado (-1 si no selecciona)
-        return new int[]{juegoSeleccionado[0],jugadorSeleccionado[0]};
     }
+
+    @Override
+    String mostrarCombinacionRequerida(int ronda) {
+        String s = "<html>Para esta ronda ";
+        s += switch (ronda) {
+            case 1 -> "(1/7) deben bajarse 2 tríos";
+            case 2 -> "(2/7) deben bajarse 1 trío y 1 escalera";
+            case 3 -> "(3/7) deben bajarse 2 escaleras";
+            case 4 -> "(4/7) deben bajarse 3 tríos";
+            case 5 -> "(5/7) deben bajarse 2 tríos y 1 escalera";
+            case 6 -> "(6/7) deben bajarse 1 tríos y 2 escaleras";
+            case 7 -> "(7/7) deben bajarse 3 escaleras";
+            default -> "";
+        };
+        s += "<br>Trío = 3 cartas (mínimo) con el mismo número<br>Escalera = 4 cartas (mínimo) con número consecutivo y mismo palo</html>";
+        return s;
+    }
+
+    @Override
+    void setNombreVista() {
+        String resp;
+        do {
+            resp = JOptionPane.showInputDialog(frame, "Indica tu nombre: ", "Entrada",
+                    JOptionPane.QUESTION_MESSAGE);
+        } while (!entradaValida(resp));
+        nombreVista = resp;
+    }
+
+    @Override
+    public void mostrarInfo(String s) {
+        String titulo = "Aviso";
+        if (nombreVista!= null) {
+            titulo += " - Jugador: " + nombreVista;
+        }
+        String finalTitulo = titulo;
+        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(frame, s,
+                finalTitulo, JOptionPane.INFORMATION_MESSAGE)
+        );
+    }
+
+    @Override
+    public void setNumeroJugadorTitulo() {
+        frame.setTitle("Mesa - Jugador N°" + (ctrl.getNumJugador(nombreVista)+1) + ": " + nombreVista);
+        cardLayout.show(cardPanel, "Mesa");
+    }
+
 }

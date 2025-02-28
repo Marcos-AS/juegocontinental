@@ -71,7 +71,7 @@ public class EscaleraBajada extends JuegoBajado{
         return esEscalera;
     }
 
-    static ArrayList<Carta> extraerComodines(ArrayList<Carta> juego) {
+    private static ArrayList<Carta> extraerComodines(ArrayList<Carta> juego) {
         ArrayList<Carta> comodines = new ArrayList<>();
         Iterator<Carta> iterador = juego.iterator();
         while (iterador.hasNext()) {
@@ -84,7 +84,7 @@ public class EscaleraBajada extends JuegoBajado{
         return comodines;
     }
 
-    static void ordenarCartas(ArrayList<Carta> cartas) { //metodo de insercion
+    private static void ordenarCartas(ArrayList<Carta> cartas) { //metodo de insercion
         boolean intercambio = true, contieneK = false,contieneAs = false;
         while (intercambio) {
             intercambio = false;

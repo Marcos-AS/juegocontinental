@@ -1,6 +1,7 @@
 package modelo;
 
 import excepciones.FaltanJugadoresException;
+import excepciones.JugadorDesconectadoException;
 import rmimvc.src.observer.IObservableRemoto;
 import rmimvc.src.observer.IObservadorRemoto;
 import serializacion.Serializador;
@@ -11,7 +12,7 @@ import java.util.Map;
 public interface ifPartida extends IObservableRemoto {
     ArrayList<ArrayList<Carta>> getJuegos(int numJugador) throws RemoteException;
     void setNumeroJugador(int numJugador, int nuevoNumero) throws RemoteException;
-    void finTurno() throws RemoteException;
+    void finTurno() throws RemoteException, JugadorDesconectadoException;
     boolean isTurnoActual(int numJugador) throws RemoteException;
     int[] comprobarQueFaltaParaCortar(int numJugador) throws RemoteException;
     int getObservadorIndex(IObservadorRemoto o) throws RemoteException;
@@ -32,11 +33,11 @@ public interface ifPartida extends IObservableRemoto {
             throws RemoteException;
     int getCantJugadoresDeseada() throws RemoteException;
     boolean isEnCurso() throws RemoteException;
-    void robarDelMazo() throws RemoteException;
+    void robarDelMazo() throws RemoteException, JugadorDesconectadoException;
     void robarDelPozo() throws RemoteException;
     void robarConCastigo() throws RemoteException;
     void empezarRonda() throws RemoteException;
-    void tirarAlPozo(int cartaATirar) throws RemoteException;
+    void tirarAlPozo(int cartaATirar) throws RemoteException, JugadorDesconectadoException;
     void moverCartaEnMano(int i, int i1) throws RemoteException;
     String getNombreJugador(int numJugador) throws RemoteException;
     void guardar() throws RemoteException;
@@ -48,18 +49,18 @@ public interface ifPartida extends IObservableRemoto {
     int getCantJuegos(int numJugador) throws RemoteException;
     void setJugadoresQuePuedenRobarConCastigo() throws RemoteException;
     void notificarSalir() throws RemoteException;
-    void setEjecutarFinTurno(boolean ejecutarFinTurno)
-            throws RemoteException;
     void incNumJugadorRoboCastigo() throws RemoteException;
-    void comprobarEmpezarPartida() throws RemoteException;
+    void comprobarEmpezarPartida() throws RemoteException, JugadorDesconectadoException;
     void desarrolloRobo(String eleccion)
-            throws RemoteException;
+            throws RemoteException, JugadorDesconectadoException;
     boolean hayRepetidos(int[] array) throws RemoteException;
     boolean acomodar(int cartaAcomodar, int iJuego, int numJugador) throws RemoteException;
-    boolean bajarse(int[] indicesCartas) throws RemoteException;
+    boolean bajarse(int[] indicesCartas) throws RemoteException, JugadorDesconectadoException;
     void setCantJugadoresDeseada(int cant) throws RemoteException;
     ArrayList<ArrayList<ArrayList<Carta>>> enviarJuegosEnMesa()
             throws RemoteException;
 
     String getTurnoDe() throws RemoteException;
+
+    ArrayList<Carta> getMano(int controlador) throws RemoteException;
 }

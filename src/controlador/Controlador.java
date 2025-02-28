@@ -1,6 +1,7 @@
 package controlador;
 
 import excepciones.FaltanJugadoresException;
+import excepciones.JugadorDesconectadoException;
 import modelo.ifPartida;
 import modelo.ifCarta;
 import modelo.Carta;
@@ -157,31 +158,32 @@ public class Controlador implements IControladorRemoto {
                 case EntradasUsuario.ACOMODAR -> {
                     int cartaAcomodar = vista.preguntarCartaParaAcomodar();
                     int[] seleccion = vista.seleccionarJuego(juegosMesaToString());
-                    int iJuego = seleccion[0];
-                    int numJugador = seleccion[1];
-                    boolean acomodar = partida.acomodar(cartaAcomodar, iJuego, numJugador);
-                    if (acomodar) {
-                        vista.mostrarAcomodoCarta();
-                    } else {
-                        vista.mostrarInfo(ifVista.NO_PUEDE_ACOMODAR);
-                    }
+                    if (seleccion!= null) {
+                        int iJuego = seleccion[0];
+                        int numJugador = seleccion[1];
+                        boolean acomodar = partida.acomodar(cartaAcomodar, iJuego, numJugador);
+                        if (acomodar) {
+                            vista.mostrarAcomodoCarta();
+                        } else {
+                            vista.mostrarInfo(ifVista.NO_PUEDE_ACOMODAR);
+                        }
+                    } else vista.mostrarInfo(ifVista.NO_PUEDE_ACOMODAR);
                 }
             }
         } catch (RemoteException e) {
             throw new RuntimeException(e);
+        } catch (JugadorDesconectadoException e) {
+            vista.salirAlMenu();
         }
     }
 
     public void finTurno() {
         try {
-            if (vista.isActiva()) {
-                partida.finTurno();
-            } else {
-                partida.setEjecutarFinTurno(true);
-                partida.guardar();
-            }
+            partida.finTurno();
         } catch (RemoteException e) {
             throw new RuntimeException(e);
+        } catch (JugadorDesconectadoException e) {
+            e.printStackTrace();
         }
     }
 
@@ -201,15 +203,20 @@ public class Controlador implements IControladorRemoto {
         }
     }
 
-    public void desarrolloRobo(String eleccion) {
+    public boolean desarrolloRobo(String eleccion) {
+        boolean robo = true;
         try {
             partida.desarrolloRobo(eleccion);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
+        } catch (JugadorDesconectadoException e) {
+            robo = false;
         }
+        return robo;
     }
 
     private void mostrarJuegosEnMesa() throws RemoteException {
+        vista.removeJuegosAnteriores();
         //cada vista tiene que mostrar los juegos de cada jugador
         for (int j = 0; j < getCantJugActuales(); j++) {
             vista.mostrarJuegos(partida.getNombreJugador(j),
@@ -362,11 +369,12 @@ public class Controlador implements IControladorRemoto {
     }
 
     public boolean agregarNombreElegido(String nombre) {
+        boolean agregado = false;
         try {
             //ya están los jugadores creados, debo cambiar los nums de los jugadores
             //para que matcheen con el nombre que eligieron y el num de observador
             //para este momento ya se cargó una partida
-            boolean agregado = partida.agregarNombreElegido(nombre);
+            agregado = partida.agregarNombreElegido(nombre);
             if (agregado) {
                 vista.setActiva(true); //activa se pone en false al guardar la partida, y puede quedar la vista abierta por eso importa cambiarla
                 vista.inicializarMenu();
@@ -375,10 +383,12 @@ public class Controlador implements IControladorRemoto {
                 partida.setNumeroJugador(numJugador,obsIndex); //se cambia el atr. numJugador del jugador
                 partida.comprobarEmpezarPartida();
             }
-            return agregado;
         } catch (RemoteException e) {
             throw new RuntimeException(e);
+        } catch (JugadorDesconectadoException e) {
+            e.printStackTrace();
         }
+        return agregado;
     }
 
     public int getNumRonda() {

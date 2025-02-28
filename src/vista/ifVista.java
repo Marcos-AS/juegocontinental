@@ -90,21 +90,7 @@ public abstract class ifVista {
     public void setControlador(Controlador ctrl) {
         this.ctrl = ctrl;
     }
-    String mostrarCombinacionRequerida(int ronda) {
-        String s = "<html>Para esta ronda ";
-        s += switch (ronda) {
-            case 1 -> "(1/7) deben bajarse 2 tríos";
-            case 2 -> "(2/7) deben bajarse 1 trío y 1 escalera";
-            case 3 -> "(3/7) deben bajarse 2 escaleras";
-            case 4 -> "(4/7) deben bajarse 3 tríos";
-            case 5 -> "(5/7) deben bajarse 2 tríos y 1 escalera";
-            case 6 -> "(6/7) deben bajarse 1 tríos y 2 escaleras";
-            case 7 -> "(7/7) deben bajarse 3 escaleras";
-            default -> "";
-        };
-        s += "<br>Trío = 3 cartas (mínimo) con el mismo número<br>Escalera = 4 cartas (mínimo) con número consecutivo y mismo palo</html>";
-        return s;
-    }
+    abstract String mostrarCombinacionRequerida(int ronda);
 
     public static String cartaToString(ifCarta c) {
         String carta;
@@ -163,36 +149,15 @@ public abstract class ifVista {
         return valida;
     }
 
-    public String preguntarInput(String mensaje) {
-        String resp;
-        do {
-            resp = JOptionPane.showInputDialog(frame, mensaje, "Entrada",
-                    JOptionPane.QUESTION_MESSAGE);
-        } while (!entradaValida(resp));
-        return resp;
-    }
     public void mostrarAcomodoCarta() {
         mostrarInfo("Se acomodó la carta en el juego.");
     }
 
-    public void mostrarInfo(String s) {
-        String titulo = "Aviso";
-        if (nombreVista!= null) {
-            titulo += " - Jugador: " + nombreVista;
-        }
-        String finalTitulo = titulo;
-        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(frame, s,
-                finalTitulo, JOptionPane.INFORMATION_MESSAGE)
-        );
-    }
-
+    public abstract void mostrarInfo(String s);
     public String getNombreVista() {
         return nombreVista;
     }
-    void setNombreVista() {
-        nombreVista = preguntarInput("Indica tu nombre: ");
-    }
-
+    abstract void setNombreVista();
     public void comienzoRonda(int ronda) {
         JLabel label = new JLabel(mostrarCombinacionRequerida(ronda));
         label.setFont(new Font("Arial", Font.PLAIN, 15));
@@ -213,9 +178,7 @@ public abstract class ifVista {
         panelPuntuacion.repaint();
     }
 
-    public void setNumeroJugadorTitulo() {
-        frame.setTitle("Mesa - Jugador N°" + (ctrl.getNumJugador(nombreVista)+1) + ": " + nombreVista);
-    }
+    public abstract void setNumeroJugadorTitulo();
 
     public void setSalir() {
         activa = false;
@@ -230,7 +193,6 @@ public abstract class ifVista {
     }
 
     public abstract int preguntarCantJugadoresPartida();
-    public void esperaRoboCastigo(){}
     public abstract int[] preguntarParaOrdenarCartas();
     public abstract int preguntarCartaParaAcomodar();
     public abstract void mostrarJuegos(String nombreJugador,
@@ -250,5 +212,8 @@ public abstract class ifVista {
     public void esperarRoboCastigo(){}
     public void terminaEsperaRoboCastigo(){}
     public void inicializarMenu(){}
-    public abstract int[] seleccionarJuego(ArrayList<ArrayList<ArrayList<String>>> juegosMesa);
+    public abstract int[]
+    seleccionarJuego(ArrayList<ArrayList<ArrayList<String>>> juegosMesa);
+
+    public void removeJuegosAnteriores() {}
 }

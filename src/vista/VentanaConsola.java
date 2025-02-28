@@ -2,14 +2,13 @@ package vista;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class VentanaConsola extends ifVista {
     private JTextPane textChat;
@@ -32,8 +31,19 @@ public class VentanaConsola extends ifVista {
 
         JPanel panelInput = new JPanel(new BorderLayout());
         textMensaje = new JTextField();
+
         JButton botonEnviar = new JButton("Enviar");
         buttonMap.put("enviar", botonEnviar);
+
+        textMensaje.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    botonEnviar.doClick(); // Simula un clic en el botón "Enviar"
+                }
+            }
+        });
+
 
         panelInput.add(textMensaje, BorderLayout.CENTER);
         panelInput.add(botonEnviar, BorderLayout.EAST);
@@ -55,7 +65,7 @@ public class VentanaConsola extends ifVista {
         for (Map.Entry<String, Integer> entry : puntos.entrySet()) {
             puntuacion.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
         }
-        textChat.setText(puntuacion.toString());
+        mostrarMensajeChat(puntuacion.toString());
     }
 
     private void opcionesIniciales() {
@@ -100,17 +110,7 @@ public class VentanaConsola extends ifVista {
     @Override
     public void finPartida() {
         opcionesIniciales(); //cambio a partidaIniciada antes para mostrar de vuelta
-        JPanel panelMenu = panelMap.get("Menu");
-        JButton botonJugar = new JButton("Jugar otra partida");
-        botonJugar.addActionListener(e -> {
-            botonJugar.setEnabled(false);
-            switchInicial();
-        });
-        buttonMap.put("botonJugar", botonJugar);
-        panelMenu.add(botonJugar);
-        panelMenu.revalidate();
-        panelMenu.repaint();
-        cardLayout.show(cardPanel, "Menu");
+        switchInicial();
     }
 
     @Override
@@ -122,49 +122,46 @@ public class VentanaConsola extends ifVista {
         return resp;
     }
 
-    private int preguntarInputInicial(String input) {
-        // Mostrar el mensaje en el JTextPane
-        textChat.setText(textChat.getText()+"\n"+input + "\nIngrese el número de opción que desee: ");
+    public String preguntarInput(String mensaje) {
+        String resp;
+        do {
+            mostrarMensajeChat(mensaje);  // Muestra el mensaje en el chat
+            resp = obtenerEntradaChat();  // Espera la entrada del usuario
+        } while (!entradaValida(resp));
+        return resp;
+    }
+
+    public void mostrarMensajeChat(String mensaje) {
+        textChat.setText(textChat.getText() + "\n\n" + mensaje);
         textChat.setCaretPosition(textChat.getDocument().getLength());
+    }
 
-        // Cambiar el foco al JTextField para que el usuario pueda escribir
-        textMensaje.requestFocusInWindow();
+    public String obtenerEntradaChat() {
+        final String[] entrada = {null};  // Variable para almacenar la entrada
+        final CountDownLatch latch = new CountDownLatch(1);  // Mecanismo para esperar
 
-        // Crear un semáforo para esperar la entrada del usuario
-        final int[] respuesta = { -1 }; // Valor por defecto en caso de error
-        final Object lock = new Object(); // Objeto para sincronización
         JButton botonEnviar = buttonMap.get("enviar");
-        // Agregar un ActionListener al botón de enviar
-        botonEnviar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    // Leer el valor ingresado por el usuario
-                    String texto = textMensaje.getText().trim();
-                    respuesta[0] = Integer.parseInt(texto); // Convertir a entero
-                    textMensaje.setText(""); // Limpiar el campo de texto
-                    synchronized (lock) {
-                        lock.notify(); // Notificar que se ha recibido la entrada
-                    }
-                } catch (NumberFormatException ex) {
-                    // Si el usuario ingresa algo que no es un número, mostrar un mensaje de error
-                    textChat.setText(textChat.getText()+"\nError: Debe ingresar un número válido.\n" + input + "\nIngrese el número de opción que desee: ");
-                    textMensaje.setText(""); // Limpiar el campo de texto
-                }
-            }
+        botonEnviar.addActionListener(e -> {
+            entrada[0] = textMensaje.getText();  // Guardamos lo que escribió el usuario
+            textMensaje.setText("");  // Limpiamos el campo de texto
+            latch.countDown();  // Liberamos el latch, lo que permite continuar con el flujo
         });
 
-        // Esperar a que el usuario ingrese un valor
-        synchronized (lock) {
-            try {
-                lock.wait(); // Esperar hasta que se reciba la entrada
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        // Esperamos a que el usuario haga clic en el botón
+        try {
+            latch.await();  // Este método no bloquea la UI y espera hasta que countDown() sea llamado
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
-        // Retornar la respuesta del usuario
-        return respuesta[0];
+        return entrada[0];  // Devolvemos lo que escribió el usuario
+    }
+
+
+
+    private int preguntarInputInicial(String input) {
+        textMensaje.requestFocusInWindow();
+        return Integer.parseInt(preguntarInput(input + "\nIngrese el número de opción que desee: "));
     }
 
     private void switchInicial() {
@@ -174,7 +171,6 @@ public class VentanaConsola extends ifVista {
         final int ELECCION_SALIR = -1;
         int eleccion;
         String input = "";
-        int inicioPartida = 0;
         boolean iniciada = false;
         do {
             eleccion = preguntarInputInicial(input);
@@ -185,6 +181,7 @@ public class VentanaConsola extends ifVista {
                         setNombreVista();
                     }
                     ctrl.crearPartida();
+                    iniciada = true;
                     break;
                 }
                 case ELECCION_RANKING: {
@@ -202,12 +199,6 @@ public class VentanaConsola extends ifVista {
                 }
             }
         } while (!iniciada);
-        if (inicioPartida == 0) {
-            mostrarInfo(input);
-        } else if (inicioPartida == 1) {
-            ctrl.empezarRonda();
-            ctrl.cambioTurno();
-        }
     }
 
     public int preguntarCantJugadoresPartida() {
@@ -233,82 +224,70 @@ public class VentanaConsola extends ifVista {
         if (ctrl.isPartidaEnCurso()) {
             String nombre = ctrl.getTurnoDe();
             if (nombre.equals(nombreVista)) {
-                JPanel panelTurno = panelMap.get("Turno");
-                panelTurno.removeAll();
-                panelTurno.add(new JLabel("Es tu turno."));
-                panelTurno.revalidate();
-                panelTurno.repaint();
+                mostrarMensajeChat("Es tu turno.");
 
                 CountDownLatch latch = new CountDownLatch(1);
+
                 try {
-                    SwingUtilities.invokeLater(() -> {
-                        ctrl.desarrolloRobo(preguntarInput("1 - Robar del mazo\n2 - Robar del pozo\nElige una opción: "));
-                        latch.countDown();
-                    });
-                } catch (Exception e) {
+                    // Llamamos a preguntarInput para obtener la opción de robo
+                    String opcion = preguntarInput("1 - Robar del mazo\n2 - Robar del pozo\nElige una opción: ");
+
+                    // Llamamos a desarrolloRobo con la opción seleccionada
+                    ctrl.desarrolloRobo(opcion);
+
+                    // Esperar a que el CountDownLatch se libere (es decir, que el robo termine)
+                    latch.await();
+
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
 
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                executor.submit(() -> {
-                    try {
-                        latch.await();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    while (ctrl.isTurnoActual()) {
-                        ctrl.switchMenuBajar(menuBajar());
-                    }
-                    ctrl.finTurno();
-                    if (ctrl.isPartidaEnCurso()) {
-                        ctrl.cambioTurno();
-                    }
-                });
-                executor.shutdown();
+                while (ctrl.isTurnoActual()) {
+                    ctrl.switchMenuBajar(menuBajar());
+                }
+                ctrl.finTurno();
+                if (ctrl.isPartidaEnCurso()) {
+                    ctrl.cambioTurno();
+                }
             } else {
-                JPanel panelTurno = panelMap.get("Turno");
-                panelTurno.removeAll();
-                panelTurno.add(new JLabel("Espera tu turno."));
-                panelTurno.revalidate();
-                panelTurno.repaint();
+                mostrarMensajeChat("Espera tu turno.");
             }
         }
+    }
+
+    private void activarEntradas(boolean habilitar) {
+        // Aquí puedes deshabilitar todos los elementos de entrada (botones, campos de texto, etc.)
+        textMensaje.setEditable(habilitar);
+        buttonMap.get("enviar").setEnabled(habilitar);
+        // Puedes agregar más controles que desees deshabilitar
     }
 
     @Override
     public void actualizarManoJugador(ArrayList<String> cartas) {
         SwingUtilities.invokeLater(() -> {
-            JPanel panelMano = panelMap.get("Mano");
             manoSize = cartas.size();
-            panelMano.removeAll();
-            panelMano.revalidate();
-            panelMano.repaint();
-            StringBuilder cartasStr = new StringBuilder();
+            StringBuilder cartasStr = new StringBuilder("Mano:");
             int i = 1;
             for (String carta : cartas) {
-                cartasStr.append(i).append(" - ").append(carta).append("<br>");
+                cartasStr.append(i).append(" - ").append(carta).append("\n");
                 i++;
             }
-            JLabel labelCartas = new JLabel("<html>Mano:<br>" + cartasStr + "</html>");
-            panelMano.add(labelCartas);
-            cardLayout.show(cardPanel, "Mesa");
+
+            // Muestra las cartas en el chat
+            mostrarMensajeChat(cartasStr.toString());
         });
     }
 
     @Override
     public void actualizarPozo(String cartaATirar) {
-        JPanel panelPozo = panelMap.get("Pozo");
-        JLabel labelPozo;
-        if (cartaATirar.isEmpty()) {
-            labelPozo = new JLabel("Pozo vacío");
-        } else {
-            labelPozo = new JLabel("<html>Pozo:<br>"+cartaATirar+"</html>");
-        }
-        panelPozo.removeAll();
-        panelPozo.add(labelPozo);
-        panelPozo.repaint();
-        panelPozo.revalidate();
+        SwingUtilities.invokeLater(() -> {
+            String mensaje = cartaATirar.isEmpty() ? "El pozo está vacío." : "Pozo: " + cartaATirar;
+
+            // Mostrar la información en el chat
+            mostrarMensajeChat(mensaje);
+        });
     }
+
 
     private String getRankingString(Object[] ranking) {
         StringBuilder s = new StringBuilder("Ranking de mejores jugadores: \n");
@@ -323,11 +302,32 @@ public class VentanaConsola extends ifVista {
     @Override
     public boolean preguntarInputRobarCastigo() {
         String PREGUNTA_ROBAR_CASTIGO = "Quieres robar con castigo? (robar del pozo y robar del mazo)\n(Si/No)";
-        String resp;
-        do
-            resp = JOptionPane.showInputDialog(null, PREGUNTA_ROBAR_CASTIGO,nombreVista,JOptionPane.QUESTION_MESSAGE);
-        while (!entradaValida(resp));
-        return isRespAfirmativa(resp);
+        mostrarMensajeChat(PREGUNTA_ROBAR_CASTIGO);
+
+        // Creamos un CountDownLatch que bloquea hasta que se obtenga la entrada.
+        final CountDownLatch latch = new CountDownLatch(1);
+        final String[] entrada = new String[1]; // Array para almacenar la entrada del usuario
+
+        // Configuramos un ActionListener temporal para el campo de texto
+        // (Se recomienda quitarlo después de obtener la entrada para no acumular listeners)
+        ActionListener listener = e -> {
+            entrada[0] = textMensaje.getText();
+            textMensaje.setText(""); // Limpiar el campo después de leer
+            latch.countDown();       // Libera el latch
+        };
+        textMensaje.addActionListener(listener);
+
+        try {
+            // Espera hasta que se haga clic en Enviar o se presione Enter (según esté configurado)
+            latch.await();
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+
+        // Removemos el listener para evitar duplicados en llamadas futuras
+        textMensaje.removeActionListener(listener);
+
+        return isRespAfirmativa(entrada[0]);
     }
 
     private String getCartasString(ArrayList<String> cartas) {
@@ -348,11 +348,6 @@ public class VentanaConsola extends ifVista {
         3 - Ordenar cartas
         4 - Acomodar una carta
         """;
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
         return preguntarInput(MENU_BAJAR);
     }
 
@@ -386,26 +381,21 @@ public class VentanaConsola extends ifVista {
 
     @Override
     public void mostrarJuegos(String nombreJugador, ArrayList<ArrayList<String>> juegos) {
-        StringBuilder mostrar = new StringBuilder("<html>");
+        StringBuilder mostrar = new StringBuilder();
         int numJuego = 1;
-        mostrar.append("Juegos de ").append(nombreJugador).append(": <br>");
+        mostrar.append("Juegos de ").append(nombreJugador).append(": \n");
         if (juegos.isEmpty()) {
             mostrar.append("No tiene juegos bajados.");
         }
         else {
             for (ArrayList<String> juego : juegos) {
-                mostrar.append("Juego N° ").append(numJuego).append(": <br>")
-                    .append(getCartasString(juego)).append("<br>");
+                mostrar.append("Juego N° ").append(numJuego).append(": \n")
+                    .append(getCartasString(juego)).append("\n");
                 numJuego++;
             }
         }
-        mostrar.append("<br><br>");
-        JLabel labelJuegos = new JLabel(String.valueOf(mostrar));
-        JPanel panelJuegos = panelMap.get("Juegos");
-        panelJuegos.removeAll();
-        panelJuegos.add(labelJuegos);
-        panelJuegos.revalidate();
-        panelJuegos.repaint();
+        mostrar.append("\n");
+        mostrarMensajeChat(String.valueOf(mostrar));
     }
 
     @Override
@@ -448,10 +438,48 @@ public class VentanaConsola extends ifVista {
         return eleccion;
     }
 
-    public void esperaRoboCastigo() {
-        JOptionPane.showMessageDialog(frame,
-        "Atención: Otros jugadores pueden robar con castigo.",
-        "Aviso", JOptionPane.WARNING_MESSAGE);
+    @Override
+    public void esperarRoboCastigo() {
+        mostrarMensajeChat("Atención: Otros jugadores pueden robar con castigo.");
     }
 
+    @Override
+    public void comienzoRonda(int ronda) {
+        SwingUtilities.invokeLater(() -> {
+            String mensaje = "Comienza la ronda " + ronda + "!\n" + mostrarCombinacionRequerida(ronda);
+            mostrarMensajeChat(mensaje);
+        });
+    }
+
+    @Override
+    String mostrarCombinacionRequerida(int ronda) {
+        String s = "Para esta ronda ";
+        s += switch (ronda) {
+            case 1 -> "(1/7) deben bajarse 2 tríos";
+            case 2 -> "(2/7) deben bajarse 1 trío y 1 escalera";
+            case 3 -> "(3/7) deben bajarse 2 escaleras";
+            case 4 -> "(4/7) deben bajarse 3 tríos";
+            case 5 -> "(5/7) deben bajarse 2 tríos y 1 escalera";
+            case 6 -> "(6/7) deben bajarse 1 tríos y 2 escaleras";
+            case 7 -> "(7/7) deben bajarse 3 escaleras";
+            default -> "";
+        };
+        s += "\nTrío = 3 cartas (mínimo) con el mismo número\nEscalera = 4 cartas (mínimo) con número consecutivo y mismo palo";
+        return s;
+    }
+
+    @Override
+    void setNombreVista() {
+        nombreVista = preguntarInput("Indica tu nombre: ");
+    }
+
+    @Override
+    public void mostrarInfo(String s) {
+        mostrarMensajeChat(s);
+    }
+
+    @Override
+    public void setNumeroJugadorTitulo() {
+        frame.setTitle("Mesa - Jugador N°" + (ctrl.getNumJugador(nombreVista)+1) + ": " + nombreVista);
+    }
 }

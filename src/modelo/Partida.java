@@ -1,6 +1,7 @@
 package modelo;
 
 import excepciones.FaltanJugadoresException;
+import excepciones.JugadorDesconectadoException;
 import rmimvc.src.observer.IObservadorRemoto;
 import rmimvc.src.observer.ObservableRemoto;
 import serializacion.Serializador;
@@ -27,7 +28,6 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
     private int numTurno;
     private int cantJugadoresDeseada;
     private boolean enCurso = false;
-    private boolean ejecutarFinTurno = false;
     private static Partida instancia;
 
     private Partida() {}
@@ -52,8 +52,7 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
         numJugadorQueEmpiezaRonda = partidaCargada.numJugadorQueEmpiezaRonda;
         numTurno = partidaCargada.numTurno;
         cantJugadoresDeseada = partidaCargada.cantJugadoresDeseada;
-        enCurso = partidaCargada.enCurso;
-        ejecutarFinTurno = partidaCargada.ejecutarFinTurno;
+        enCurso = true;
         nombresElegidos = new ArrayList<>();
     }
 
@@ -161,6 +160,7 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
     }
 
     public void guardar() throws RemoteException {
+        enCurso = false;
         srlPartidas.writeOneObject(this);
     }
 
@@ -172,11 +172,6 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
             return true;
         }
         return false;
-    }
-
-    public void setEjecutarFinTurno(boolean ejecutarFinTurno)
-    throws RemoteException{
-        this.ejecutarFinTurno = ejecutarFinTurno;
     }
 
     @Override
@@ -191,12 +186,12 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
             notificacionesComienzoRonda();
             notificarObservadores(NOTIFICACION_NUMERO_JUGADOR);
             notificarObservadores(NOTIFICACION_BAJO_JUEGO); //muestra los juegos bajados si había
-            if (ejecutarFinTurno) finTurno(); //cuando se guarda una partida puede que quede sin ejecutar esto
         }
     }
 
     @Override
-    public void desarrolloRobo(String eleccion) throws RemoteException {
+    public void desarrolloRobo(String eleccion) throws RemoteException,
+            JugadorDesconectadoException {
         if (Objects.equals(eleccion, ROBAR_DEL_MAZO) ||
             Objects.equals(eleccion,ROBO_DEL_MAZO)) {
             robarDelMazo();
@@ -217,7 +212,7 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
     }
 
     public boolean bajarse(int[] indicesCartas)
-            throws RemoteException {
+            throws RemoteException, JugadorDesconectadoException {
         boolean bajar = false;
         if (puedeBajar()) {
             bajar = bajarJuego(indicesCartas);
@@ -247,6 +242,12 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
     public String getTurnoDe() throws RemoteException {
         jugadores.get(numTurno).setTurnoActual(true);
         return getNombreJugador(numTurno);
+    }
+
+    @Override
+    public ArrayList<Carta> getMano(int controlador) throws RemoteException {
+
+        return null;
     }
 
     @Override
@@ -336,7 +337,7 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
         return juego!=null;
     }
 
-    private void cortar() throws RemoteException {
+    private void cortar() throws RemoteException, JugadorDesconectadoException {
         int sizeMano = jugadores.get(numTurno).getMano().getSize();
         if (sizeMano <= 1) {
             if (sizeMano == 1) {
@@ -404,11 +405,16 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
         return -1;
     }
 
-    public void robarDelMazo() throws RemoteException {
+    public void robarDelMazo() throws RemoteException,
+            JugadorDesconectadoException {
         jugadores.get(numTurno).getMano().agregarCarta(mazo.sacarPrimeraDelMazo()); //robo del mazo
         actualizarMano(numTurno);
         if (pozo!=null) {
-            notificarRoboConCastigo(numTurno);
+            if (enCurso) {
+                notificarRoboConCastigo(numTurno);
+            } else {
+                throw new JugadorDesconectadoException();
+            }
         }
     }
 
@@ -449,7 +455,7 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
         notificarObservadores(NOTIFICACION_HUBO_ROBO_CASTIGO);
     }
 
-    public void tirarAlPozo(int cartaATirar) throws RemoteException {
+    public void tirarAlPozo(int cartaATirar) throws RemoteException, JugadorDesconectadoException {
         pozo = (jugadores.get(numTurno).getMano().removeCarta(cartaATirar));
         jugadores.get(numTurno).setTurnoActual(false);
         notificarObservadores(NOTIFICACION_POZO);
@@ -457,23 +463,27 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
         finTurno();
     }
 
-    public void finTurno() throws RemoteException {
+    public void finTurno() throws RemoteException, JugadorDesconectadoException {
         final int TOTAL_RONDAS = 7;
-        if (jugadores.get(numTurno).getMano().getSize()==0) {
-            finRonda();
-            if (numRonda > TOTAL_RONDAS) {
-                finPartida();
+        if (enCurso) {
+            if (jugadores.get(numTurno).getMano().getSize()==0) {
+                finRonda();
+                if (numRonda > TOTAL_RONDAS) {
+                    finPartida();
+                } else {
+                    notificarObservadores(NOTIFICACION_BAJO_JUEGO);
+                    empezarRonda();
+                    notificarObservadores(NOTIFICACION_CAMBIO_TURNO);
+                }
             } else {
-                notificarObservadores(NOTIFICACION_BAJO_JUEGO);
-                empezarRonda();
+                numTurno++;
+                if (numTurno>jugadores.size()-1) {
+                    numTurno = 0;
+                }
                 notificarObservadores(NOTIFICACION_CAMBIO_TURNO);
             }
         } else {
-            numTurno++;
-            if (numTurno>jugadores.size()-1) {
-                numTurno = 0;
-            }
-            notificarObservadores(NOTIFICACION_CAMBIO_TURNO);
+            throw new JugadorDesconectadoException();
         }
     }
 
