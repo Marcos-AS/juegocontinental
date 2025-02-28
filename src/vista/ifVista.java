@@ -156,15 +156,7 @@ public abstract class ifVista {
         return nombreVista;
     }
     abstract void setNombreVista();
-    public void comienzoRonda(int ronda) {
-        JLabel label = new JLabel(mostrarCombinacionRequerida(ronda));
-        label.setFont(new Font("Arial", Font.PLAIN, 15));
-        JPanel panelInfoRonda = panelMap.get("infoRonda");
-        panelInfoRonda.removeAll();
-        panelInfoRonda.add(label);
-        panelInfoRonda.revalidate();
-        panelInfoRonda.repaint();
-    }
+    public abstract void comienzoRonda(int ronda);
 
     public void mostrarPuntosRonda(Map<String, Integer> puntos) {
         JPanel panelPuntuacion = panelMap.get("Puntuacion");
@@ -191,8 +183,8 @@ public abstract class ifVista {
     public abstract void cambioTurno();
     public abstract void actualizarManoJugador(ArrayList<String> cartas);
     public abstract void actualizarPozo(String cartaATirar);
-    public void salirAlMenu(){}
-    public void elegirJugador(ArrayList<String> nombreJugadores){}
+    public abstract void salirAlMenu();
+    public abstract void elegirJugador(ArrayList<String> nombreJugadores);
     public abstract void nuevaPartida();
     public abstract void finPartida();
     public void esperarRoboCastigo(){}

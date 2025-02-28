@@ -736,4 +736,13 @@ public class GUI extends ifVista {
         cardLayout.show(cardPanel, "Mesa");
     }
 
+    public void comienzoRonda(int ronda) {
+        JLabel label = new JLabel(mostrarCombinacionRequerida(ronda));
+        label.setFont(new Font("Arial", Font.PLAIN, 15));
+        JPanel panelInfoRonda = panelMap.get("infoRonda");
+        panelInfoRonda.removeAll();
+        panelInfoRonda.add(label);
+        panelInfoRonda.revalidate();
+        panelInfoRonda.repaint();
+    }
 }

@@ -202,7 +202,7 @@ public class Controlador implements IControladorRemoto {
     public boolean desarrolloRobo(String eleccion) {
         boolean robo = true;
         try {
-            partida.desarrolloRobo(eleccion);
+            partida.robo(eleccion);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         } catch (JugadorDesconectadoException e) {

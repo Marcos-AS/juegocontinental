@@ -20,9 +20,7 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
     private final Serializador srlPartidas =
             new Serializador("src/serializacion/partidas.dat");
     private ArrayList<String> nombresElegidos;
-    private int numRonda = 1;
-    private Carta pozo;
-    private Mazo mazo;
+    private Ronda ronda = Ronda.getInstancia();
     private Puntuacion puntuacion;
     private int numJugadorQueEmpiezaRonda;
     private int numTurno;
@@ -45,9 +43,7 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
 
     private void sincronizarCon(Partida partidaCargada) {
         jugadores = partidaCargada.jugadores;
-        numRonda = partidaCargada.numRonda;
-        pozo = partidaCargada.pozo;
-        mazo = partidaCargada.mazo;
+        ronda = partidaCargada.ronda;
         puntuacion = partidaCargada.puntuacion;
         numJugadorQueEmpiezaRonda = partidaCargada.numJugadorQueEmpiezaRonda;
         numTurno = partidaCargada.numTurno;
@@ -126,14 +122,13 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
 
     private void notificacionesComienzoRonda() throws RemoteException {
         notificarObservadores(NOTIFICACION_PUNTOS);
-        actualizarManoJugadores();
-        notificarObservadores(NOTIFICACION_POZO);
         notificarObservadores(NOTIFICACION_COMIENZO_RONDA);
+        notificarObservadores(NOTIFICACION_POZO);
+        actualizarManoJugadores();
     }
 
     private void finRonda() throws RemoteException {
-        incrementarNumJugadorQueEmpiezaRonda();
-        numRonda++;
+        ronda.fin();
         for (Jugador j : jugadores) {
             puntuacion.sumarPuntos(j);
             j.resetFinRonda();
@@ -149,21 +144,14 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
         notificarObservadores(NOTIFICACION_GANADOR);
         notificarObservadores(NOTIFICACION_FIN_PARTIDA);
         jugadores = new ArrayList<>();
-        numRonda = 1;
-    }
-
-    private void incrementarNumJugadorQueEmpiezaRonda() throws RemoteException {
-        numJugadorQueEmpiezaRonda++;
-        if (numJugadorQueEmpiezaRonda >= jugadores.size()) {
-            numJugadorQueEmpiezaRonda = 0;
-        }
+        ronda.finPartida();
     }
 
     public void guardar(int numJugadorQueLlamo) throws RemoteException {
         enCurso = false;
         srlPartidas.writeOneObject(this);
         if (numJugadorQueLlamo!=numTurno) {
-            notificarPartidaGuardada(); //sale al menu para todas las vistas menos la del turno actual
+            notificarPartidaGuardada(); //le avisa a todas las vistas menos la del turno actual
         } else {
             notificarObservadores(NOTIFICACION_PARTIDA_GUARDADA);
         }
@@ -189,15 +177,17 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
     public void comprobarEmpezarPartida() throws RemoteException {
         if (nombresElegidos.size()==jugadores.size()) {
             ponerJugadoresEnOrden();
+            notificarObservadores(NOTIFICACION_BAJO_JUEGO); //muestra los juegos bajados si había
             notificacionesComienzoRonda();
             notificarObservadores(NOTIFICACION_NUMERO_JUGADOR);
-            notificarObservadores(NOTIFICACION_BAJO_JUEGO); //muestra los juegos bajados si había
+            notificarObservadores(NOTIFICACION_CAMBIO_TURNO);
         }
     }
 
     @Override
-    public void desarrolloRobo(String eleccion) throws RemoteException,
+    public void robo(String eleccion) throws RemoteException,
             JugadorDesconectadoException {
+        actualizarManoJugadores();
         if (Objects.equals(eleccion, ROBAR_DEL_MAZO) ||
             Objects.equals(eleccion,ROBO_DEL_MAZO)) {
             robarDelMazo();
@@ -210,8 +200,8 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
     private boolean puedeBajar() throws RemoteException {
         boolean bajar = true;
         int cantVecesQueBajo = getCantJuegos(numTurno);
-        if ((numRonda <= 3 && cantVecesQueBajo > 2) ||
-                (numRonda>3 && cantVecesQueBajo > 3)) {
+        if ((ronda.getNumRonda() <= 3 && cantVecesQueBajo > 2) ||
+                (ronda.getNumRonda()>3 && cantVecesQueBajo > 3)) {
             bajar = false;
         }
         return bajar;
@@ -224,7 +214,7 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
             bajar = bajarJuego(indicesCartas);
             if (bajar){
                 notificarObservadores(NOTIFICACION_BAJO_JUEGO);
-                if(jugadores.get(numTurno).comprobarPosibleCorte(numRonda)) {
+                if(jugadores.get(numTurno).comprobarPosibleCorte()) {
                     cortar();
                 }
             }
@@ -248,12 +238,6 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
     public String getTurnoDe() throws RemoteException {
         jugadores.get(numTurno).setTurnoActual(true);
         return getNombreJugador(numTurno);
-    }
-
-    @Override
-    public ArrayList<Carta> getMano(int controlador) throws RemoteException {
-
-        return null;
     }
 
     @Override
@@ -397,11 +381,11 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
     }
 
     public int getNumRonda() throws RemoteException {
-        return numRonda;
+        return ronda.getNumRonda();
     }
 
     public ifCarta getPozo() throws RemoteException {
-        return pozo;
+        return ronda.getPozo();
     }
 
     public int getNumeroJugador(String nombreJugador)  throws RemoteException{
@@ -413,9 +397,9 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
 
     public void robarDelMazo() throws RemoteException,
             JugadorDesconectadoException {
-        jugadores.get(numTurno).getMano().agregarCarta(mazo.sacarPrimeraDelMazo()); //robo del mazo
+        jugadores.get(numTurno).getMano().agregarCarta(ronda.sacarPrimeraDelMazo()); //robo del mazo
         actualizarMano(numTurno);
-        if (pozo!=null) {
+        if (ronda.getPozo()!=null) {
             if (enCurso) {
                 notificarRoboConCastigo(numTurno);
             } else {
@@ -425,8 +409,7 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
     }
 
     public void robarDelPozo() throws RemoteException {
-        jugadores.get(numTurno).getMano().agregarCarta(pozo);
-        pozo = null;
+        jugadores.get(numTurno).getMano().agregarCarta(ronda.robarDelPozo());
         actualizarMano(numTurno);
         notificarObservadores(NOTIFICACION_POZO);
     }
@@ -453,16 +436,16 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
 
     public void robarConCastigo() throws RemoteException {
         Mano jugadorRoboMano = jugadores.get(getNumJugadorRoboCastigo()).getMano();
-        jugadorRoboMano.agregarCarta(pozo);
-        pozo = null;
-        jugadorRoboMano.agregarCarta(mazo.sacarPrimeraDelMazo()); //robo del mazo
+        jugadorRoboMano.agregarCarta(ronda.robarDelPozo());
+        jugadorRoboMano.agregarCarta(ronda.sacarPrimeraDelMazo()); //robo del mazo
         actualizarMano(getNumJugadorRoboCastigo());
         notificarObservadores(NOTIFICACION_POZO);
         notificarObservadores(NOTIFICACION_HUBO_ROBO_CASTIGO);
     }
 
-    public void tirarAlPozo(int cartaATirar) throws RemoteException, JugadorDesconectadoException {
-        pozo = (jugadores.get(numTurno).getMano().removeCarta(cartaATirar));
+    public void tirarAlPozo(int cartaATirar)
+            throws RemoteException, JugadorDesconectadoException {
+        ronda.setPozo(jugadores.get(numTurno).getMano().removeCarta(cartaATirar));
         jugadores.get(numTurno).setTurnoActual(false);
         notificarObservadores(NOTIFICACION_POZO);
         actualizarMano(numTurno);
@@ -472,9 +455,11 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
     public void finTurno() throws RemoteException, JugadorDesconectadoException {
         final int TOTAL_RONDAS = 7;
         if (enCurso) {
+            //si termina la ronda (porque corta) o sigue
             if (jugadores.get(numTurno).getMano().getSize()==0) {
                 finRonda();
-                if (numRonda > TOTAL_RONDAS) {
+                //se incrementa la ronda y se comprueba si fue la ultima
+                if (ronda.getNumRonda()> TOTAL_RONDAS) {
                     finPartida();
                 } else {
                     notificarObservadores(NOTIFICACION_BAJO_JUEGO);
@@ -486,6 +471,7 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
                 if (numTurno>jugadores.size()-1) {
                     numTurno = 0;
                 }
+                actualizarManoJugadores();
                 notificarObservadores(NOTIFICACION_CAMBIO_TURNO);
             }
         } else {
@@ -494,11 +480,7 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
     }
 
     public void empezarRonda() throws RemoteException {
-        mazo = new Mazo();
-        mazo.iniciarMazo(jugadores.size());
-        //mazo.repartirCartasPrueba(jugadores,numRonda); //prueba
-        mazo.repartirCartas(jugadores,numRonda);
-        pozo = mazo.sacarPrimeraDelMazo();
+        ronda.empezar(jugadores);
         notificacionesComienzoRonda();
     }
 
@@ -512,7 +494,7 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
     }
 
     public int[] comprobarQueFaltaParaCortar(int numJugador) throws RemoteException {
-        return jugadores.get(numJugador).comprobarQueFaltaParaCortar(numRonda);
+        return jugadores.get(numJugador).comprobarQueFaltaParaCortar();
     }
 
     public String getNombreJugador(int numJugador) throws RemoteException {

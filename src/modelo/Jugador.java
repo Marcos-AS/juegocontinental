@@ -15,13 +15,13 @@ class Jugador implements Serializable {
         this.nombre = nombre;
     }
 
-    int[] comprobarQueFaltaParaCortar(int ronda) {
+    int[] comprobarQueFaltaParaCortar() {
         int[] juegosBajados = new int[2];
         getJuegosBajados(juegosBajados);
         int trios = 0;
         int escaleras = 0;
         int[] faltante = new int[2];
-        switch (ronda) {
+        switch (Ronda.getInstancia().getNumRonda()) {
             case 1:
                 trios = 2 - juegosBajados[0];
                 break;
@@ -59,11 +59,11 @@ class Jugador implements Serializable {
         }
     }
 
-    boolean comprobarPosibleCorte(int ronda) {
+    boolean comprobarPosibleCorte() {
         int[] juegosBajados = new int[2];
         getJuegosBajados(juegosBajados);
         boolean puedeCortar = false;
-        switch (ronda) {
+        switch (Ronda.getInstancia().getNumRonda()) {
             case 1:
                 puedeCortar = juegosBajados[0] == 2;
                 break;

@@ -51,8 +51,8 @@ class Mazo implements Serializable {
         return cantBarajas;
     }
 
-    void repartirCartas(ArrayList<Jugador> jugadores, int numRonda) {
-        int numCartasARepartir = 6 + numRonda -1;
+    void repartirCartas(ArrayList<Jugador> jugadores) {
+        int numCartasARepartir = 6 + Ronda.getInstancia().getNumRonda() -1;
         for(Jugador j: jugadores) {
             while (j.getMano().getSize() < numCartasARepartir) {
                 j.getMano().agregarCarta(sacarPrimeraDelMazo());

@@ -9,4 +9,5 @@ public class EntradasUsuario {
     public static final String TIRAR = "2";
     public static final String ORDENAR = "3";
     public static final String ACOMODAR = "4";
+    public static final String GUARDAR = "3";
 }

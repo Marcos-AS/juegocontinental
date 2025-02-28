@@ -1,5 +1,7 @@
 package vista;
 
+import modelo.EntradasUsuario;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -71,16 +73,15 @@ public class VentanaConsola extends ifVista {
     }
 
     private void opcionesIniciales() {
-        // Limpiamos el contenido previo del JTextPane
         textChat.setText("");
 
-        // Construimos el mensaje a mostrar
         StringBuilder mostrar = new StringBuilder();
         mostrar.append("Bienvenido al juego El Continental\n\n");
         mostrar.append("Elije una opción:\n");
         mostrar.append("1 - Jugar\n");
         mostrar.append("2 - Ver ranking mejores jugadores\n");
         mostrar.append("3 - Ver reglas de juego\n");
+        mostrar.append("4 - Cargar partida\n");
         mostrar.append("-1 - Salir del juego\n\n");
 
         // Verificamos si hay una partida en curso
@@ -92,16 +93,6 @@ public class VentanaConsola extends ifVista {
 
         // Mostramos el mensaje en el JTextPane
         textChat.setText(mostrar.toString());
-
-        // Si hay un botón de jugar, lo agregamos al panel de entrada (opcional)
-        JButton botonJugar = buttonMap.get("botonJugar");
-        JPanel panelChat = panelMap.get("Mesa");
-        if (botonJugar != null) {
-            JPanel panelInput = (JPanel) panelChat.getComponent(1); // Asumiendo que panelInput es el segundo componente
-            panelInput.add(botonJugar, BorderLayout.WEST); // Lo agregamos al panel de entrada
-            panelInput.revalidate();
-            panelInput.repaint();
-        }
     }
 
     @Override
@@ -167,41 +158,50 @@ public class VentanaConsola extends ifVista {
     }
 
     private void switchInicial() {
-        final int ELECCION_JUGAR = 1;
-        final int ELECCION_RANKING = 2;
-        final int ELECCION_REGLAS = 3;
-        final int ELECCION_SALIR = -1;
-        int eleccion;
-        String input = "";
-        boolean iniciada = false;
-        do {
-            eleccion = preguntarInputInicial(input);
-            input = "";
-            switch (eleccion) {
-                case ELECCION_JUGAR: {
-                    if (nombreVista == null) {
-                        setNombreVista();
-                    }
-                    ctrl.crearPartida();
-                    iniciada = true;
-                    break;
-                }
-                case ELECCION_RANKING: {
-                    input = getRankingString(ctrl.getRanking());
-                    break;
-                }
-                case ELECCION_REGLAS: {
-                    mostrarInfo(REGLAS);
-                    break;
-                }
-                case ELECCION_SALIR: {
-                    frame.dispose();
-                    System.exit(0);
-                    break;
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            final int ELECCION_JUGAR = 1;
+            final int ELECCION_RANKING = 2;
+            final int ELECCION_REGLAS = 3;
+            final int ELECCION_CARGAR = 4;
+            final int ELECCION_SALIR = -1;
+
+            String input = "";
+            boolean iniciada = false;
+
+            while (!iniciada) {
+                int eleccion = preguntarInputInicial(input);
+                input = "";
+
+                switch (eleccion) {
+                    case ELECCION_JUGAR:
+                        if (nombreVista == null) {
+                            setNombreVista();
+                        }
+                        ctrl.crearPartida();
+                        iniciada = true;
+                        break;
+                    case ELECCION_RANKING:
+                        input = getRankingString(ctrl.getRanking());
+                        break;
+                    case ELECCION_REGLAS:
+                        mostrarInfo(REGLAS);
+                        break;
+                    case ELECCION_SALIR:
+                        frame.dispose();
+                        System.exit(0);
+                        break;
+                    case ELECCION_CARGAR:
+                        iniciada = true;
+                        if (!ctrl.cargarPartida()) {
+                            mostrarInfo("No hay una partida para cargar.");
+                        }
                 }
             }
-        } while (!iniciada);
+            executor.shutdown();
+        });
     }
+
 
     public int preguntarCantJugadoresPartida() {
         int cantJugadores = 0;
@@ -231,22 +231,24 @@ public class VentanaConsola extends ifVista {
                 ExecutorService executor = Executors.newSingleThreadExecutor();
                 executor.execute(() -> {
                     try {
-                        String opcion = preguntarInput("1 - Robar del mazo\n2 - Robar del pozo\nElige una opción: ");
+                        String opcion = preguntarInput("1 - Robar del mazo\n2 - Robar del pozo\n3 - Guardar partida\nElige una opción: ");
+                        if (opcion.equals(EntradasUsuario.GUARDAR)) {
+                            ctrl.guardarPartida();
+                        } else {
+                            // Llamamos a desarrolloRobo con la opción seleccionada
+                            ctrl.desarrolloRobo(opcion);
 
-                        // Llamamos a desarrolloRobo con la opción seleccionada
-                        ctrl.desarrolloRobo(opcion);
+                            // Volvemos a preguntar hasta que termine el turno
+                            while (ctrl.isTurnoActual()) {
+                                ctrl.switchMenuBajar(menuBajar());
+                            }
 
-                        // Volvemos a preguntar hasta que termine el turno
-                        while (ctrl.isTurnoActual()) {
-                            ctrl.switchMenuBajar(menuBajar());
+                            ctrl.finTurno();
+
+                            if (ctrl.isPartidaEnCurso()) {
+                                SwingUtilities.invokeLater(ctrl::cambioTurno);
+                            }
                         }
-
-                        ctrl.finTurno();
-
-                        if (ctrl.isPartidaEnCurso()) {
-                            SwingUtilities.invokeLater(ctrl::cambioTurno);
-                        }
-
                     } catch (Exception e) {
                         e.printStackTrace();
                     } finally {
@@ -272,7 +274,7 @@ public class VentanaConsola extends ifVista {
     public void actualizarManoJugador(ArrayList<String> cartas) {
         SwingUtilities.invokeLater(() -> {
             manoSize = cartas.size();
-            StringBuilder cartasStr = new StringBuilder("Mano:");
+            StringBuilder cartasStr = new StringBuilder("Mano:\n");
             int i = 1;
             for (String carta : cartas) {
                 cartasStr.append(i).append(" - ").append(carta).append("\n");
@@ -452,7 +454,7 @@ public class VentanaConsola extends ifVista {
     @Override
     public void comienzoRonda(int ronda) {
         SwingUtilities.invokeLater(() -> {
-            String mensaje = "Comienza la ronda " + ronda + "!\n" + mostrarCombinacionRequerida(ronda);
+            String mensaje = "Ronda " + ronda + ":\n" + mostrarCombinacionRequerida(ronda);
             mostrarMensajeChat(mensaje);
         });
     }
@@ -488,4 +490,48 @@ public class VentanaConsola extends ifVista {
     public void setNumeroJugadorTitulo() {
         frame.setTitle("Mesa - Jugador N°" + (ctrl.getNumJugador(nombreVista)+1) + ": " + nombreVista);
     }
+
+    @Override
+    public void salirAlMenu() {
+        mostrarMensajeChat("Se ha guardado la partida.");
+        opcionesIniciales();
+
+        switchInicial();
+    }
+
+    @Override
+    public void elegirJugador(ArrayList<String> nombreJugadores) {
+        StringBuilder mensaje = new StringBuilder("Selecciona el jugador que eras en la partida anterior:\n");
+        int i = 1;
+        for (String nombre : nombreJugadores) {
+            mensaje.append(i).append("- ").append(nombre).append("\n");
+            i++;
+        }
+
+        mostrarMensajeChat(mensaje.toString());
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            try {
+                int numJugador;
+                String nombreElegido;
+                do {
+                    numJugador = Integer.parseInt(obtenerEntradaChat())-1;
+                    nombreElegido = nombreJugadores.get(numJugador);
+                    if (!nombreJugadores.contains(nombreElegido)) {
+                        mostrarMensajeChat("Jugador no válido. Intenta de nuevo.");
+                    }
+                } while (!nombreJugadores.contains(nombreElegido));
+
+                nombreVista = nombreElegido;
+                if (!ctrl.agregarNombreElegido(nombreElegido)) {
+                    mostrarMensajeChat("Jugador ya elegido. Elige otro.");
+                    elegirJugador(nombreJugadores); // Volver a preguntar
+                }
+            } finally {
+                executor.shutdown();
+            }
+        });
+    }
+
 }
