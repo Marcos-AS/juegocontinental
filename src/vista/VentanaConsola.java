@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class VentanaConsola extends ifVista {
     private JTextPane textChat;
@@ -226,34 +228,38 @@ public class VentanaConsola extends ifVista {
             if (nombre.equals(nombreVista)) {
                 mostrarMensajeChat("Es tu turno.");
 
-                CountDownLatch latch = new CountDownLatch(1);
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                executor.execute(() -> {
+                    try {
+                        String opcion = preguntarInput("1 - Robar del mazo\n2 - Robar del pozo\nElige una opción: ");
 
-                try {
-                    // Llamamos a preguntarInput para obtener la opción de robo
-                    String opcion = preguntarInput("1 - Robar del mazo\n2 - Robar del pozo\nElige una opción: ");
+                        // Llamamos a desarrolloRobo con la opción seleccionada
+                        ctrl.desarrolloRobo(opcion);
 
-                    // Llamamos a desarrolloRobo con la opción seleccionada
-                    ctrl.desarrolloRobo(opcion);
-                    latch.countDown();
-                    // Esperar a que el CountDownLatch se libere (es decir, que el robo termine)
-                    latch.await();
+                        // Volvemos a preguntar hasta que termine el turno
+                        while (ctrl.isTurnoActual()) {
+                            ctrl.switchMenuBajar(menuBajar());
+                        }
 
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                        ctrl.finTurno();
 
-                while (ctrl.isTurnoActual()) { //se le tiene que preguntar de nuevo
-                    ctrl.switchMenuBajar(menuBajar());
-                }
-                ctrl.finTurno();
-                if (ctrl.isPartidaEnCurso()) {
-                    ctrl.cambioTurno();
-                }
+                        if (ctrl.isPartidaEnCurso()) {
+                            SwingUtilities.invokeLater(ctrl::cambioTurno);
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally {
+                        executor.shutdown();
+                    }
+                });
+
             } else {
                 mostrarMensajeChat("Espera tu turno.");
             }
         }
     }
+
 
     private void activarEntradas(boolean habilitar) {
         // Aquí puedes deshabilitar todos los elementos de entrada (botones, campos de texto, etc.)
@@ -440,7 +446,7 @@ public class VentanaConsola extends ifVista {
 
     @Override
     public void esperarRoboCastigo() {
-        mostrarMensajeChat("Atención: Otros jugadores pueden robar con castigo.");
+        mostrarMensajeChat("Espera mientras los demás jugadores pueden robar con castigo.");
     }
 
     @Override

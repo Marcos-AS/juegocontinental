@@ -37,7 +37,8 @@ public interface ifPartida extends IObservableRemoto {
     void robarDelPozo() throws RemoteException;
     void robarConCastigo() throws RemoteException;
     void empezarRonda() throws RemoteException;
-    void tirarAlPozo(int cartaATirar) throws RemoteException, JugadorDesconectadoException;
+    void tirarAlPozo(int cartaATirar)
+            throws RemoteException, JugadorDesconectadoException;
     void moverCartaEnMano(int i, int i1) throws RemoteException;
     String getNombreJugador(int numJugador) throws RemoteException;
     void guardar(int numJugadorQueLlamo) throws RemoteException;
