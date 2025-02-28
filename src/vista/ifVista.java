@@ -5,7 +5,6 @@ import modelo.ifCarta;
 import javax.swing.*;
 import java.awt.*;
 import java.rmi.RemoteException;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -18,7 +17,6 @@ public abstract class ifVista {
     JPanel cardPanel;
     Map<String, JPanel> panelMap;
     Map<String, JButton> buttonMap;
-    boolean activa = true;
     public static String NO_PUEDE_ACOMODAR = "No puede acomodar porque no tienes o no hay juegos bajados o porque la carta que deseas acomodar no hace juego con el juego elegido.";
     public static String MOSTRAR_JUEGO_INVALIDO = "No puedes bajar porque la combinacion elegida no forma un juego valido para la ronda\n";
     static String REGLAS =
@@ -179,18 +177,6 @@ public abstract class ifVista {
     }
 
     public abstract void setNumeroJugadorTitulo();
-
-    public void setSalir() {
-        activa = false;
-    }
-
-    public boolean isActiva() {
-        return activa;
-    }
-
-    public void setActiva(boolean activa) {
-        this.activa = activa;
-    }
 
     public abstract int preguntarCantJugadoresPartida();
     public abstract int[] preguntarParaOrdenarCartas();

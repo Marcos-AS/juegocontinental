@@ -96,11 +96,7 @@ public class Controlador implements IControladorRemoto {
                     vista.setNumeroJugadorTitulo();
                     break;
                 }
-                case NOTIFICACION_SALIR: {
-                    vista.setSalir();
-                    break;
-                }
-                case NOTIFICACION_SALIR_MENU: {
+                case NOTIFICACION_PARTIDA_GUARDADA: {
                     vista.salirAlMenu();
                     break;
                 }
@@ -342,14 +338,8 @@ public class Controlador implements IControladorRemoto {
 
     public void guardarPartida() {
         try {
-            partida.guardar();
             int numJugadorQueLlamo = getNumJugador(vista.getNombreVista());
-            if (numJugadorQueLlamo!=partida.getNumTurno()) {
-                partida.notificarSalir(); //sale al menu para todas las vistas menos la del turno actual
-                partida.notificarObservador(partida.getNumTurno(), NOTIFICACION_SALIR);
-            } else {
-                partida.notificarObservadores(NOTIFICACION_SALIR_MENU);
-            }
+            partida.guardar(numJugadorQueLlamo);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -376,7 +366,6 @@ public class Controlador implements IControladorRemoto {
             //para este momento ya se cargó una partida
             agregado = partida.agregarNombreElegido(nombre);
             if (agregado) {
-                vista.setActiva(true); //activa se pone en false al guardar la partida, y puede quedar la vista abierta por eso importa cambiarla
                 vista.inicializarMenu();
                 int obsIndex = partida.getObservadorIndex(this);
                 int numJugador = partida.getNumJugador(vista.getNombreVista());

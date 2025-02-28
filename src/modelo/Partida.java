@@ -159,9 +159,15 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
         }
     }
 
-    public void guardar() throws RemoteException {
+    public void guardar(int numJugadorQueLlamo) throws RemoteException {
         enCurso = false;
         srlPartidas.writeOneObject(this);
+        if (numJugadorQueLlamo!=numTurno) {
+            notificarPartidaGuardada(); //sale al menu para todas las vistas menos la del turno actual
+        } else {
+            notificarObservadores(NOTIFICACION_PARTIDA_GUARDADA);
+        }
+
     }
 
     public boolean cargarPartida() throws RemoteException{
@@ -436,13 +442,13 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
     }
 
     @Override
-    public void notificarSalir() throws RemoteException {
+    public void notificarPartidaGuardada() throws RemoteException {
         ArrayList<Integer> avisar = new ArrayList<>();
         for (Jugador j : jugadores) {
             if (j.getNumeroJugador() != numTurno)
                 avisar.add(j.getNumeroJugador());
         }
-        notificarObservadores(avisar, NOTIFICACION_SALIR_MENU);
+        notificarObservadores(avisar, NOTIFICACION_PARTIDA_GUARDADA);
     }
 
     public void robarConCastigo() throws RemoteException {

@@ -234,7 +234,7 @@ public class VentanaConsola extends ifVista {
 
                     // Llamamos a desarrolloRobo con la opción seleccionada
                     ctrl.desarrolloRobo(opcion);
-
+                    latch.countDown();
                     // Esperar a que el CountDownLatch se libere (es decir, que el robo termine)
                     latch.await();
 
@@ -242,7 +242,7 @@ public class VentanaConsola extends ifVista {
                     e.printStackTrace();
                 }
 
-                while (ctrl.isTurnoActual()) {
+                while (ctrl.isTurnoActual()) { //se le tiene que preguntar de nuevo
                     ctrl.switchMenuBajar(menuBajar());
                 }
                 ctrl.finTurno();
