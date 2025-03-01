@@ -66,4 +66,12 @@ public class Ronda implements Serializable {
     void setPozo(Carta carta) {
         pozo = carta;
     }
+
+    void setNumJugadorQueEmpiezaRonda() {
+        try {
+            numJugadorQueEmpiezaRonda = Partida.getInstancia().getNumTurno();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

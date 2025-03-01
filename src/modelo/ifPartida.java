@@ -16,7 +16,7 @@ public interface ifPartida extends IObservableRemoto {
     boolean isTurnoActual(int numJugador) throws RemoteException;
     int[] comprobarQueFaltaParaCortar(int numJugador) throws RemoteException;
     int getObservadorIndex(IObservadorRemoto o) throws RemoteException;
-    Serializador getRanking() throws RemoteException;
+    Object[] getRanking() throws RemoteException;
     int getCantJugadores() throws RemoteException;
     int getNumRonda() throws RemoteException;
     ifCarta getPozo() throws RemoteException;

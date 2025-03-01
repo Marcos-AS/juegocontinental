@@ -310,15 +310,7 @@ public class Controlador implements IControladorRemoto {
 
     public Object[] getRanking() {
         try {
-            return partida.getRanking().readObjects();
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void empezarRonda() {
-        try {
-            partida.empezarRonda();
+            return partida.getRanking();
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
