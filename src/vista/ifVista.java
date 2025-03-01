@@ -19,6 +19,7 @@ public abstract class ifVista {
     Map<String, JButton> buttonMap;
     public static String NO_PUEDE_ACOMODAR = "No puede acomodar porque no tienes o no hay juegos bajados o porque la carta que deseas acomodar no hace juego con el juego elegido.";
     public static String MOSTRAR_JUEGO_INVALIDO = "No puedes bajar porque la combinacion elegida no forma un juego valido para la ronda\n";
+    public static String CARTAS_REPETIDAS = "Seleccionó más de una vez la misma carta";
     static String REGLAS =
     """
         OBJETIVO

@@ -14,7 +14,6 @@ public interface ifPartida extends IObservableRemoto {
     void setNumeroJugador(int numJugador, int nuevoNumero) throws RemoteException;
     void finTurno() throws RemoteException, JugadorDesconectadoException;
     boolean isTurnoActual(int numJugador) throws RemoteException;
-    int[] comprobarQueFaltaParaCortar(int numJugador) throws RemoteException;
     int getObservadorIndex(IObservadorRemoto o) throws RemoteException;
     Object[] getRanking() throws RemoteException;
     int getCantJugadores() throws RemoteException;
@@ -57,7 +56,8 @@ public interface ifPartida extends IObservableRemoto {
             throws RemoteException, JugadorDesconectadoException;
     boolean hayRepetidos(int[] array) throws RemoteException;
     boolean acomodar(int cartaAcomodar, int iJuego, int numJugador) throws RemoteException;
-    boolean bajarse(int[] indicesCartas) throws RemoteException, JugadorDesconectadoException;
+    boolean bajarse(int[] indicesCartas)
+            throws RemoteException, JugadorDesconectadoException;
     void setCantJugadoresDeseada(int cant) throws RemoteException;
     ArrayList<ArrayList<ArrayList<Carta>>> enviarJuegosEnMesa()
             throws RemoteException;

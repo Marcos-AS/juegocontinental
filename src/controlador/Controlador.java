@@ -39,12 +39,7 @@ public class Controlador implements IControladorRemoto {
                     break;
                 }
                 case NOTIFICACION_POZO: {
-                    ifCarta pozo = partida.getPozo();
-                    String actualizar = "";
-                    if (pozo != null) {
-                        actualizar = ifVista.cartaToString(pozo);
-                    }
-                    vista.actualizarPozo(actualizar);
+                    vista.actualizarPozo(getPozoString());
                     break;
                 }
                 case NOTIFICACION_ROBO_CASTIGO: {
@@ -63,12 +58,8 @@ public class Controlador implements IControladorRemoto {
                     vista.nuevaPartida();
                     break;
                 }
-                case NOTIFICACION_AGREGAR_OBSERVADOR:
-                    int observadorIndex = partida.getObservadorIndex(this);
-                    int numJugador = partida.getNumeroJugador(vista.getNombreVista());
-                    if (numJugador != observadorIndex) {
-                        partida.setNumeroJugador(numJugador, observadorIndex);
-                    }
+                case NOTIFICACION_JUGADORES_ACTUALIZADOS:
+                    actualizarNumJugador();
                     break;
                 case NOTIFICACION_CORTE_RONDA: {
                     String nombreJ = partida.getNombreJugador(partida.getNumTurno());
@@ -124,6 +115,33 @@ public class Controlador implements IControladorRemoto {
         }
     }
 
+    private void actualizarNumJugador() {
+        int observadorIndex = 0;
+        try {
+            observadorIndex = partida.getObservadorIndex(this);
+            int numJugador = partida.getNumeroJugador(vista.getNombreVista());
+            if (numJugador != observadorIndex) {
+                partida.setNumeroJugador(numJugador, observadorIndex);
+            }
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String getPozoString() {
+        ifCarta pozo;
+        String actualizar = "";
+        try {
+            pozo = partida.getPozo();
+            if (pozo != null) {
+                actualizar = ifVista.cartaToString(pozo);
+            }
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+        return actualizar;
+    }
+
     public String getTurnoDe() {
         try {
             return partida.getTurnoDe();
@@ -137,12 +155,13 @@ public class Controlador implements IControladorRemoto {
             switch (eleccion) {
                 case EntradasUsuario.BAJARSE -> {
                     if(vista.preguntarSiQuiereSeguirBajandoJuegos()) {
-                        int[] indicesCartas;
-                        do {
-                            indicesCartas = vista.preguntarQueBajarParaJuego();
-                        } while (partida.hayRepetidos(indicesCartas));
-                        if (!partida.bajarse(indicesCartas)) {
-                            vista.mostrarInfo(ifVista.MOSTRAR_JUEGO_INVALIDO);
+                        int[] indicesCartas = vista.preguntarQueBajarParaJuego();
+                        if (!partida.hayRepetidos(indicesCartas)) {
+                            if (!partida.bajarse(indicesCartas)) {
+                                vista.mostrarInfo(ifVista.MOSTRAR_JUEGO_INVALIDO);
+                            }
+                        } else {
+                            vista.mostrarInfo(ifVista.CARTAS_REPETIDAS);
                         }
                     }
                 }

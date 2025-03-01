@@ -264,11 +264,7 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
     }
 
     public ArrayList<ArrayList<Carta>> getJuegos(int numJugador) throws RemoteException {
-        ArrayList<ArrayList<Carta>> a = new ArrayList<>();
-        for (JuegoBajado juego : jugadores.get(numJugador).juegos) {
-            a.add(new ArrayList<>(juego.juego));
-        }
-        return a;
+        return jugadores.get(numJugador).getJuegos();
     }
 
     public void setNumeroJugador(int numJugador, int nuevoNumero) throws RemoteException {
@@ -287,7 +283,7 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
         if (juego!=null) {
             Jugador j = jugadores.get(numTurno);
             j.juegos.add(juego);
-            j.getMano().eliminarDeLaMano(j.juegos.get(j.juegos.size()-1).juego);
+            j.getMano().removerCartasBajadas(j.juegos.get(j.juegos.size()-1).juego);
             actualizarMano(numTurno);
         }
         return juego!=null;
@@ -323,7 +319,7 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
     public void jugarPartida() throws RemoteException,
             FaltanJugadoresException {
         if (jugadores.size() == cantJugadoresDeseada) {
-            notificarObservadores(NOTIFICACION_AGREGAR_OBSERVADOR);
+            notificarObservadores(NOTIFICACION_JUGADORES_ACTUALIZADOS);
             ponerJugadoresEnOrden();
             notificarObservadores(NOTIFICACION_NUMERO_JUGADOR);
             puntuacion = new Puntuacion(jugadores);
@@ -457,10 +453,6 @@ public class Partida extends ObservableRemoto implements Serializable, ifPartida
     public void moverCartaEnMano(int i, int i1) throws RemoteException {
         jugadores.get(numTurno).getMano().moverCartaEnMano(i,i1);
         actualizarMano(numTurno);
-    }
-
-    public int[] comprobarQueFaltaParaCortar(int numJugador) throws RemoteException {
-        return jugadores.get(numJugador).comprobarQueFaltaParaCortar();
     }
 
     public String getNombreJugador(int numJugador) throws RemoteException {

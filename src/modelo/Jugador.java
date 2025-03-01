@@ -8,48 +8,11 @@ class Jugador implements Serializable {
     private int numeroJugador;
     //private final ArrayList<Partida> partidas = new ArrayList<>();
     private boolean turnoActual = false;
-    private Mano mano = new Mano();
+    private final Mano mano = new Mano();
     ArrayList<JuegoBajado> juegos = new ArrayList<>();
 
     Jugador(String nombre) {
         this.nombre = nombre;
-    }
-
-    int[] comprobarQueFaltaParaCortar() {
-        int[] juegosBajados = new int[2];
-        getJuegosBajados(juegosBajados);
-        int trios = 0;
-        int escaleras = 0;
-        int[] faltante = new int[2];
-        switch (Ronda.getInstancia().getNumRonda()) {
-            case 1:
-                trios = 2 - juegosBajados[0];
-                break;
-            case 2:
-                trios = 1 - juegosBajados[0];
-                escaleras = 1 - juegosBajados[1];
-                break;
-            case 3:
-                escaleras = 2 - juegosBajados[1];
-                break;
-            case 4:
-                trios = 3 - juegosBajados[0];
-                break;
-            case 5:
-                trios = 2 - juegosBajados[0];
-                escaleras = 1 - juegosBajados[1];
-                break;
-            case 6:
-                trios = 1 - juegosBajados[0];
-                escaleras = 2 - juegosBajados[1];
-                break;
-            case 7:
-                escaleras = 3 - juegosBajados[1];
-                break;
-        }
-        faltante[0] = trios;
-        faltante[1] = escaleras;
-        return faltante;
     }
 
     private void getJuegosBajados(int[] juegosBajados) {
@@ -118,5 +81,13 @@ class Jugador implements Serializable {
 
     Mano getMano() {
         return mano;
+    }
+
+    public ArrayList<ArrayList<Carta>> getJuegos() {
+        ArrayList<ArrayList<Carta>> a = new ArrayList<>();
+        for (JuegoBajado juego : juegos) {
+            a.add(new ArrayList<>(juego.juego));
+        }
+        return a;
     }
 }

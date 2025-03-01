@@ -38,7 +38,7 @@ public class Mano implements Serializable {
         return juego;
     }
 
-    void eliminarDeLaMano(ArrayList<Carta> cartasABajar) {
+    void removerCartasBajadas(ArrayList<Carta> cartasABajar) {
         for(Carta c : cartasABajar) {
             mano.remove(c);
         }
